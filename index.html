@@ -167,11 +167,6 @@ color: #cbd5e1;
 font-size: 0.9rem;
 }
 
-        .search-highlight {
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid #3b82f6;
-            border-radius: 0.25rem;
-            padding: 0.2rem 0.4rem;
         /* Service Details and Pricing Calculator */
         .service-details {
             background: rgba(15, 23, 42, 0.7);
@@ -334,6 +329,11 @@ font-size: 0.9rem;
             font-weight: 600;
             color: #10b981;
             font-size: 0.9rem;
+        .search-highlight {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            border-radius: 0.25rem;
+            padding: 0.2rem 0.4rem;
 }
 
 /* Pests Not Covered Alert */
@@ -993,16 +993,13 @@ officeHours: "Monday-Friday: 8 AM - 5 PM"
 bulletin: "This is test data - no Wix connection detected",
 pestsNotCovered: "Test pests (sample data)",
 services: [{
+                        name: "Quarterly General Pest Control",
+                        description: "Comprehensive pest control service with quarterly treatments",
                         name: "Sample Service",
                         description: "This is sample data for testing",
                         firstPrice: "$150",
                         recurringPrice: "$45",
-                        name: "Quarterly General Pest Control",
-                        description: "Comprehensive pest control service with quarterly treatments",
 contract: "12 Months",
-                        guarantee: "Test Guarantee",
-                        duration: "30 Minutes",
-                        pests: "Test Pests"
                         guarantee: "90-day guarantee",
                         duration: "45 minutes",
                         pests: "Ants, Roaches, Spiders, Crickets, Silverfish",
@@ -1090,6 +1087,9 @@ contract: "12 Months",
                                 serviceType: "Monthly Mosquito"
                             }
                         ]
+                        guarantee: "Test Guarantee",
+                        duration: "30 Minutes",
+                        pests: "Test Pests"
 }],
 technicians: [{
 name: "Sample Technician",
@@ -1192,19 +1192,10 @@ serviceCard.className = 'service-card';
 
             // Generate unique ID for this service's calculator
             const serviceId = `service_${Math.random().toString(36).substr(2, 9)}`;
-            serviceCard.setAttribute('data-service-id', serviceId);
             
 serviceCard.innerHTML = `
                <div class="service-name">${service.name || 'Unnamed Service'}</div>
                <div class="service-description">${service.description || 'No description available.'}</div>
-                <div class="service-pricing">
-                    <div class="price-item">
-                        <div class="price-label">First Service</div>
-                        <div class="price-value">${service.firstPrice || 'N/A'}</div>
-                    </div>
-                    <div class="price-item">
-                        <div class="price-label">Recurring</div>
-                        <div class="price-value">${service.recurringPrice || 'N/A'}</div>
                 
                 <!-- Service Details -->
                 <div class="service-details">
@@ -1241,34 +1232,35 @@ serviceCard.innerHTML = `
                             <div class="detail-label">Billing Frequency</div>
                             <div class="detail-value">${service.billingFrequency || 'N/A'}</div>
                         </div>
-                   </div>
+                <div class="service-pricing">
                     <div class="price-item">
-                        <div class="price-label">Contract</div>
-                        <div class="price-value">${service.contract || 'N/A'}</div>
+                        <div class="price-label">First Service</div>
+                        <div class="price-value">${service.firstPrice || 'N/A'}</div>
+                   </div>
                     <div class="detail-item">
                         <div class="detail-label">Pests Covered</div>
                         <div class="detail-value pests-covered">${service.pests || 'N/A'}</div>
-                   </div>
                     <div class="price-item">
-                        <div class="price-label">Guarantee</div>
-                        <div class="price-value">${service.guarantee || 'N/A'}</div>
+                        <div class="price-label">Recurring</div>
+                        <div class="price-value">${service.recurringPrice || 'N/A'}</div>
+                   </div>
                 </div>
 
                 <!-- Pricing Calculator -->
                 <div class="pricing-calculator">
                     <div class="calculator-title">
                         🧮 Pricing Calculator
-                   </div>
                     <div class="price-item">
-                        <div class="price-label">Duration</div>
-                        <div class="price-value">${service.duration || 'N/A'}</div>
+                        <div class="price-label">Contract</div>
+                        <div class="price-value">${service.contract || 'N/A'}</div>
+                   </div>
                     <div class="sqft-input-container">
                         <input type="number" class="sqft-input" id="sqft_${serviceId}" placeholder="Enter square footage" min="0" step="1">
                         <button class="calculate-btn" onclick="calculatePricing('${serviceId}')">Calculate</button>
-                   </div>
                     <div class="price-item">
-                        <div class="price-label">Pests Covered</div>
-                        <div class="price-value pests-covered">${service.pests || 'N/A'}</div>
+                        <div class="price-label">Guarantee</div>
+                        <div class="price-value">${service.guarantee || 'N/A'}</div>
+                   </div>
                     <div class="pricing-result" id="result_${serviceId}">
                         <div class="pricing-display" id="pricing_${serviceId}">
                             <!-- Calculated pricing will appear here -->
@@ -1276,17 +1268,19 @@ serviceCard.innerHTML = `
                         <div class="sqft-range-info" id="range_${serviceId}">
                             <!-- Square footage range info will appear here -->
                         </div>
+                    <div class="price-item">
+                        <div class="price-label">Duration</div>
+                        <div class="price-value">${service.duration || 'N/A'}</div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-label">Pests Covered</div>
+                        <div class="price-value pests-covered">${service.pests || 'N/A'}</div>
                    </div>
                </div>
 
                ${service.variants ? service.variants.map(variant => `
                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #334155;">
                            <div class="service-name" style="font-size: 1rem; color: #94a3b8;">↳ ${variant.name}</div>
-                            <div class="service-description" style="font-size: 0.9rem;">${variant.description}</div>
-                            <div class="service-pricing" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));">
-                                <div class="price-item">
-                                    <div class="price-label">First</div>
-                                    <div class="price-value">${variant.firstPrice || 'N/A'}</div>
                             <div class="service-description" style="font-size: 0.9rem;">${variant.description || ''}</div>
                             
                             <!-- Variant Service Details -->
@@ -1308,10 +1302,12 @@ serviceCard.innerHTML = `
                                         <div class="detail-label">Product Type</div>
                                         <div class="detail-value">${variant.productType || 'N/A'}</div>
                                     </div>
-                               </div>
+                            <div class="service-description" style="font-size: 0.9rem;">${variant.description}</div>
+                            <div class="service-pricing" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));">
                                 <div class="price-item">
-                                    <div class="price-label">Recurring</div>
-                                    <div class="price-value">${variant.recurringPrice || 'N/A'}</div>
+                                    <div class="price-label">First</div>
+                                    <div class="price-value">${variant.firstPrice || 'N/A'}</div>
+                               </div>
                             </div>
 
                             <!-- Variant Pricing Calculator -->
@@ -1332,10 +1328,10 @@ serviceCard.innerHTML = `
                                             <!-- Square footage range info will appear here -->
                                         </div>
                                     </div>
-                               </div>
                                 <div class="price-item">
-                                    <div class="price-label">Contract</div>
-                                    <div class="price-value">${variant.contract || 'N/A'}</div>
+                                    <div class="price-label">Recurring</div>
+                                    <div class="price-value">${variant.recurringPrice || 'N/A'}</div>
+                               </div>
                             ` : `
                                 <!-- Simple variant pricing if no tiers -->
                                 <div class="service-pricing" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));">
@@ -1347,9 +1343,12 @@ serviceCard.innerHTML = `
                                         <div class="price-label">Recurring</div>
                                         <div class="price-value">${variant.recurringPrice || 'N/A'}</div>
                                     </div>
+                                <div class="price-item">
+                                    <div class="price-label">Contract</div>
+                                    <div class="price-value">${variant.contract || 'N/A'}</div>
                                </div>
-                            </div>
                             `}
+                            </div>
                        </div>
                    `).join('') : ''}
            `;
@@ -1677,7 +1676,6 @@ servicesGrid.appendChild(serviceCard);
 showSection('services');
 }
 
-        // Add Enter key support for search
         // Pricing calculation functions
         function calculatePricing(serviceId) {
             const sqft = parseInt(document.getElementById(`sqft_${serviceId}`).value);
@@ -1691,7 +1689,9 @@ showSection('services');
             }
             
             // Find the service card and get its pricing data
-            const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
+            const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`) || 
+                              Array.from(document.querySelectorAll('.service-card')).find(card => 
+                                  card.innerHTML.includes(`sqft_${serviceId}`));
             
             if (!serviceCard || !serviceCard._pricingData) {
                 pricingDiv.innerHTML = '<div class="price-display-item"><div class="price-display-value">No pricing tiers available</div></div>';
@@ -1793,6 +1793,7 @@ showSection('services');
         }
 
         // Add Enter key support for pricing calculators
+        // Add Enter key support for search
 document.addEventListener('DOMContentLoaded', function() {
             // Handle enter key for search
 document.getElementById('pestSearch').addEventListener('keypress', function(e) {
