@@ -1,1274 +1,1024 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Profile - Call Center Interface</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
-            margin: 0;
-            min-height: 100vh;
-        }
-
-        /* Header Section */
-        .header-container {
-            background: linear-gradient(135deg, #0c1427 0%, #1a1f3a 50%, #0f172a 100%);
-            border-bottom: 2px solid #334155;
-            padding: 20px 24px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.08) 0%, transparent 50%);
-            opacity: 0.6;
-        }
-
-        .company-header {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-
-        .company-info {
-            flex: 1;
-        }
-
-        .company-name {
-            font-family: 'Poppins', 'Inter', sans-serif;
-            font-size: 2.8em;
-            font-weight: 600;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .location-timezone {
-            font-family: 'Rajdhani', 'Inter', sans-serif;
-            font-size: 1.4em;
-            color: #94a3b8;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .useful-links {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .link-btn {
-            background: #334155;
-            color: #e2e8f0;
-            padding: 10px 16px;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .link-btn:hover {
-            background: #3b82f6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        /* Main Layout */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr 320px;
-            gap: 24px;
-            padding: 24px;
-            min-height: calc(100vh - 140px);
-        }
-
-        /* Left Navigation */
-        .nav-sidebar {
-            background: #1e293b;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            padding: 20px;
-            height: fit-content;
-            position: sticky;
-            top: 24px;
-        }
-
-        .nav-title {
-            font-family: 'Rajdhani', 'Inter', sans-serif;
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid #475569;
-            padding-bottom: 8px;
-        }
-
-        .nav-link {
-            display: block;
-            color: #cbd5e1;
-            text-decoration: none;
-            padding: 12px 16px;
-            margin: 6px 0;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            background: #334155;
-            border: 1px solid #475569;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background: #3b82f6;
-            color: #f8fafc;
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        /* Main Content Area */
-        .content-area {
-            background: #1e293b;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            padding: 24px;
-            min-height: 600px;
-        }
-
-        /* Bulletin Section */
-        .bulletin-section {
-            background: #451a03;
-            border: 1px solid #f59e0b;
-            border-left: 4px solid #f59e0b;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .bulletin-title {
-            font-weight: 700;
-            color: #fbbf24;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-
-        .bulletin-content {
-            color: #fef3c7;
-            line-height: 1.5;
-        }
-
-        /* Pests Not Covered */
-        .pests-not-covered {
-            background: #7f1d1d;
-            border: 1px solid #ef4444;
-            border-left: 4px solid #ef4444;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .pests-title {
-            font-weight: 700;
-            color: #fca5a5;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-
-        .pests-content {
-            color: #fecaca;
-            line-height: 1.5;
-        }
-
-        /* Service Cards */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 24px;
-        }
-
-        .service-card {
-            background: #0f172a;
-            border: 1px solid #475569;
-            border-left: 4px solid #10b981;
-            border-radius: 12px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .service-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
-        }
-
-        .service-title {
-            font-family: 'Rajdhani', 'Inter', sans-serif;
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 12px;
-        }
-
-        .service-description {
-            color: #94a3b8;
-            line-height: 1.5;
-            margin-bottom: 16px;
-        }
-
-        .service-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            font-size: 0.9em;
-        }
-
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            background: #334155;
-            border-radius: 6px;
-        }
-
-        .detail-label {
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        .detail-value {
-            color: #e2e8f0;
-            font-weight: 600;
-        }
-
-        /* Right Sidebar Tools */
-        .tools-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .tool-card {
-            background: #1e293b;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            padding: 20px;
-        }
-
-        .tool-title {
-            font-family: 'Rajdhani', 'Inter', sans-serif;
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Acreage Converter */
-        .converter-input {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .converter-input input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #475569;
-            border-radius: 6px;
-            background: #334155;
-            color: #e2e8f0;
-            font-size: 16px;
-        }
-
-        .converter-input input::placeholder {
-            color: #94a3b8;
-        }
-
-        .convert-btn {
-            background: #3b82f6;
-            color: #f8fafc;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .convert-btn:hover {
-            background: #2563eb;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .converter-result {
-            color: #10b981;
-            font-weight: 600;
-            font-size: 1.1em;
-            margin-top: 8px;
-        }
-
-        /* Zip Code Lookup */
-        .zip-lookup {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .zip-lookup input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #475569;
-            border-radius: 6px;
-            background: #334155;
-            color: #e2e8f0;
-            font-size: 16px;
-        }
-
-        .search-btn {
-            background: #10b981;
-            color: #f8fafc;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .search-btn:hover {
-            background: #059669;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .zip-result {
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-weight: 600;
-            display: none;
-        }
-
-        .zip-result.success {
-            background: #064e3b;
-            border: 1px solid #10b981;
-            color: #6ee7b7;
-        }
-
-        .zip-result.error {
-            background: #7f1d1d;
-            border: 1px solid #ef4444;
-            color: #fca5a5;
-        }
-
-        /* Time Display */
-        .time-display {
-            background: #334155;
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .time-zone {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            font-size: 0.9em;
-        }
-
-        .time-label {
-            color: #94a3b8;
-        }
-
-        .time-value {
-            color: #e2e8f0;
-            font-weight: 600;
-            font-family: 'Rajdhani', monospace;
-        }
-
-        /* Weather Forecast */
-        .weather-display {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 8px;
-        }
-
-        .weather-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #334155;
-        }
-
-        .weather-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #e2e8f0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .weather-forecast {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-
-        .weather-day {
-            text-align: center;
-            padding: 8px 4px;
-            background: #0f172a;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .weather-day:hover {
-            background: #1e293b;
-            border-color: #64748b;
-            transform: translateY(-1px);
-        }
-
-        .weather-day-name {
-            font-size: 0.7em;
-            font-weight: 600;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .weather-icon {
-            font-size: 1.4em;
-            margin: 4px 0;
-        }
-
-        .weather-temp {
-            font-size: 0.85em;
-            font-weight: 600;
-            color: #e2e8f0;
-            margin: 2px 0;
-        }
-
-        .weather-rain {
-            font-size: 0.7em;
-            color: #60a5fa;
-            font-weight: 500;
-        }
-
-        .weather-loading {
-            text-align: center;
-            color: #64748b;
-            font-style: italic;
-            padding: 20px;
-        }
-
-        /* Office Information Modal Styles */
-        .office-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-        }
-
-        .office-modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #1e293b;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            padding: 24px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #475569;
-        }
-
-        .modal-title {
-            font-family: 'Rajdhani', 'Inter', sans-serif;
-            font-size: 1.4em;
-            font-weight: 700;
-            color: #f1f5f9;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .close-btn:hover {
-            background: #ef4444;
-            color: #f8fafc;
-        }
-
-        .office-info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .info-item {
-            padding: 12px;
-            background: #334155;
-            border-radius: 8px;
-        }
-
-        .info-label {
-            color: #94a3b8;
-            font-size: 0.9em;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .info-value {
-            color: #e2e8f0;
-            font-weight: 600;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .nav-sidebar {
-                position: static;
-                order: -1;
-            }
-            
-            .tools-sidebar {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 16px;
-            }
-        }
-
-        /* Section Content Styles */
-        .section-content {
-            display: none;
-        }
-
-        .section-content.active {
-            display: block;
-        }
-
-        .page-title {
-            font-family: 'Rajdhani', 'Inter', sans-serif;
-            font-size: 2em;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Updated Button */
-        .updated-btn {
-            background: #334155;
-            color: #e2e8f0;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 12px;
-        }
-
-        .updated-btn:hover {
-            background: #475569;
-            transform: translateY(-1px);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Call Center Profile - Dynamic</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Inter', sans-serif;
+background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+color: #e2e8f0;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* Cyberpunk Header */
+.header {
+background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+padding: 1.5rem 2rem;
+border-bottom: 2px solid #3b82f6;
+position: relative;
+overflow: hidden;
+}
+
+.header::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+animation: scan 3s infinite;
+}
+
+@keyframes scan {
+0% { left: -100%; }
+100% { left: 100%; }
+}
+
+.header-content {
+display: flex;
+justify-content: space-between;
+align-items: center;
+position: relative;
+z-index: 2;
+}
+
+.company-info h1 {
+font-family: 'Poppins', sans-serif;
+font-size: 2.5rem;
+font-weight: 600;
+color: #60a5fa;
+text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+margin-bottom: 0.5rem;
+letter-spacing: -0.02em;
+}
+
+.company-info .location {
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.2rem;
+color: #94a3b8;
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+
+.time-weather-container {
+display: flex;
+gap: 1rem;
+align-items: center;
+}
+
+.current-time {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #3b82f6;
+padding: 0.5rem 1rem;
+border-radius: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+color: #60a5fa;
+text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+}
+
+.weather-forecast {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #3b82f6;
+padding: 0.5rem 1rem;
+border-radius: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+color: #60a5fa;
+text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+min-width: 200px;
+}
+
+.weather-forecast-content {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 0.5rem;
+font-size: 0.8rem;
+}
+
+.weather-day {
+text-align: center;
+padding: 0.2rem;
+}
+
+.weather-day-name {
+font-size: 0.7rem;
+color: #94a3b8;
+margin-bottom: 0.1rem;
+}
+
+.weather-temp {
+font-size: 0.8rem;
+color: #60a5fa;
+font-weight: 600;
+}
+
+.weather-desc {
+font-size: 0.6rem;
+color: #cbd5e1;
+}
+
+.header-actions {
+display: flex;
+gap: 1rem;
+}
+
+/* Search Section */
+.search-section {
+background: rgba(30, 41, 59, 0.8);
+border: 1px solid #334155;
+border-radius: 1rem;
+padding: 1.5rem;
+margin: 1rem 2rem;
+backdrop-filter: blur(10px);
+}
+
+.search-container {
+display: flex;
+gap: 1rem;
+align-items: center;
+margin-bottom: 1rem;
+}
+
+.search-input {
+flex: 1;
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+color: #e2e8f0;
+padding: 1rem 1.5rem;
+border-radius: 0.75rem;
+font-family: 'Inter', sans-serif;
+font-size: 1rem;
+transition: all 0.3s ease;
+}
+
+.search-input:focus {
+outline: none;
+border-color: #3b82f6;
+box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+color: #64748b;
+}
+
+.search-btn {
+background: linear-gradient(45deg, #1e40af, #3b82f6);
+border: 1px solid #60a5fa;
+color: white;
+padding: 1rem 2rem;
+border-radius: 0.75rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+background: linear-gradient(45deg, #3b82f6, #60a5fa);
+box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.clear-search-btn {
+background: linear-gradient(45deg, #dc2626, #ef4444);
+border: 1px solid #f87171;
+color: white;
+padding: 1rem 1.5rem;
+border-radius: 0.75rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+.clear-search-btn:hover {
+background: linear-gradient(45deg, #ef4444, #f87171);
+box-shadow: 0 0 20px rgba(248, 113, 113, 0.4);
+}
+
+.search-results {
+font-family: 'Inter', sans-serif;
+color: #cbd5e1;
+font-size: 0.9rem;
+}
+
+.search-highlight {
+background: rgba(59, 130, 246, 0.2);
+border: 1px solid #3b82f6;
+border-radius: 0.25rem;
+padding: 0.2rem 0.4rem;
+}
+
+/* Navigation */
+.nav-section {
+background: rgba(30, 41, 59, 0.6);
+border: 1px solid #334155;
+border-radius: 0.75rem;
+margin: 1rem 2rem;
+padding: 1rem;
+backdrop-filter: blur(10px);
+}
+
+.nav-buttons {
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+}
+
+.nav-btn {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+color: #e2e8f0;
+padding: 0.75rem 1.5rem;
+border-radius: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+.nav-btn:hover, .nav-btn.active {
+background: linear-gradient(45deg, #1e40af, #3b82f6);
+border-color: #60a5fa;
+color: white;
+box-shadow: 0 0 15px rgba(96, 165, 250, 0.3);
+}
+
+/* Content Sections */
+.content-section {
+margin: 1rem 2rem;
+}
+
+.section {
+display: none;
+background: rgba(30, 41, 59, 0.6);
+border: 1px solid #334155;
+border-radius: 0.75rem;
+padding: 1.5rem;
+backdrop-filter: blur(10px);
+}
+
+.section.active {
+display: block;
+animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.section h2 {
+color: #60a5fa;
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.5rem;
+margin-bottom: 1rem;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+/* Service Cards */
+.services-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 1rem;
+}
+
+.service-card {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+border-radius: 0.75rem;
+padding: 1.5rem;
+transition: all 0.3s ease;
+}
+
+.service-card:hover {
+border-color: #3b82f6;
+box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
+}
+
+.service-name {
+color: #60a5fa;
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.25rem;
+font-weight: 600;
+margin-bottom: 0.5rem;
+}
+
+.service-description {
+color: #cbd5e1;
+font-size: 0.9rem;
+margin-bottom: 1rem;
+line-height: 1.5;
+}
+
+.service-pricing {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+gap: 0.75rem;
+margin-top: 1rem;
+}
+
+.price-item {
+background: rgba(15, 23, 42, 0.5);
+padding: 0.75rem;
+border-radius: 0.5rem;
+border: 1px solid #334155;
+}
+
+.price-label {
+font-size: 0.75rem;
+color: #94a3b8;
+text-transform: uppercase;
+margin-bottom: 0.25rem;
+}
+
+.price-value {
+font-weight: 600;
+color: #10b981;
+}
+
+.pests-covered {
+color: #e2e8f0 !important;
+}
+
+/* Technician Cards */
+.technicians-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+gap: 1rem;
+}
+
+.technician-card {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+border-radius: 0.75rem;
+padding: 1.5rem;
+transition: all 0.3s ease;
+}
+
+.technician-card:hover {
+border-color: #10b981;
+box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
+}
+
+.technician-name {
+color: #10b981;
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.1rem;
+font-weight: 600;
+margin-bottom: 0.5rem;
+}
+
+.technician-info {
+color: #cbd5e1;
+font-size: 0.9rem;
+margin-bottom: 0.5rem;
+}
+
+/* Office Info */
+.office-info-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 1rem;
+}
+
+.info-item {
+background: rgba(15, 23, 42, 0.5);
+padding: 1rem;
+border-radius: 0.5rem;
+border: 1px solid #334155;
+}
+
+.info-label {
+font-size: 0.8rem;
+color: #94a3b8;
+text-transform: uppercase;
+margin-bottom: 0.5rem;
+}
+
+.info-value {
+color: #e2e8f0;
+font-weight: 500;
+}
+
+.info-value a {
+color: #60a5fa;
+text-decoration: none;
+}
+
+.info-value a:hover {
+text-decoration: underline;
+}
+
+/* Tools Section */
+.tools-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 1rem;
+}
+
+.tool-item {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+border-radius: 0.75rem;
+padding: 1rem;
+text-align: center;
+transition: all 0.3s ease;
+cursor: pointer;
+}
+
+.tool-item:hover {
+border-color: #f59e0b;
+box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+}
+
+.tool-name {
+color: #f59e0b;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+margin-bottom: 0.5rem;
+}
+
+.tool-description {
+color: #cbd5e1;
+font-size: 0.9rem;
+}
+
+/* Bulletin Alert */
+.bulletin-alert {
+background: linear-gradient(45deg, #dc2626, #ef4444);
+border: 1px solid #f87171;
+border-radius: 0.75rem;
+padding: 1rem;
+margin-bottom: 1rem;
+color: white;
+}
+
+.bulletin-alert h3 {
+margin-bottom: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+}
+
+/* Pests Not Covered Alert */
+.pests-not-covered-alert {
+background: linear-gradient(45deg, #dc2626, #ef4444);
+border: 1px solid #f87171;
+border-radius: 0.75rem;
+padding: 1rem;
+margin-bottom: 1rem;
+color: white;
+}
+
+.pests-not-covered-alert h3 {
+margin-bottom: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+.header-content {
+flex-direction: column;
+gap: 1rem;
+text-align: center;
+}
+
+.search-container {
+flex-direction: column;
+}
+
+.nav-buttons {
+justify-content: center;
+}
+
+.services-grid,
+.technicians-grid,
+.office-info-grid,
+.tools-grid {
+grid-template-columns: 1fr;
+}
+}
+
+/* Loading State */
+.loading {
+text-align: center;
+padding: 2rem;
+color: #64748b;
+}
+
+.loading::after {
+content: "⚡";
+animation: pulse 1s infinite;
+margin-left: 0.5rem;
+}
+
+@keyframes pulse {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.5; }
+}
+</style>
 </head>
 <body>
-    <!-- Header Section -->
-    <div class="header-container">
-        <div class="company-header">
+    <div class="header">
+        <div class="header-content">
             <div class="company-info">
-                <h1 class="company-name" id="companyName">Loading Company...</h1>
-                <div class="location-timezone" id="locationTimezone">Loading Location...</div>
-            </div>
-            <div class="useful-links">
-                <a href="#" class="link-btn" id="pricingLink">
-                    <span>💰</span> Pricing Lookup
-                </a>
-                <a href="#" class="link-btn" id="fieldRoutesLink" target="_blank">
-                    <span>📋</span> FieldRoutes
-                </a>
-                <a href="#" class="link-btn" id="websiteLink" target="_blank">
-                    <span>🌐</span> Website
-                </a>
-                <button class="link-btn" id="officeInfoBtn">
-                    <span>🏢</span> Office Info
-                </button>
-            </div>
-        </div>
-        <button class="updated-btn" id="updatedBtn">Updated: Loading...</button>
-    </div>
-
-    <!-- Main Layout -->
-    <div class="main-layout">
-        <!-- Left Navigation -->
-        <nav class="nav-sidebar">
-            <h3 class="nav-title">🧭 Navigation</h3>
-            <a href="#" class="nav-link active" data-section="services">
-                <span>🛡️</span> Services
-            </a>
-            <a href="#" class="nav-link" data-section="technicians">
-                <span>👨‍🔧</span> Technicians
-            </a>
-            <a href="#" class="nav-link" data-section="policies">
-                <span>📜</span> Policies
-            </a>
-            <a href="#" class="nav-link" data-section="areas">
-                <span>📍</span> Service Areas
-            </a>
-            <a href="#" class="nav-link" data-section="discounts">
-                <span>💸</span> Discounts
-            </a>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="content-area">
-            <!-- Bulletin Section -->
-            <div class="bulletin-section" id="bulletinSection" style="display: none;">
-                <div class="bulletin-title">📢 Bulletin</div>
-                <div class="bulletin-content" id="bulletinContent"></div>
-            </div>
-
-            <!-- Pests Not Covered -->
-            <div class="pests-not-covered" id="pestsNotCoveredSection" style="display: none;">
-                <div class="pests-title">🚫 Pests Not Covered</div>
-                <div class="pests-content" id="pestsNotCoveredContent"></div>
-            </div>
-
-            <!-- Services Section -->
-            <div class="section-content active" id="servicesSection">
-                <h2 class="page-title">🛡️ Services</h2>
-                <div class="services-grid" id="servicesGrid">
-                    <!-- Services will be dynamically loaded here -->
+                <h1 id="companyName">Loading...</h1>
+                <div class="location">
+                    📍 <span id="companyLocation">Loading...</span>
                 </div>
             </div>
-
-            <!-- Technicians Section -->
-            <div class="section-content" id="techniciansSection">
-                <h2 class="page-title">👨‍🔧 Technicians & Scheduling</h2>
-                <div id="techniciansContent">
-                    <!-- Technicians content will be loaded here -->
-                </div>
-            </div>
-
-            <!-- Policies Section -->
-            <div class="section-content" id="policiesSection">
-                <h2 class="page-title">📜 Policies</h2>
-                <div id="policiesContent">
-                    <!-- Policies content will be loaded here -->
-                </div>
-            </div>
-
-            <!-- Service Areas Section -->
-            <div class="section-content" id="areasSection">
-                <h2 class="page-title">📍 Service Areas</h2>
-                <div id="areasContent">
-                    <!-- Service areas content will be loaded here -->
-                </div>
-            </div>
-
-            <!-- Discounts Section -->
-            <div class="section-content" id="discountsSection">
-                <h2 class="page-title">💸 Discounts</h2>
-                <div id="discountsContent">
-                    <!-- Discounts content will be loaded here -->
-                </div>
-            </div>
-        </main>
-
-        <!-- Right Sidebar Tools -->
-        <aside class="tools-sidebar">
-            <!-- Acreage to Square Footage Converter -->
-            <div class="tool-card">
-                <h3 class="tool-title">📐 Acreage Converter</h3>
-                <div class="converter-input">
-                    <input type="text" id="acresInput" placeholder="Enter acres (e.g., 1.5 or 3/4)">
-                    <button class="convert-btn" onclick="convertAcres()">Convert</button>
-                </div>
-                <div class="converter-result" id="squareFootageResult"></div>
-            </div>
-
-            <!-- Zip Code Lookup -->
-            <div class="tool-card">
-                <h3 class="tool-title">📍 Zip Code Lookup</h3>
-                <div class="zip-lookup">
-                    <input type="text" id="zipInput" placeholder="Enter zip code" maxlength="5">
-                    <button class="search-btn" onclick="searchZip()">Search</button>
-                </div>
-                <div class="zip-result" id="zipResult"></div>
-            </div>
-
-            <!-- Time Display -->
-            <div class="tool-card">
-                <h3 class="tool-title">🕒 Current Time</h3>
-                <div class="time-display">
-                    <div class="time-zone">
-                        <span class="time-label">Pacific:</span>
-                        <span class="time-value" id="pacificTime">--:--:-- --</span>
-                    </div>
-                    <div class="time-zone">
-                        <span class="time-label">Mountain:</span>
-                        <span class="time-value" id="mountainTime">--:--:-- --</span>
-                    </div>
-                    <div class="time-zone">
-                        <span class="time-label">Central:</span>
-                        <span class="time-value" id="centralTime">--:--:-- --</span>
-                    </div>
-                    <div class="time-zone">
-                        <span class="time-label">Eastern:</span>
-                        <span class="time-value" id="easternTime">--:--:-- --</span>
+            <div class="time-weather-container">
+                <div class="current-time" id="currentTime">Loading...</div>
+                <div class="weather-forecast" id="weatherForecast">
+                    <div class="weather-forecast-content" id="weatherContent">
+                        Loading weather...
                     </div>
                 </div>
-            </div>
-
-            <!-- Weather Forecast -->
-            <div class="tool-card">
-                <h3 class="tool-title">🌤️ 7-Day Forecast</h3>
-                <div class="weather-display">
-                    <div class="weather-loading" id="weatherLoading">Loading weather...</div>
-                    <div class="weather-forecast" id="weatherForecast" style="display: none;">
-                        <!-- Weather days will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-        </aside>
-    </div>
-
-    <!-- Office Information Modal -->
-    <div class="office-modal" id="officeModal">
-        <div class="office-modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">🏢 Office Information</h3>
-                <button class="close-btn" onclick="closeOfficeModal()">&times;</button>
-            </div>
-            <div class="office-info-grid" id="officeInfoGrid">
-                <!-- Office information will be populated here -->
             </div>
         </div>
     </div>
 
-    <script>
-        // Global variables
-        let clientData = {};
+    <div class="search-section">
+        <div class="search-container">
+            <input type="text" id="pestSearch" class="search-input" placeholder="Search for pests, services, or treatments...">
+            <button class="search-btn" onclick="searchPests()">🔍 Search</button>
+            <button class="clear-search-btn" onclick="clearSearch()">Clear</button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showSection('office')">🏢 Office Info</button>
+            <button class="nav-btn" onclick="showSection('services')">🛡️ Services</button>
+            <button class="nav-btn" onclick="showSection('technicians')">👨‍🔧 Technicians</button>
+            <button class="nav-btn" onclick="showSection('tools')">🔧 Tools</button>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div id="bulletinSection"></div>
+        <div id="pestsNotCoveredSection"></div>
+
+        <div id="office" class="section active">
+            <h2>🏢 Office Information</h2>
+            <div class="office-info-grid" id="officeInfo">
+                <div class="loading">Loading office information...</div>
+            </div>
+        </div>
+
+        <div id="services" class="section">
+            <h2>🛡️ Services</h2>
+            <div class="services-grid" id="servicesGrid">
+                <div class="loading">Loading services...</div>
+            </div>
+        </div>
+
+        <div id="technicians" class="section">
+            <h2>👨‍🔧 Technicians</h2>
+            <div class="technicians-grid" id="techniciansGrid">
+                <div class="loading">Loading technicians...</div>
+            </div>
+        </div>
+
+        <div id="tools" class="section">
+            <h2>🔧 Tools & Resources</h2>
+            <div class="tools-grid" id="toolsGrid">
+                <div class="loading">Loading tools...</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// Get URL parameters
+function getUrlParameters() {
+const urlParams = new URLSearchParams(window.location.search);
+return {
+companyName: urlParams.get('companyName') || 'SOS Exterminating',
+location: urlParams.get('location') || 'Dallas, TX',
+phone: urlParams.get('phone') || '(214) 555-0123',
+email: urlParams.get('email') || 'dallas@sosexterminating.com',
+website: urlParams.get('website') || 'www.sosexterminating.com',
+hours: urlParams.get('hours') || 'Mon-Fri: 8AM-6PM, Sat: 9AM-3PM',
+manager: urlParams.get('manager') || 'John Smith',
+bulletin: urlParams.get('bulletin') || '',
+pestsNotCovered: urlParams.get('pestsNotCovered') || ''
+};
+}
+
+// Sample data (will be replaced with real data from URL parameters)
+const sampleData = {
+companyName: "SOS Exterminating",
+location: "Dallas, TX",
+phone: "(214) 555-0123",
+email: "dallas@sosexterminating.com",
+website: "www.sosexterminating.com",
+hours: "Mon-Fri: 8AM-6PM, Sat: 9AM-3PM",
+manager: "John Smith",
+bulletin: "This is test data - no Wix connection detected",
+pestsNotCovered: "Test pests (sample data)",
+services: [{
+name: "Sample Service",
+description: "This is sample data for testing",
+firstPrice: "$150",
+recurringPrice: "$45",
+contract: "12 Months",
+guarantee: "Test Guarantee",
+duration: "30 Minutes",
+pests: "Test Pests"
+}],
+technicians: [{
+name: "Sample Technician",
+phone: "(214) 555-0124",
+email: "tech@sosexterminating.com",
+specialties: "General Pest Control"
+}],
+tools: [{
+name: "Sample Tool",
+description: "This is a sample tool for testing",
+url: "#"
+}]
+};
+
+// Initialize the page
+function initializePage() {
+const data = getUrlParameters();
+
+// Update header
+document.getElementById('companyName').textContent = data.companyName;
+document.getElementById('companyLocation').textContent = data.location;
+
+// Update sections
+populateOfficeInfo(data);
+populateServices(sampleData.services);
+populateTechnicians(sampleData.technicians);
+populateTools(sampleData.tools);
+populateBulletin(data.bulletin);
+populatePestsNotCovered(data.pestsNotCovered);
+
+// Start time updates
+updateTime();
+setInterval(updateTime, 1000);
+
+// Load weather forecast
+loadWeatherForecast(data.location);
+}
+
+// Weather functions
+async function loadWeatherForecast(location) {
+    try {
+        // Get coordinates for the location
+        const geoResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`);
+        const geoData = await geoResponse.json();
         
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            initializePage();
-            setupNavigation();
-            setupTimeUpdates();
-            setupWeatherForecast();
-            setupZipInputEnter();
-        });
-
-        // Initialize page with client data
-        function initializePage() {
-            // Get client ID from URL or set default for testing
-            const urlParams = new URLSearchParams(window.location.search);
-            const clientId = urlParams.get('clientId') || 'test-client';
-            
-            // Load client data (this would normally come from Wix database)
-            loadClientData(clientId);
+        if (geoData.length === 0) {
+            throw new Error('Location not found');
         }
+        
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
+        
+        // Get weather forecast
+        const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=7`);
+        const weatherData = await weatherResponse.json();
+        
+        displayWeatherForecast(weatherData.daily);
+    } catch (error) {
+        console.error('Error loading weather:', error);
+        document.getElementById('weatherContent').innerHTML = 'Weather unavailable';
+    }
+}
 
-        // Load client data from Wix database
-        function loadClientData(clientId) {
-            // This is a placeholder - in real implementation, this would query Wix database
-            // For now, using sample data that matches your form structure
-            clientData = {
-                companyName: "Addison Pest Control",
-                location: "Frisco, Texas",
-                timezone: "Central",
-                officeInfo: {
-                    phone: "(972) 555-0123",
-                    email: "contact@addisonpest.com",
-                    website: "https://www.addisonpest.com",
-                    fieldRoutesLink: "https://addison.fieldroutes.com/",
-                    physicalAddress: "123 Main Street\nFrisco, TX 75034",
-                    officeHours: "Monday-Friday: 8:00 AM - 5:00 PM\nSaturday: 8:00 AM - 12:00 PM\nSunday: Closed"
-                },
-                bulletin: "Davidson Pest Control has merged with Dynasty Pest Control. Welcome Davidson customers to the Dynasty family.",
-                pestsNotCovered: "Stinging Insects, Skunks, Grubs",
-                services: [
-                    {
-                        name: "General Pest ADVANTAGE",
-                        description: "The Advantage PC plan provides thorough initial service with ongoing exterior protection.",
-                        firstPrice: "$150",
-                        recurringPrice: "$45",
-                        contract: "12 Months",
-                        guarantee: "Unlimited Reservices",
-                        duration: "35 Minutes",
-                        pests: "Roaches, Ants, Spiders, Scorpions, Silverfish"
-                    }
-                ]
-            };
-            
-            populateClientData();
-        }
+function displayWeatherForecast(dailyData) {
+    const weatherContent = document.getElementById('weatherContent');
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    let forecastHTML = '';
+    
+    for (let i = 0; i < 7; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() + i);
+        const dayName = days[date.getDay()];
+        
+        const maxTemp = Math.round(dailyData.temperature_2m_max[i]);
+        const minTemp = Math.round(dailyData.temperature_2m_min[i]);
+        const weatherCode = dailyData.weather_code[i];
+        const weatherDesc = getWeatherDescription(weatherCode);
+        
+        forecastHTML += `
+            <div class="weather-day">
+                <div class="weather-day-name">${dayName}</div>
+                <div class="weather-temp">${maxTemp}°</div>
+                <div class="weather-desc">${weatherDesc}</div>
+            </div>
+        `;
+    }
+    
+    weatherContent.innerHTML = forecastHTML;
+}
 
-        // Populate page with client data
-        function populateClientData() {
-            // Update header
-            document.getElementById('companyName').textContent = clientData.companyName;
-            document.getElementById('locationTimezone').textContent = `${clientData.location} • ${clientData.timezone} Time`;
-            
-            // Update links
-            if (clientData.officeInfo.website) {
-                document.getElementById('websiteLink').href = clientData.officeInfo.website;
-            }
-            if (clientData.officeInfo.fieldRoutesLink) {
-                document.getElementById('fieldRoutesLink').href = clientData.officeInfo.fieldRoutesLink;
-            }
-            
-            // Show/hide bulletin
-            if (clientData.bulletin) {
-                document.getElementById('bulletinSection').style.display = 'block';
-                document.getElementById('bulletinContent').textContent = clientData.bulletin;
-            }
-            
-            // Show/hide pests not covered
-            if (clientData.pestsNotCovered) {
-                document.getElementById('pestsNotCoveredSection').style.display = 'block';
-                document.getElementById('pestsNotCoveredContent').textContent = clientData.pestsNotCovered;
-            }
-            
-            // Load services
-            loadServices();
-            
-            // Load office information
-            loadOfficeInformation();
-        }
+function getWeatherDescription(code) {
+    const weatherCodes = {
+        0: '☀️',
+        1: '🌤️',
+        2: '⛅',
+        3: '☁️',
+        45: '🌫️',
+        48: '🌫️',
+        51: '🌦️',
+        53: '🌦️',
+        55: '🌦️',
+        61: '🌧️',
+        63: '🌧️',
+        65: '🌧️',
+        71: '🌨️',
+        73: '🌨️',
+        75: '🌨️',
+        95: '⛈️'
+    };
+    return weatherCodes[code] || '🌤️';
+}
 
-        // Load services into grid
-        function loadServices() {
-            const servicesGrid = document.getElementById('servicesGrid');
-            servicesGrid.innerHTML = '';
-            
-            clientData.services.forEach(service => {
-                const serviceCard = createServiceCard(service);
-                servicesGrid.appendChild(serviceCard);
-            });
-        }
+// Time functions
+function updateTime() {
+try {
+const now = new Date();
+const timeString = now.toLocaleTimeString('en-US', {
+hour: '2-digit',
+minute: '2-digit',
+second: '2-digit',
+hour12: true
+});
+document.getElementById('currentTime').textContent = timeString;
+} catch (error) {
+document.getElementById('currentTime').textContent = 'Time Error';
+}
+}
 
-        // Create service card element
-        function createServiceCard(service) {
-            const card = document.createElement('div');
-            card.className = 'service-card';
-            
-            card.innerHTML = `
-                <div class="service-title">${service.name}</div>
-                <div class="service-description">${service.description}</div>
-                <div class="service-details">
-                    <div class="detail-item">
-                        <span class="detail-label">First Price:</span>
-                        <span class="detail-value">${service.firstPrice}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Recurring:</span>
-                        <span class="detail-value">${service.recurringPrice}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Contract:</span>
-                        <span class="detail-value">${service.contract}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Guarantee:</span>
-                        <span class="detail-value">${service.guarantee}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Duration:</span>
-                        <span class="detail-value">${service.duration}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Pests:</span>
-                        <span class="detail-value">${service.pests}</span>
-                    </div>
-                </div>
-            `;
-            
-            return card;
-        }
+// Population functions
+function populateOfficeInfo(data) {
+const officeInfo = document.getElementById('officeInfo');
+officeInfo.innerHTML = `
+<div class="info-item">
+<div class="info-label">Phone</div>
+<div class="info-value"><a href="tel:${data.phone}">${data.phone}</a></div>
+</div>
+<div class="info-item">
+<div class="info-label">Email</div>
+<div class="info-value"><a href="mailto:${data.email}">${data.email}</a></div>
+</div>
+<div class="info-item">
+<div class="info-label">Website</div>
+<div class="info-value"><a href="https://${data.website}" target="_blank">${data.website}</a></div>
+</div>
+<div class="info-item">
+<div class="info-label">Hours</div>
+<div class="info-value">${data.hours}</div>
+</div>
+<div class="info-item">
+<div class="info-label">Manager</div>
+<div class="info-value">${data.manager}</div>
+</div>
+`;
+}
 
-        // Setup navigation
-        function setupNavigation() {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const sections = document.querySelectorAll('.section-content');
-            
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const targetSection = this.getAttribute('data-section');
-                    
-                    // Update active nav link
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show target section
-                    sections.forEach(s => s.classList.remove('active'));
-                    document.getElementById(targetSection + 'Section').classList.add('active');
-                });
-            });
-        }
+function populateServices(services) {
+const servicesGrid = document.getElementById('servicesGrid');
+servicesGrid.innerHTML = '';
 
-        // Time update functions
-        function setupTimeUpdates() {
-            updateTime();
-            setInterval(updateTime, 1000);
-        }
+services.forEach(service => {
+const serviceCard = createServiceCard(service);
+servicesGrid.appendChild(serviceCard);
+});
+}
 
-        function updateTime() {
-            const now = new Date();
-            const utcHours = now.getUTCHours();
-            const utcMinutes = now.getUTCMinutes();
-            const utcSeconds = now.getUTCSeconds();
-            
-            document.getElementById('pacificTime').textContent = getTimeInTimeZone(utcHours, utcMinutes, utcSeconds, -8);
-            document.getElementById('mountainTime').textContent = getTimeInTimeZone(utcHours, utcMinutes, utcSeconds, -7);
-            document.getElementById('centralTime').textContent = getTimeInTimeZone(utcHours, utcMinutes, utcSeconds, -6);
-            document.getElementById('easternTime').textContent = getTimeInTimeZone(utcHours, utcMinutes, utcSeconds, -5);
-        }
+function createServiceCard(service) {
+const serviceCard = document.createElement('div');
+serviceCard.className = 'service-card';
 
-        function getTimeInTimeZone(utcHours, utcMinutes, utcSeconds, offset) {
-            let hours = (utcHours + offset) % 24;
-            hours = hours < 0 ? 24 + hours : hours;
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            const minutes = utcMinutes.toString().padStart(2, '0');
-            const seconds = utcSeconds.toString().padStart(2, '0');
-            
-            return `${hours}:${minutes}:${seconds} ${ampm}`;
-        }
+serviceCard.innerHTML = `
+<div class="service-name">${service.name || 'Unnamed Service'}</div>
+<div class="service-description">${service.description || 'No description available.'}</div>
+<div class="service-pricing">
+<div class="price-item">
+<div class="price-label">First Service</div>
+<div class="price-value">${service.firstPrice || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Recurring</div>
+<div class="price-value">${service.recurringPrice || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Contract</div>
+<div class="price-value">${service.contract || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Guarantee</div>
+<div class="price-value">${service.guarantee || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Duration</div>
+<div class="price-value">${service.duration || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Pests Covered</div>
+<div class="price-value pests-covered">${service.pests || 'N/A'}</div>
+</div>
+</div>
 
-        // Weather forecast functions
-        function setupWeatherForecast() {
-            loadWeatherForecast();
-        }
+${service.variants ? service.variants.map(variant => `
+<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #334155;">
+<div class="service-name" style="font-size: 1rem; color: #94a3b8;">↳ ${variant.name}</div>
+<div class="service-description" style="font-size: 0.9rem;">${variant.description}</div>
+<div class="service-pricing" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));">
+<div class="price-item">
+<div class="price-label">First</div>
+<div class="price-value">${variant.firstPrice || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Recurring</div>
+<div class="price-value">${variant.recurringPrice || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Contract</div>
+<div class="price-value">${variant.contract || 'N/A'}</div>
+</div>
+</div>
+</div>
+`).join('') : ''}
+`;
 
-        async function loadWeatherForecast() {
-            try {
-                // Get location from client data
-                const location = clientData.location || "Dallas, TX";
-                console.log('Loading weather for:', location);
-                
-                // First, get coordinates for the location
-                const coordinates = await getCoordinatesFromLocation(location);
-                if (!coordinates) {
-                    displayWeatherError("Could not find location coordinates");
-                    return;
-                }
-                
-                // Then get weather data using coordinates
-                const weatherData = await getWeatherData(coordinates.lat, coordinates.lon);
-                if (weatherData) {
-                    displayWeatherForecast(weatherData);
-                } else {
-                    displayWeatherError("Could not load weather data");
-                }
-            } catch (error) {
-                console.error('Weather loading error:', error);
-                displayWeatherError("Weather service unavailable");
-            }
-        }
+return serviceCard;
+}
 
-        async function getCoordinatesFromLocation(location) {
-            try {
-                // Use OpenWeatherMap's Geocoding API
-                const apiKey = 'demo_key'; // You'll need to replace this with your actual API key
-                const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(location)}&limit=1&appid=${apiKey}`;
-                
-                // For demo purposes, let's use a fallback service that doesn't require an API key
-                // In production, you should use OpenWeatherMap with a proper API key
-                return await getCoordinatesFromNominatim(location);
-                
-            } catch (error) {
-                console.error('Geocoding error:', error);
-                return null;
-            }
-        }
+function populateTechnicians(technicians) {
+const techniciansGrid = document.getElementById('techniciansGrid');
+techniciansGrid.innerHTML = '';
 
-        async function getCoordinatesFromNominatim(location) {
-            try {
-                // Using Nominatim (OpenStreetMap) which doesn't require API key
-                const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`;
-                
-                const response = await fetch(geocodeUrl);
-                const data = await response.json();
-                
-                if (data && data.length > 0) {
-                    return {
-                        lat: parseFloat(data[0].lat),
-                        lon: parseFloat(data[0].lon)
-                    };
-                }
-                return null;
-            } catch (error) {
-                console.error('Nominatim geocoding error:', error);
-                return null;
-            }
-        }
+technicians.forEach(tech => {
+const techCard = document.createElement('div');
+techCard.className = 'technician-card';
+techCard.innerHTML = `
+<div class="technician-name">${tech.name}</div>
+<div class="technician-info">📞 ${tech.phone}</div>
+<div class="technician-info">📧 ${tech.email}</div>
+<div class="technician-info">🎯 ${tech.specialties}</div>
+`;
+techniciansGrid.appendChild(techCard);
+});
+}
 
-        async function getWeatherData(lat, lon) {
-            try {
-                // For demo purposes, we'll use Open-Meteo which is free and doesn't require API key
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=auto&forecast_days=7`;
-                
-                const response = await fetch(weatherUrl);
-                const data = await response.json();
-                
-                if (data && data.daily) {
-                    return formatWeatherData(data);
-                }
-                return null;
-            } catch (error) {
-                console.error('Weather API error:', error);
-                return null;
-            }
-        }
+function populateTools(tools) {
+const toolsGrid = document.getElementById('toolsGrid');
+toolsGrid.innerHTML = '';
 
-        function formatWeatherData(apiData) {
-            const daily = apiData.daily;
-            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-            
-            return daily.time.map((date, index) => {
-                const dateObj = new Date(date);
-                const dayIndex = dateObj.getDay();
-                const maxTemp = Math.round(daily.temperature_2m_max[index]);
-                const minTemp = Math.round(daily.temperature_2m_min[index]);
-                const rainChance = daily.precipitation_probability_max[index] || 0;
-                const weatherCode = daily.weather_code[index];
-                
-                // Convert Celsius to Fahrenheit
-                const maxTempF = Math.round((maxTemp * 9/5) + 32);
-                const minTempF = Math.round((minTemp * 9/5) + 32);
-                
-                return {
-                    day: days[dayIndex],
-                    icon: getWeatherIconFromCode(weatherCode, rainChance),
-                    temp: maxTempF,
-                    lowTemp: minTempF,
-                    rainChance: rainChance,
-                    isRaining: rainChance > 50
-                };
-            });
-        }
+tools.forEach(tool => {
+const toolItem = document.createElement('div');
+toolItem.className = 'tool-item';
+toolItem.innerHTML = `
+<div class="tool-name">${tool.name}</div>
+<div class="tool-description">${tool.description}</div>
+`;
+if (tool.url && tool.url !== '#') {
+toolItem.onclick = () => window.open(tool.url, '_blank');
+}
+toolsGrid.appendChild(toolItem);
+});
+}
 
-        function getWeatherIconFromCode(weatherCode, rainChance) {
-            // Weather code mapping for Open-Meteo API
-            // https://open-meteo.com/en/docs
-            if (weatherCode >= 80 && weatherCode <= 99) return '⛈️'; // Thunderstorms
-            if (weatherCode >= 61 && weatherCode <= 82) return '🌧️'; // Rain
-            if (weatherCode >= 51 && weatherCode <= 67) return '🌦️'; // Drizzle/Light rain
-            if (weatherCode >= 71 && weatherCode <= 77) return '🌨️'; // Snow
-            if (weatherCode >= 2 && weatherCode <= 3) return '⛅'; // Partly cloudy
-            if (weatherCode >= 45 && weatherCode <= 48) return '🌫️'; // Fog
-            if (weatherCode === 1) return '🌤️'; // Mainly clear
-            if (weatherCode === 0) return '☀️'; // Clear sky
-            
-            // Fallback based on rain chance
-            if (rainChance > 70) return '🌧️';
-            if (rainChance > 40) return '🌦️';
-            if (rainChance > 20) return '⛅';
-            return '☀️';
-        }
+function populateBulletin(bulletin) {
+const bulletinSection = document.getElementById('bulletinSection');
+if (bulletin && bulletin.trim()) {
+bulletinSection.innerHTML = `
+<div class="bulletin-alert">
+<h3>📢 Important Bulletin</h3>
+<p>${bulletin}</p>
+</div>
+`;
+} else {
+bulletinSection.innerHTML = '';
+}
+}
 
-        function displayWeatherError(message) {
-            const loadingEl = document.getElementById('weatherLoading');
-            loadingEl.textContent = message;
-            loadingEl.style.color = '#ef4444';
-        }
+function populatePestsNotCovered(pestsNotCovered) {
+const pestsSection = document.getElementById('pestsNotCoveredSection');
+if (pestsNotCovered && pestsNotCovered.trim()) {
+pestsSection.innerHTML = `
+<div class="pests-not-covered-alert">
+<h3>⚠️ Pests Not Covered</h3>
+<p>${pestsNotCovered}</p>
+</div>
+`;
+} else {
+pestsSection.innerHTML = '';
+}
+}
 
-        function displayWeatherForecast(weatherData) {
-            const loadingEl = document.getElementById('weatherLoading');
-            const forecastEl = document.getElementById('weatherForecast');
-            
-            loadingEl.style.display = 'none';
-            forecastEl.style.display = 'grid';
-            
-            forecastEl.innerHTML = weatherData.map(day => `
-                <div class="weather-day">
-                    <div class="weather-day-name">${day.day}</div>
-                    <div class="weather-icon">${day.icon}</div>
-                    <div class="weather-temp">${day.temp}°F</div>
-                    <div class="weather-rain">${day.rainChance}%</div>
-                </div>
-            `).join('');
-        }
+// Navigation functions
+function showSection(sectionName) {
+// Hide all sections
+document.querySelectorAll('.section').forEach(section => {
+section.classList.remove('active');
+});
 
-        // Acreage converter
-        function convertAcres() {
-            const acresInput = document.getElementById('acresInput').value;
-            const resultDiv = document.getElementById('squareFootageResult');
-            
-            if (!acresInput) {
-                resultDiv.textContent = 'Please enter acres value';
-                return;
-            }
-            
-            const fractionPattern = /^(\d+)\s?\/\s?(\d+)$/;
-            let decimal = parseFloat(acresInput);
-            const match = fractionPattern.exec(acresInput);
-            
-            if (match) {
-                const numerator = parseInt(match[1]);
-                const denominator = parseInt(match[2]);
-                decimal = numerator / denominator;
-            }
-            
-            if (isNaN(decimal)) {
-                resultDiv.textContent = 'Invalid input format';
-                return;
-            }
-            
-            const squareFootage = decimal * 43560;
-            resultDiv.textContent = `Square Footage: ${squareFootage.toLocaleString()}`;
-        }
+// Remove active class from all nav buttons
+document.querySelectorAll('.nav-btn').forEach(btn => {
+btn.classList.remove('active');
+});
 
-        // Zip code lookup
-        function searchZip() {
-            const zipInput = document.getElementById('zipInput').value.replace(/\D/g, '').trim();
-            const resultDiv = document.getElementById('zipResult');
-            
-            if (zipInput.length !== 5) {
-                showZipResult('Invalid zip code format.', false);
-                return;
-            }
-            
-            // This would normally query your Wix database
-            // For demo purposes, using sample data
-            const sampleZips = {
-                '75034': 'North Dallas Branch',
-                '75035': 'North Dallas Branch',
-                '75025': 'North Dallas Branch'
-            };
-            
-            if (sampleZips[zipInput]) {
-                showZipResult(`Customer in service area. Branch: ${sampleZips[zipInput]}`, true);
-            } else {
-                showZipResult('Not in service area.', false);
-            }
-        }
+// Show selected section
+document.getElementById(sectionName).classList.add('active');
 
-        function showZipResult(message, isSuccess) {
-            const resultDiv = document.getElementById('zipResult');
-            resultDiv.textContent = message;
-            resultDiv.className = 'zip-result ' + (isSuccess ? 'success' : 'error');
-            resultDiv.style.display = 'block';
-        }
+// Add active class to clicked button
+event.target.classList.add('active');
+}
 
-        function setupZipInputEnter() {
-            document.getElementById('zipInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchZip();
-                }
-            });
-        }
+// Search functions
+function searchPests() {
+const searchTerm = document.getElementById('pestSearch').value.toLowerCase().trim();
+const resultsDiv = document.getElementById('searchResults');
 
-        // Office information modal
-        function loadOfficeInformation() {
-            const officeInfoGrid = document.getElementById('officeInfoGrid');
-            
-            const officeData = [
-                { label: 'Phone', value: clientData.officeInfo.phone },
-                { label: 'Email', value: clientData.officeInfo.email },
-                { label: 'Physical Address', value: clientData.officeInfo.physicalAddress },
-                { label: 'Office Hours', value: clientData.officeInfo.officeHours }
-            ];
-            
-            officeInfoGrid.innerHTML = '';
-            officeData.forEach(item => {
-                const infoItem = document.createElement('div');
-                infoItem.className = 'info-item';
-                infoItem.innerHTML = `
-                    <div class="info-label">${item.label}</div>
-                    <div class="info-value">${item.value}</div>
-                `;
-                officeInfoGrid.appendChild(infoItem);
-            });
-        }
+if (!searchTerm) {
+resultsDiv.innerHTML = '';
+return;
+}
 
-        document.getElementById('officeInfoBtn').addEventListener('click', function() {
-            document.getElementById('officeModal').style.display = 'block';
-        });
+let results = [];
+const searchableContent = [];
 
-        function closeOfficeModal() {
-            document.getElementById('officeModal').style.display = 'none';
-        }
+// Gather all searchable content
+document.querySelectorAll('.service-card, .technician-card, .tool-item').forEach(element => {
+const text = element.textContent.toLowerCase();
+if (text.includes(searchTerm)) {
+let type = 'Unknown';
+let title = 'Unknown';
 
-        // Close modal when clicking outside
-        document.getElementById('officeModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeOfficeModal();
-            }
-        });
-    </script>
+if (element.classList.contains('service-card')) {
+type = 'Service';
+title = element.querySelector('.service-name')?.textContent || 'Unknown Service';
+} else if (element.classList.contains('technician-card')) {
+type = 'Technician';
+title = element.querySelector('.technician-name')?.textContent || 'Unknown Technician';
+} else if (element.classList.contains('tool-item')) {
+type = 'Tool';
+title = element.querySelector('.tool-name')?.textContent || 'Unknown Tool';
+}
+
+results.push({ type, title, element });
+}
+});
+
+// Display results
+if (results.length > 0) {
+const resultHTML = results.map(result => 
+`<span class="search-highlight">${result.type}: ${result.title}</span>`
+).join(', ');
+resultsDiv.innerHTML = `Found ${results.length} result(s): ${resultHTML}`;
+
+// Auto-navigate to appropriate section
+if (results[0].type === 'Service') {
+showSection('services');
+} else if (results[0].type === 'Technician') {
+showSection('technicians');
+} else if (results[0].type === 'Tool') {
+showSection('tools');
+}
+} else {
+resultsDiv.innerHTML = `No results found for "${searchTerm}"`;
+}
+}
+
+function clearSearch() {
+document.getElementById('pestSearch').value = '';
+document.getElementById('searchResults').innerHTML = '';
+showSection('office');
+}
+
+// Add Enter key support for search
+document.addEventListener('DOMContentLoaded', function() {
+document.getElementById('pestSearch').addEventListener('keypress', function(e) {
+if (e.key === 'Enter') {
+searchPests();
+}
+});
+});
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', initializePage);
+</script>
 </body>
 </html>
