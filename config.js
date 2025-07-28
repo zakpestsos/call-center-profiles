@@ -1,9 +1,9 @@
-// Configuration file for Google Sheets and Wix integration
+﻿// Configuration file for Google Sheets and Wix integration
 const CONFIG = {
     // Google Sheets Configuration
     GOOGLE_SHEETS: {
         // Updated with your actual Google Apps Script Web App URL
-        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbz3xZWEXbdbDhqKQ63OwlSjNW-rlSmxd81M8v278RNM8FgfkGQnPMf_2ld7r8RiBF51cw/exec',
+        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbyXa9tQqgtsUqF-8SdRNDvfRWrteZ68nw1HQhu2jFmHT1Ehes9b4Nq0WSKNwYgc-8-fGw/exec',
         
         // Alternative: Direct Google Sheets API (requires API key)
         API_KEY: 'YOUR_GOOGLE_SHEETS_API_KEY',
