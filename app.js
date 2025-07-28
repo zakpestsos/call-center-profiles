@@ -54,6 +54,8 @@ class CallCenterApp {
     async loadClientDataFromGoogleSheets() {
         try {
             console.log('📊 Fetching data from Google Sheets CSV...');
+            console.log('🔗 URL:', GOOGLE_SHEETS_CSV_URL);
+            console.log('🔍 Looking for Profile ID:', this.profileId);
             
             // Fetch CSV data from Google Sheets
             const response = await fetch(GOOGLE_SHEETS_CSV_URL);
@@ -63,24 +65,43 @@ class CallCenterApp {
             }
             
             const csvText = await response.text();
-            console.log('✅ CSV data received');
+            console.log('✅ CSV data received, length:', csvText.length);
+            console.log('📄 Raw CSV preview:', csvText.substring(0, 200) + '...');
             
             // Parse CSV data
             const rows = csvText.split('\n').filter(row => row.trim());
+            console.log('📊 Number of rows found:', rows.length);
+            
             if (rows.length < 2) {
-                throw new Error('No profile data found in sheet');
+                console.error('❌ CSV has insufficient data. Rows:', rows);
+                throw new Error('No profile data found in sheet - insufficient rows');
             }
             
             const headers = this.parseCSVRow(rows[0]);
-            console.log('📋 Headers:', headers);
+            console.log('📋 Parsed headers:', headers);
+            console.log('📋 Header count:', headers.length);
+            
+            // Debug: Show all profile IDs available
+            console.log('🔍 Available Profile IDs:');
+            for (let i = 1; i < Math.min(rows.length, 6); i++) { // Show first 5 data rows
+                const data = this.parseCSVRow(rows[i]);
+                console.log(`  Row ${i}: "${data[0]}" (length: ${data[0] ? data[0].length : 0})`);
+            }
             
             // Find matching profile
+            let profileFound = false;
             for (let i = 1; i < rows.length; i++) {
                 const data = this.parseCSVRow(rows[i]);
                 
+                // Debug each comparison
+                const csvProfileId = data[0] ? data[0].toString().trim() : '';
+                const searchProfileId = this.profileId.toString().trim();
+                
+                console.log(`🔍 Comparing: "${csvProfileId}" vs "${searchProfileId}"`);
+                
                 // Check if this row matches our profile ID (first column)
-                if (data[0] && data[0].toString().trim() === this.profileId.toString().trim()) {
-                    console.log('✅ Profile found!');
+                if (csvProfileId === searchProfileId) {
+                    console.log('✅ Profile found at row', i);
                     
                     // Create profile object
                     const profile = {};
@@ -88,24 +109,36 @@ class CallCenterApp {
                         profile[header] = data[index] || '';
                     });
                     
+                    console.log('📋 Profile object created:', profile);
+                    
                     // Convert to expected format
                     this.clientData = this.convertGoogleSheetsToClientData(profile);
+                    console.log('✅ Client data converted:', this.clientData);
+                    profileFound = true;
                     return;
                 }
             }
             
-            throw new Error(`Profile ID "${this.profileId}" not found`);
+            if (!profileFound) {
+                console.error('❌ Profile not found. Searched for:', this.profileId);
+                console.error('❌ Available IDs:', rows.slice(1).map(row => this.parseCSVRow(row)[0]));
+                throw new Error(`Profile ID "${this.profileId}" not found in ${rows.length - 1} available profiles`);
+            }
             
         } catch (error) {
-            console.error('Error loading from Google Sheets:', error);
+            console.error('❌ Error loading from Google Sheets:', error);
+            console.error('Error details:', error.message);
+            console.error('Stack:', error.stack);
             throw error;
         }
     }
 
     /**
-     * Parse a CSV row handling quoted values
+     * Parse a CSV row handling quoted values and edge cases
      */
     parseCSVRow(row) {
+        if (!row) return [];
+        
         const result = [];
         let current = '';
         let inQuotes = false;
@@ -114,7 +147,13 @@ class CallCenterApp {
             const char = row[i];
             
             if (char === '"') {
-                inQuotes = !inQuotes;
+                // Handle escaped quotes
+                if (i + 1 < row.length && row[i + 1] === '"') {
+                    current += '"';
+                    i++; // Skip the next quote
+                } else {
+                    inQuotes = !inQuotes;
+                }
             } else if (char === ',' && !inQuotes) {
                 result.push(current.trim());
                 current = '';
@@ -123,8 +162,17 @@ class CallCenterApp {
             }
         }
         
+        // Add the last field
         result.push(current.trim());
-        return result;
+        
+        // Clean up the result - remove outer quotes if present
+        return result.map(field => {
+            field = field.trim();
+            if (field.startsWith('"') && field.endsWith('"')) {
+                field = field.slice(1, -1);
+            }
+            return field;
+        });
     }
 
     /**
