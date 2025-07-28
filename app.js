@@ -1,15 +1,36 @@
-// Main Application JavaScript - Complete Call Center Profile System
+// Main Application JavaScript - Complete Call Center Profile System with Google Sheets Integration
+// Updated with live Google Sheets CSV URL
+const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec/export?format=csv&gid=0';
+
 class CallCenterApp {
     constructor() {
         this.clientData = {};
         this.isWixEnvironment = CONFIG.WIX.IS_WIX_ENVIRONMENT;
+        this.profileId = this.getProfileIdFromURL();
         this.init();
+    }
+
+    /**
+     * Get profile ID from URL parameters
+     */
+    getProfileIdFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('profileId');
     }
 
     async init() {
         try {
-            // Load client data
-            await this.loadClientData();
+            console.log('🚀 Initializing Call Center Profile App');
+            console.log('📊 Data source:', GOOGLE_SHEETS_CSV_URL);
+            console.log('🔍 Profile ID:', this.profileId);
+            
+            if (!this.profileId) {
+                this.showError('No profile ID specified in URL. Please add ?profileId=YOUR_ID to the URL.');
+                return;
+            }
+            
+            // Load client data from Google Sheets
+            await this.loadClientDataFromGoogleSheets();
             
             // Initialize components
             this.initializeEventListeners();
@@ -23,24 +44,121 @@ class CallCenterApp {
             
         } catch (error) {
             console.error('Failed to initialize app:', error);
-            this.showError('Failed to load client data');
+            this.showError('Failed to load client data: ' + error.message);
         }
     }
 
-    async loadClientData() {
+    /**
+     * Load client data from Google Sheets CSV
+     */
+    async loadClientDataFromGoogleSheets() {
         try {
-            if (this.isWixEnvironment) {
-                // Load from Wix CMS
-                this.clientData = await this.loadFromWixCMS();
-            } else {
-                // Load from URL parameters or Google Sheets
-                this.clientData = await this.loadFromDataSource();
+            console.log('📊 Fetching data from Google Sheets CSV...');
+            
+            // Fetch CSV data from Google Sheets
+            const response = await fetch(GOOGLE_SHEETS_CSV_URL);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            
+            const csvText = await response.text();
+            console.log('✅ CSV data received');
+            
+            // Parse CSV data
+            const rows = csvText.split('\n').filter(row => row.trim());
+            if (rows.length < 2) {
+                throw new Error('No profile data found in sheet');
+            }
+            
+            const headers = this.parseCSVRow(rows[0]);
+            console.log('📋 Headers:', headers);
+            
+            // Find matching profile
+            for (let i = 1; i < rows.length; i++) {
+                const data = this.parseCSVRow(rows[i]);
+                
+                // Check if this row matches our profile ID (first column)
+                if (data[0] && data[0].toString().trim() === this.profileId.toString().trim()) {
+                    console.log('✅ Profile found!');
+                    
+                    // Create profile object
+                    const profile = {};
+                    headers.forEach((header, index) => {
+                        profile[header] = data[index] || '';
+                    });
+                    
+                    // Convert to expected format
+                    this.clientData = this.convertGoogleSheetsToClientData(profile);
+                    return;
+                }
+            }
+            
+            throw new Error(`Profile ID "${this.profileId}" not found`);
+            
         } catch (error) {
-            console.error('Error loading client data:', error);
-            // Fallback to sample data
-            this.clientData = CONFIG.FALLBACK_DATA;
+            console.error('Error loading from Google Sheets:', error);
+            throw error;
         }
+    }
+
+    /**
+     * Parse a CSV row handling quoted values
+     */
+    parseCSVRow(row) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(current.trim());
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        result.push(current.trim());
+        return result;
+    }
+
+    /**
+     * Convert Google Sheets data to client data format
+     */
+    convertGoogleSheetsToClientData(profile) {
+        return {
+            // Basic Info
+            profileId: profile['Profile_ID'] || '',
+            companyName: profile['Company_Name'] || '',
+            location: profile['Company_Location'] || '',
+            phoneNumber: profile['Phone_Number'] || '',
+            contactPerson: profile['Contact_Person'] || '',
+            industry: profile['Industry'] || '',
+            websiteUrl: profile['Website_URL'] || '',
+            
+            // Bulletin and Notes
+            morningBulletin: profile['Morning_Bulletin'] || '',
+            internalNotes: profile['Internal_Notes'] || '',
+            
+            // Legacy format support
+            companyDetails: {
+                name: profile['Company_Name'] || '',
+                address: profile['Company_Location'] || '',
+                phone: profile['Phone_Number'] || '',
+                website: profile['Website_URL'] || ''
+            },
+            
+            // Default values for missing data
+            services: [],
+            technicians: [],
+            policies: {},
+            serviceAreas: []
+        };
     }
 
     async loadFromWixCMS() {
