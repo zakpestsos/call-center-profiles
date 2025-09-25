@@ -1,6 +1,5 @@
 {
   "timeZone": "America/New_York",
-<<<<<<< HEAD
   "dependencies": {},
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
@@ -8,10 +7,4 @@
     "executeAs": "USER_DEPLOYING",
     "access": "ANYONE"
   }
-=======
-  "dependencies": {
-  },
-  "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
->>>>>>> 2736c685fc8fe36c89bbf61e8bcaaac71c17974d
 }

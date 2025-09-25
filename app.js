@@ -1797,7 +1797,8 @@ document.addEventListener('keypress', function(e) {
 =======
 // Main Application JavaScript - Complete Call Center Profile System with Google Sheets Integration
 // Updated with live Google Sheets CSV URL
-const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec/export?format=csv&gid=0';
+// Use Apps Script API instead of direct CSV
+const GOOGLE_SHEETS_API_URL = CONFIG.GOOGLE_SHEETS.WEB_APP_URL;
 
 class CallCenterApp {
     constructor() {
@@ -1846,84 +1847,35 @@ class CallCenterApp {
     }
 
     /**
-     * Load client data from Google Sheets CSV
+     * Load client data from Google Sheets via Apps Script API
      */
     async loadClientDataFromGoogleSheets() {
         try {
-            console.log('📊 Fetching data from Google Sheets CSV...');
-            console.log('🔗 URL:', GOOGLE_SHEETS_CSV_URL);
+            console.log('📊 Fetching data from Apps Script API...');
+            console.log('🔗 URL:', GOOGLE_SHEETS_API_URL);
             console.log('🔍 Looking for Profile ID:', this.profileId);
-            
-            // Fetch CSV data from Google Sheets
-            const response = await fetch(GOOGLE_SHEETS_CSV_URL);
-            
+
+            // Fetch data from Apps Script with profileId
+            const response = await fetch(`${GOOGLE_SHEETS_API_URL}?profileId=${encodeURIComponent(this.profileId)}`);
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            const csvText = await response.text();
-            console.log('✅ CSV data received, length:', csvText.length);
-            console.log('📄 Raw CSV preview:', csvText.substring(0, 200) + '...');
-            
-            // Parse CSV data
-            const rows = csvText.split('\n').filter(row => row.trim());
-            console.log('📊 Number of rows found:', rows.length);
-            
-            if (rows.length < 2) {
-                console.error('❌ CSV has insufficient data. Rows:', rows);
-                throw new Error('No profile data found in sheet - insufficient rows');
+            const data = await response.json();
+            console.log('✅ Data received from Apps Script:', data);
+
+            // Check if there's an error in the response
+            if (data.error) {
+                throw new Error(`Apps Script error: ${data.error}`);
             }
-            
-            const headers = this.parseCSVRow(rows[0]);
-            console.log('📋 Parsed headers:', headers);
-            console.log('📋 Header count:', headers.length);
-            
-            // Debug: Show all profile IDs available
-            console.log('🔍 Available Profile IDs:');
-            for (let i = 1; i < Math.min(rows.length, 6); i++) { // Show first 5 data rows
-                const data = this.parseCSVRow(rows[i]);
-                console.log(`  Row ${i}: "${data[0]}" (length: ${data[0] ? data[0].length : 0})`);
-            }
-            
-            // Find matching profile
-            let profileFound = false;
-            for (let i = 1; i < rows.length; i++) {
-                const data = this.parseCSVRow(rows[i]);
-                
-                // Debug each comparison
-                const csvProfileId = data[0] ? data[0].toString().trim() : '';
-                const searchProfileId = this.profileId.toString().trim();
-                
-                console.log(`🔍 Comparing: "${csvProfileId}" vs "${searchProfileId}"`);
-                
-                // Check if this row matches our profile ID (first column)
-                if (csvProfileId === searchProfileId) {
-                    console.log('✅ Profile found at row', i);
-                    
-                    // Create profile object
-                    const profile = {};
-                    headers.forEach((header, index) => {
-                        profile[header] = data[index] || '';
-                    });
-                    
-                    console.log('📋 Profile object created:', profile);
-                    
-                    // Convert to expected format
-                    this.clientData = this.convertGoogleSheetsToClientData(profile);
-                    console.log('✅ Client data converted:', this.clientData);
-                    profileFound = true;
-                    return;
-                }
-            }
-            
-            if (!profileFound) {
-                console.error('❌ Profile not found. Searched for:', this.profileId);
-                console.error('❌ Available IDs:', rows.slice(1).map(row => this.parseCSVRow(row)[0]));
-                throw new Error(`Profile ID "${this.profileId}" not found in ${rows.length - 1} available profiles`);
-            }
-            
+
+            // Use the data directly from the API response
+            this.clientData = data;
+            console.log('✅ Profile data loaded successfully');
+
         } catch (error) {
-            console.error('❌ Error loading from Google Sheets:', error);
+            console.error('❌ Error loading from Apps Script:', error);
             console.error('Error details:', error.message);
             console.error('Stack:', error.stack);
             throw error;
