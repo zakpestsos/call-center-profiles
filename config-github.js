@@ -2,7 +2,7 @@
 const CONFIG = {
   GOOGLE_SHEETS: {
     MASTER_SHEET_ID: '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec', // Your Master Client Profiles Sheet
-    WEB_APP_URL: 'https://script.google.com/macros/s/1hnHH4JAWakQBGPaWr02eWtrkaysnV-qmZuwp1bVsZqN9j2pYobj5hI7f/exec' // Your deployed Apps Script Web App URL
+    WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbxLqAH53_8IS6kG68PgHM-tv3nkLtvRM1o410u0wZEdg1IdiH1EqS_o84XGDziKjTugsQ/exec' // Your deployed Apps Script Web App URL
   },
   GITHUB: {
     REPO_URL: 'https://zakpestsos.github.io/call-center-profiles/',
