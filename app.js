@@ -3,7 +3,8 @@
 class CallCenterApp {
     constructor() {
         this.clientData = {};
-        this.isWixEnvironment = CONFIG.WIX.IS_WIX_ENVIRONMENT;
+        this.isWixEnvironment = window.CONFIG?.WIX?.IS_WIX_ENVIRONMENT || false;
+        this.profileId = this.getProfileIdFromURL();
         this.init();
     }
 
@@ -1798,12 +1799,12 @@ document.addEventListener('keypress', function(e) {
 // Main Application JavaScript - Complete Call Center Profile System with Google Sheets Integration
 // Updated with live Google Sheets CSV URL
 // Use Apps Script API instead of direct CSV
-const GOOGLE_SHEETS_API_URL = CONFIG.GOOGLE_SHEETS.WEB_APP_URL;
+const GOOGLE_SHEETS_API_URL = window.CONFIG?.GOOGLE_SHEETS?.WEB_APP_URL;
 
 class CallCenterApp {
     constructor() {
         this.clientData = {};
-        this.isWixEnvironment = CONFIG.WIX.IS_WIX_ENVIRONMENT;
+        this.isWixEnvironment = window.CONFIG?.WIX?.IS_WIX_ENVIRONMENT || false;
         this.profileId = this.getProfileIdFromURL();
         this.init();
     }
@@ -1930,12 +1931,12 @@ class CallCenterApp {
     convertGoogleSheetsToClientData(profile) {
         return {
             // Basic Info
-            profileId: profile['Profile_ID'] || '',
-            companyName: profile['Company_Name'] || '',
-            location: profile['Company_Location'] || '',
-            phoneNumber: profile['Phone_Number'] || '',
-            contactPerson: profile['Contact_Person'] || '',
-            industry: profile['Industry'] || '',
+            profileId: profile.profileId || '',
+            companyName: profile.companyName || '',
+            location: profile.location || '',
+            phoneNumber: profile.officeInfo?.phone || '',
+            contactPerson: profile.contactPerson || '',
+            industry: profile.industry || '',
             websiteUrl: profile['Website_URL'] || '',
             
             // Bulletin and Notes
