@@ -1,7 +1,7 @@
 // Configuration for GitHub Pages integration
 const CONFIG = {
   GOOGLE_SHEETS: {
-    MASTER_SHEET_ID: 'YOUR_ACTUAL_GOOGLE_SHEET_ID', // REPLACE THIS: Get from your Google Sheet URL
+    MASTER_SHEET_ID: '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec', // Your Master Client Profiles Sheet
     WEB_APP_URL: 'https://script.google.com/macros/s/1hnHH4JAWakQBGPaWr02eWtrkaysnV-qmZuwp1bVsZqN9j2pYobj5hI7f/exec' // Your deployed Apps Script Web App URL
   },
   GITHUB: {
