@@ -1,5 +1,5 @@
 // Main Application JavaScript - Complete Call Center Profile System
-class CallCenterApp {
+class GitHubProfileViewer {
     constructor() {
         this.clientData = {};
         this.isWixEnvironment = window.CONFIG?.WIX?.IS_WIX_ENVIRONMENT || false;
@@ -1766,7 +1766,7 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    app = new CallCenterApp();
+    app = new GitHubProfileViewer();
 });
 
 // Initialize sticky header after page is fully loaded
@@ -1795,10 +1795,8 @@ document.addEventListener('keypress', function(e) {
     }
 });
 
-// Use Apps Script API instead of direct CSV
-const GOOGLE_SHEETS_API_URL = window.CONFIG?.GOOGLE_SHEETS?.WEB_APP_URL;
-
-class CallCenterApp {
+// GitHub Pages Integration - Modern profile viewer
+class GitHubProfileViewer {
     constructor() {
         this.clientData = {};
         this.isWixEnvironment = window.CONFIG?.WIX?.IS_WIX_ENVIRONMENT || false;
@@ -3678,7 +3676,7 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    app = new CallCenterApp();
+    app = new GitHubProfileViewer();
 });
 
 // Initialize sticky header after page is fully loaded
