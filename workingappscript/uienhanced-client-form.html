@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pest Control Client Profile Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            margin: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.3);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            border-right: 1px solid #334155;
+        }
+
+        .sidebar h3 {
+            margin: 0 0 20px 0;
+            color: #f1f5f9;
+            font-size: 1.2em;
+            border-bottom: 2px solid #475569;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-link {
+            display: block;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 12px 16px;
+            margin: 6px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: #334155;
+            border: 1px solid #475569;
+            font-weight: 500;
+        }
+
+        .sidebar-link:hover {
+            background: #3b82f6;
+            color: #f8fafc;
+            text-decoration: none;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .sidebar-link.disabled {
+            background: #475569;
+            color: #64748b;
+            cursor: not-allowed;
+            border-color: #64748b;
+        }
+
+        .sidebar-link.disabled:hover {
+            transform: none;
+            background: #475569;
+            color: #64748b;
+            box-shadow: none;
+        }
+
+        .drive-input-section {
+            background: #334155;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #475569;
+        }
+
+        .drive-input-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .drive-input-section input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #64748b;
+            border-radius: 6px;
+            font-size: 0.9em;
+            background: #1e293b;
+            color: #e2e8f0;
+            transition: border-color 0.3s ease;
+        }
+
+        .drive-input-section input::placeholder {
+            color: #94a3b8;
+        }
+
+        .drive-input-section input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .drive-help-text {
+            font-size: 0.8em;
+            color: #94a3b8;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #1e293b;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0c1427 0%, #1a1f3a 50%, #0f172a 100%);
+            color: #f8fafc;
+            padding: 40px 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.05) 0%, transparent 50%);
+            opacity: 0.6;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.02) 2px,
+                    rgba(255, 255, 255, 0.02) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.01) 2px,
+                    rgba(255, 255, 255, 0.01) 4px
+                );
+            opacity: 0.8;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', 'Inter', sans-serif;
+            font-size: 3.2em;
+            margin-bottom: 16px;
+            text-shadow: 
+                0 0 10px rgba(120, 119, 198, 0.5),
+                0 0 20px rgba(120, 119, 198, 0.3),
+                0 0 30px rgba(120, 119, 198, 0.2);
+            font-weight: 900;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-family: 'Rajdhani', 'Inter', sans-serif;
+            font-size: 1.3em;
+            font-weight: 500;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .progress-container {
+            background: rgba(248,250,252,0.2);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: #fbbf24;
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .form-container {
+            padding: 40px;
+            background: #1e293b;
+        }
+
+        .section {
+            margin-bottom: 32px;
+            border: 1px solid #475569;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0f172a;
+        }
+
+        .section-header {
+            background: #334155;
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+            border-bottom: 1px solid #475569;
+        }
+
+        .section-header:hover {
+            background: #475569;
+        }
+
+        .section-header h2 {
+            font-size: 1.4em;
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .toggle-icon {
+            font-size: 1.3em;
+            transition: transform 0.3s ease;
+            color: #94a3b8;
+        }
+
+        .section-content {
+            padding: 28px;
+            display: none;
+            background: #0f172a;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f1f5f9;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #475569;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #334155;
+            color: #e2e8f0;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: #1e293b;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .service-item,
+        .technician-item,
+        .area-item {
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .service-item {
+            border-left: 4px solid #10b981;
+        }
+
+        .technician-item {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .area-item {
+            border-left: 4px solid #06b6d4;
+        }
+
+        .policy-subsection {
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .policy-subsection h4 {
+            margin: 0 0 20px 0;
+            color: #f1f5f9;
+            font-size: 1.3em;
+            border-bottom: 2px solid #475569;
+            padding-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .item-title {
+            font-weight: 700;
+            font-size: 1.2em;
+            color: #f1f5f9;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: #f8fafc;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-outline-secondary {
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid #64748b;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #64748b;
+            color: #f8fafc;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #f8fafc;
+            padding: 8px 16px;
+            font-size: 12px;
+            border: 1px solid #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #f8fafc;
+            padding: 16px 32px;
+            font-size: 1.1em;
+            margin-top: 32px;
+            width: 100%;
+            border: 1px solid #059669;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .service-details {
+            background: #334155;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 16px;
+            border: 1px solid #475569;
+        }
+
+        .service-details h4 {
+            margin-bottom: 16px;
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .inspection-text {
+            background: #451a03;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .help-text {
+            font-size: 0.85em;
+            color: #94a3b8;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            border: 1px solid #475569;
+        }
+
+        .checkbox-item:hover {
+            background-color: #334155;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            margin-bottom: 0;
+            transform: scale(1.2);
+            accent-color: #3b82f6;
+        }
+
+        .checkbox-item label {
+            margin-bottom: 0;
+            cursor: pointer;
+            color: #e2e8f0;
+        }
+
+        .service-variants-section {
+            background: #334155;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #475569;
+        }
+
+        .service-variants-section h4 {
+            margin-bottom: 16px;
+            color: #f1f5f9;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .variant-item {
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .service-accordion {
+            border: 1px solid #475569;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background: #1e293b;
+        }
+
+        .service-header {
+            background: #334155;
+            padding: 16px 20px;
+            cursor: pointer;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+            border-bottom: 1px solid #475569;
+        }
+
+        .service-header:hover {
+            background: #475569;
+        }
+
+        .service-title {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .service-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .collapse-indicator {
+            color: #94a3b8;
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+
+        .service-content {
+            padding: 24px;
+            display: none;
+            background: #1e293b;
+        }
+
+        .service-content.expanded {
+            display: block;
+        }
+
+        .service-essentials {
+            margin-bottom: 20px;
+        }
+
+        .advanced-details {
+            margin-top: 20px;
+        }
+
+        .advanced-content {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #475569;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+
+        .add-btn {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h3>📊 Quick Links</h3>
+        
+        <div class="sidebar-section">
+            <a href="#" id="sidebarSheetLink" class="sidebar-link disabled" target="_blank">
+                📊 View Google Sheet
+            </a>
+            <a href="#" id="sidebarDriveLink" class="sidebar-link disabled" target="_blank">
+                📁 Company Drive Folder
+            </a>
+            <a href="#" id="sidebarProfileLink" class="sidebar-link disabled" target="_blank">
+                🔗 Wix Profile
+            </a>
+        </div>
+
+        <div class="drive-input-section">
+            <label for="sidebarGoogleDriveFolder">Company Drive Folder</label>
+            <input type="url" id="sidebarGoogleDriveFolder" name="sidebarGoogleDriveFolder" 
+                   placeholder="https://drive.google.com/drive/folders/..." 
+                   onchange="updateDriveLink()">
+            <div class="drive-help-text">
+                Paste the Google Drive folder link for this company. This will be used to store copies of client information.
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>📋 Form Sections</h3>
+            <a href="#office-section" class="sidebar-link" onclick="scrollToSection('office')">
+                🏢 Office Information
+            </a>
+            <a href="#services-section" class="sidebar-link" onclick="scrollToSection('services')">
+                🛡️ Services
+            </a>
+            <a href="#technicians-section" class="sidebar-link" onclick="scrollToSection('technicians')">
+                👨‍🔧 Technicians
+            </a>
+            <a href="#areas-section" class="sidebar-link" onclick="scrollToSection('areas')">
+                📍 Service Areas
+            </a>
+            <a href="#policies-section" class="sidebar-link" onclick="scrollToSection('policies')">
+                📜 Policies
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <h1>🐛 Pest Control Client Profile</h1>
+                <p>Create comprehensive client profiles for SOS Pest Control</p>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <form id="clientForm">
+                    <!-- Hidden field for Google Drive folder (synced from sidebar) -->
+                    <input type="hidden" id="googleDriveFolder" name="googleDriveFolder" value="">
+                    
+                    <!-- Office Information Section -->
+                    <div class="section" id="office-section">
+                        <div class="section-header" onclick="toggleSection('office')">
+                            <h2>🏢 Office Information</h2>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                    <div class="section-content active" id="office-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="companyName">Company Name <span class="required">*</span></label>
+                                <input type="text" id="companyName" name="companyName" required placeholder="Enter company name">
+                            </div>
+                            <div class="form-group">
+                                <!-- Empty for spacing - Google Drive folder moved to sidebar -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="wixLink">Wix Link</label>
+                                <input type="url" id="wixLink" name="wixLink" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label for="locations">Location(s)</label>
+                                <input type="text" id="locations" name="locations" placeholder="City, State">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="timezone">Timezone</label>
+                                <select id="timezone" name="timezone">
+                                    <option value="">Select Timezone</option>
+                                    <option value="EST">Eastern Standard Time (EST)</option>
+                                    <option value="CST">Central Standard Time (CST)</option>
+                                    <option value="MST">Mountain Standard Time (MST)</option>
+                                    <option value="PST">Pacific Standard Time (PST)</option>
+                                    <option value="AKST">Alaska Standard Time (AKST)</option>
+                                    <option value="HST">Hawaii Standard Time (HST)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <!-- Empty for spacing -->
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="officePhone">Office Phone <span class="required">*</span></label>
+                                <input type="tel" id="officePhone" name="officePhone" required placeholder="(555) 123-4567">
+                            </div>
+                            <div class="form-group">
+                                <label for="customerContactEmail">Customer Contact Email <span class="required">*</span></label>
+                                <input type="email" id="customerContactEmail" name="customerContactEmail" required placeholder="contact@company.com">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="physicalAddress">Physical Address</label>
+                            <textarea id="physicalAddress" name="physicalAddress" rows="2" placeholder="123 Main Street&#10;City, State 12345"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mailingAddress">Mailing Address</label>
+                            <textarea id="mailingAddress" name="mailingAddress" rows="2" placeholder="P.O. Box 123&#10;City, State 12345"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="officeHours">Office Hours</label>
+                            <textarea id="officeHours" name="officeHours" rows="3" placeholder="Monday-Friday: 8:00 AM - 5:00 PM&#10;Saturday: 8:00 AM - 12:00 PM&#10;Sunday: Closed"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Holidays Observed</label>
+                            <div class="checkbox-grid">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="newYearsEve" name="holidays" value="New Year's Eve">
+                                    <label for="newYearsEve">New Year's Eve</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="newYearsDay" name="holidays" value="New Year's Day">
+                                    <label for="newYearsDay">New Year's Day</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="martinLutherKing" name="holidays" value="Martin Luther King Jr. Day">
+                                    <label for="martinLutherKing">Martin Luther King Jr. Day</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="presidentsDay" name="holidays" value="President's Day">
+                                    <label for="presidentsDay">President's Day</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="memorialDay" name="holidays" value="Memorial Day">
+                                    <label for="memorialDay">Memorial Day</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="independenceDay" name="holidays" value="Independence Day">
+                                    <label for="independenceDay">Independence Day</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="juneteenth" name="holidays" value="Juneteenth">
+                                    <label for="juneteenth">Juneteenth</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="laborDay" name="holidays" value="Labor Day">
+                                    <label for="laborDay">Labor Day</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="columbusDay" name="holidays" value="Columbus/Indigenous People's Day">
+                                    <label for="columbusDay">Columbus/Indigenous People's Day</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="thanksgiving" name="holidays" value="Thanksgiving">
+                                    <label for="thanksgiving">Thanksgiving</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="blackFriday" name="holidays" value="Black Friday">
+                                    <label for="blackFriday">Black Friday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="christmasEve" name="holidays" value="Christmas Eve">
+                                    <label for="christmasEve">Christmas Eve</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="christmasDay" name="holidays" value="Christmas Day">
+                                    <label for="christmasDay">Christmas Day</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="website">Website</label>
+                                <input type="url" id="website" name="website" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldRoutesLink">FieldRoutes Link</label>
+                                <input type="url" id="fieldRoutesLink" name="fieldRoutesLink" placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Section -->
+                <div class="section" id="services-section">
+                    <div class="section-header" onclick="toggleSection('services')">
+                        <h2>🛡️ Services</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="services-content">
+                        <div id="services-container">
+                            <!-- Services will be added here -->
+                        </div>
+                        <button type="button" class="btn btn-primary add-btn" onclick="addService()">+ Add Service</button>
+                    </div>
+                </div>
+
+                <!-- Technicians Section -->
+                <div class="section" id="technicians-section">
+                    <div class="section-header" onclick="toggleSection('technicians')">
+                        <h2>👨‍🔧 Technicians</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="technicians-content">
+                        <div id="technicians-container">
+                            <!-- Technicians will be added here -->
+                        </div>
+                        <button type="button" class="btn btn-primary add-btn" onclick="addTechnician()">+ Add Technician</button>
+                    </div>
+                </div>
+
+                <!-- Service Areas Section -->
+                <div class="section" id="areas-section">
+                    <div class="section-header" onclick="toggleSection('areas')">
+                        <h2>📍 Service Areas</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="areas-content">
+                        <div id="areas-container">
+                            <!-- Service areas will be added here -->
+                        </div>
+                        <button type="button" class="btn btn-primary add-btn" onclick="addServiceArea()">+ Add Service Area</button>
+                    </div>
+                </div>
+
+                <!-- Policies Section -->
+                <div class="section" id="policies-section">
+                    <div class="section-header" onclick="toggleSection('policies')">
+                        <h2>📜 Wix CMS Policies Configuration</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="policies-content">
+                        
+                        <!-- Service Coverage Policies -->
+                        <div class="policy-subsection">
+                            <h4>🏢 Service Coverage</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="treatVehicles">Do we treat vehicles?</label>
+                                    <select id="treatVehicles" name="treatVehicles" onchange="toggleCustomInput(this, 'treatVehiclesCustom')">
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="Yes, Recreational Vehicles only">Yes, Recreational Vehicles only</option>
+                                        <option value="Limited, refer to home office">Limited, refer to home office</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="treatVehiclesCustom" name="treatVehiclesCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="commercialProperties">Commercial Properties</label>
+                                    <select id="commercialProperties" name="commercialProperties" onchange="toggleCustomInput(this, 'commercialPropertiesCustom')">
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="Yes, Requires Client follow-up">Yes, Requires Client follow-up</option>
+                                        <option value="Yes, create lead and refer to home office">Yes, create lead and refer to home office</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="commercialPropertiesCustom" name="commercialPropertiesCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="multiFamilyOffered">Multi-Family Offered</label>
+                                    <select id="multiFamilyOffered" name="multiFamilyOffered" onchange="toggleCustomInput(this, 'multiFamilyOfferedCustom')">
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="Yes, Requires Client Follow-up">Yes, Requires Client Follow-up</option>
+                                        <option value="Yes, individual units only">Yes, individual units only</option>
+                                        <option value="Yes, privately owned townhomes and condos">Yes, privately owned townhomes and condos</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="multiFamilyOfferedCustom" name="multiFamilyOfferedCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="trailersOffered">Trailers/Mobile Homes</label>
+                                    <select id="trailersOffered" name="trailersOffered" onchange="toggleCustomInput(this, 'trailersOfferedCustom')">
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                        <option value="Limited, create lead and refer to home office">Limited, create lead and refer to home office</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="trailersOfferedCustom" name="trailersOfferedCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Scheduling & Operations -->
+                        <div class="policy-subsection">
+                            <h4>⏰ Scheduling & Operations</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="signedContract">Signed Contract</label>
+                                    <select id="signedContract" name="signedContract" onchange="toggleCustomInput(this, 'signedContractCustom')">
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="None">None</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="signedContractCustom" name="signedContractCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="returningCustomers">Returning Customers</label>
+                                    <input type="text" id="returningCustomers" name="returningCustomers" placeholder="e.g., None, Special pricing">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="appointmentConfirmations">Appointment Confirmations</label>
+                                    <select id="appointmentConfirmations" name="appointmentConfirmations" onchange="toggleCustomInput(this, 'appointmentConfirmationsCustom')">
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                        <option value="Confirm all appointments">Confirm all appointments</option>
+                                        <option value="Do not confirm appointments">Do not confirm appointments</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="appointmentConfirmationsCustom" name="appointmentConfirmationsCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="callAhead">Call Ahead</label>
+                                    <input type="text" id="callAhead" name="callAhead" placeholder="e.g., Yes, 30 minutes if requested">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="maxDistance">Max Distance</label>
+                                    <input type="text" id="maxDistance" name="maxDistance" placeholder="e.g., 10 miles" value="10 miles">
+                                </div>
+                                <div class="form-group">
+                                    <label for="schedulingPolicyTimes">Scheduling Policy Times</label>
+                                    <textarea id="schedulingPolicyTimes" name="schedulingPolicyTimes" rows="2" placeholder="e.g., Inspection: AM/PM, Initial: 2 hour windows, Regular: AT"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="sameDayServices">Same Day Services</label>
+                                    <select id="sameDayServices" name="sameDayServices" onchange="toggleCustomInput(this, 'sameDayServicesCustom')">
+                                        <option value="No">No</option>
+                                        <option value="Yes, refer to home office">Yes, refer to home office</option>
+                                        <option value="Yes, before noon">Yes, before noon</option>
+                                        <option value="Varies, Refer to home office">Varies, Refer to home office</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="sameDayServicesCustom" name="sameDayServicesCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="techSkilling">Tech Skilling</label>
+                                    <select id="techSkilling" name="techSkilling" onchange="toggleCustomInput(this, 'techSkillingCustom')">
+                                        <option value="Not standard">Not standard</option>
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="techSkillingCustom" name="techSkillingCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="afterHoursEmergency">After Hours Emergency</label>
+                                <select id="afterHoursEmergency" name="afterHoursEmergency" onchange="toggleCustomInput(this, 'afterHoursEmergencyCustom')">
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="Yes, send a home office ticket">Yes, send a home office ticket</option>
+                                    <option value="Custom">Custom</option>
+                                </select>
+                                <input type="text" id="afterHoursEmergencyCustom" name="afterHoursEmergencyCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                            </div>
+                        </div>
+
+                        <!-- Service Policies -->
+                        <div class="policy-subsection">
+                            <h4>🔄 Service Policies</h4>
+                            <div class="form-group">
+                                <label for="reservices">Reservices</label>
+                                <textarea id="reservices" name="reservices" rows="3" placeholder="e.g., Customers must allow 10-14 days from prior service..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="setServiceTypeTo">Set Service Type To</label>
+                                    <select id="setServiceTypeTo" name="setServiceTypeTo" onchange="toggleCustomInput(this, 'setServiceTypeToCustom')">
+                                        <option value="Reservice">Reservice</option>
+                                        <option value="Call Back Pest Control">Call Back Pest Control</option>
+                                        <option value="Follow Up Service">Follow Up Service</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="setServiceTypeToCustom" name="setServiceTypeToCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="setSubscriptionTypeTo">Set Subscription Type To</label>
+                                    <input type="text" id="setSubscriptionTypeTo" name="setSubscriptionTypeTo" value="Stand-Alone Service or Reservice" placeholder="Default subscription handling">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment & Financial -->
+                        <div class="policy-subsection">
+                            <h4>💳 Payment & Financial</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="paymentPlans">Payment Plans</label>
+                                    <select id="paymentPlans" name="paymentPlans" onchange="toggleCustomInput(this, 'paymentPlansCustom')">
+                                        <option value="No">No</option>
+                                        <option value="Yes, refer to Home Office">Yes, refer to Home Office</option>
+                                        <option value="Offered">Offered</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                    <input type="text" id="paymentPlansCustom" name="paymentPlansCustom" placeholder="Enter custom response..." style="display: none; margin-top: 8px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="paymentTypes">Payment Types</label>
+                                    <input type="text" id="paymentTypes" name="paymentTypes" value="Cash, Check, Card, ACH" placeholder="Accepted payment methods">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="pastDuePeriod">Past Due Period</label>
+                                    <input type="text" id="pastDuePeriod" name="pastDuePeriod" value="30 days" placeholder="e.g., 30 days, 90 days">
+                                </div>
+                                <div class="form-group">
+                                    <label for="toolsToSave">Tools To Save</label>
+                                    <textarea id="toolsToSave" name="toolsToSave" rows="2" placeholder="e.g., Free reservice, manager visit, $50 coupon"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cancellationPolicy">Cancellation Policy</label>
+                                <textarea id="cancellationPolicy" name="cancellationPolicy" rows="3" placeholder="Cancellation terms and fees"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="policy-subsection">
+                            <h4>📝 Additional Information</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="additionalNotes">Additional Notes</label>
+                                    <textarea id="additionalNotes" name="additionalNotes" rows="3" placeholder="Special instructions or notes"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="branch">Branch</label>
+                                    <input type="text" id="branch" name="branch" placeholder="Branch/location identifier">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Create Client Profile & Sync to Wix</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script>
+        let serviceCounter = 0;
+        let technicianCounter = 0;
+        let areaCounter = 0;
+
+        // Sidebar navigation functions
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId + '-section');
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                // Expand the section if it's collapsed
+                const content = document.getElementById(sectionId + '-content');
+                if (content && !content.classList.contains('active')) {
+                    toggleSection(sectionId);
+                }
+            }
+        }
+
+        function updateDriveLink() {
+            const driveUrl = document.getElementById('sidebarGoogleDriveFolder').value;
+            const driveLink = document.getElementById('sidebarDriveLink');
+            
+            if (driveUrl) {
+                driveLink.href = driveUrl;
+                driveLink.classList.remove('disabled');
+            } else {
+                driveLink.href = '#';
+                driveLink.classList.add('disabled');
+            }
+            
+            // Also update the form field for submission
+            document.getElementById('googleDriveFolder').value = driveUrl;
+        }
+
+        // Toggle custom input fields for dropdowns
+        function toggleCustomInput(selectElement, customInputId) {
+            const customInput = document.getElementById(customInputId);
+            if (selectElement.value === 'Custom') {
+                customInput.style.display = 'block';
+                customInput.required = true;
+            } else {
+                customInput.style.display = 'none';
+                customInput.required = false;
+                customInput.value = '';
+            }
+        }
+
+        // Toggle service accordion
+        function toggleServiceAccordion(header) {
+            const content = header.nextElementSibling;
+            const indicator = header.querySelector('.collapse-indicator');
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                indicator.textContent = '▶';
+            } else {
+                content.classList.add('expanded');
+                indicator.textContent = '▼';
+            }
+        }
+
+        // Toggle advanced details within a service
+        function toggleAdvancedDetails(serviceIndex) {
+            const content = document.getElementById(`advanced-content-${serviceIndex}`);
+            const toggle = document.getElementById(`advanced-toggle-${serviceIndex}`);
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = 'Hide Advanced Details ▲';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = 'Show Advanced Details ▼';
+            }
+        }
+
+        // Update service title when name changes
+        function updateServiceTitle(nameInput, serviceIndex) {
+            const title = nameInput.closest('.service-item').querySelector('.service-title');
+            const serviceName = nameInput.value || 'New Service';
+            title.textContent = `Service #${serviceIndex} - ${serviceName}`;
+        }
+
+        // Toggle service details section on/off
+        function toggleServiceDetailsSection(selectElement, serviceIndex) {
+            const serviceDetails = document.getElementById(`service-details-${serviceIndex}`);
+            if (selectElement.value === 'Yes') {
+                serviceDetails.style.display = 'block';
+            } else {
+                serviceDetails.style.display = 'none';
+            }
+        }
+
+        // Toggle variant service details section on/off
+        function toggleVariantServiceDetails(selectElement, serviceIndex, variantIndex) {
+            const serviceDetails = document.getElementById(`variant-details-${serviceIndex}-${variantIndex}`);
+            if (selectElement.value === 'Yes') {
+                serviceDetails.style.display = 'block';
+            } else {
+                serviceDetails.style.display = 'none';
+            }
+        }
+
+        // Toggle section visibility
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const icon = content.parentElement.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.textContent = '▶';
+            } else {
+                content.classList.add('active');
+                icon.textContent = '▼';
+            }
+        }
+
+        // Update service type behavior
+        function updateServiceType(selectElement, serviceIndex) {
+            const serviceType = selectElement.value;
+            const serviceDetails = document.getElementById(`service-details-${serviceIndex}`);
+            const inspectionText = document.getElementById(`inspection-text-${serviceIndex}`);
+            
+            if (serviceType === 'inspection') {
+                serviceDetails.style.display = 'none';
+                inspectionText.style.display = 'block';
+                
+                // Update agent instructions based on inspection type
+                const typeSelect = selectElement.parentElement.parentElement.querySelector('select[name*="[type]"]');
+                updateInspectionText(typeSelect, serviceIndex);
+            } else if (serviceType === 'refer-office') {
+                serviceDetails.style.display = 'none';
+                inspectionText.style.display = 'block';
+                const textarea = inspectionText.querySelector('textarea');
+                textarea.value = 'Please refer this service to the home office for specialized handling.';
+            } else {
+                serviceDetails.style.display = 'block';
+                inspectionText.style.display = 'none';
+            }
+        }
+
+        function toggleServiceDetails(selectElement, serviceIndex) {
+            const inspectionType = selectElement.value;
+            const inspectionText = document.getElementById(`inspection-text-${serviceIndex}`);
+            
+            if (inspectionType === 'free-inspection') {
+                inspectionText.style.display = 'block';
+                const textarea = inspectionText.querySelector('textarea');
+                textarea.value = 'Set up and schedule Free Inspection';
+            } else if (inspectionType === 'paid-inspection') {
+                inspectionText.style.display = 'block';
+                const textarea = inspectionText.querySelector('textarea');
+                textarea.value = 'Set up and Schedule Paid Inspection';
+            }
+        }
+
+        function updateInspectionText(selectElement, serviceIndex) {
+            const inspectionType = selectElement.value;
+            const inspectionText = document.getElementById(`inspection-text-${serviceIndex}`);
+            const textarea = inspectionText.querySelector('textarea');
+            
+            if (inspectionType === 'free-inspection') {
+                textarea.value = 'Set up and schedule Free Inspection';
+            } else if (inspectionType === 'paid-inspection') {
+                textarea.value = 'Set up and Schedule Paid Inspection';
+            }
+        }
+
+        // Add service function
+        function addService() {
+            serviceCounter++;
+            const container = document.getElementById('services-container');
+            
+            const serviceDiv = document.createElement('div');
+            serviceDiv.className = 'service-item service-accordion';
+            serviceDiv.innerHTML = `
+                <div class="service-header" onclick="toggleServiceAccordion(this)">
+                    <h3 class="service-title">Service #${serviceCounter} - New Service</h3>
+                    <div class="service-actions">
+                        <span class="collapse-indicator">▼</span>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="event.stopPropagation(); removeService(this)">Remove</button>
+                    </div>
+                </div>
+                
+                <div class="service-content expanded">
+                    <!-- Essential Fields (Always Visible) -->
+                    <div class="service-essentials">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Service Name:</label>
+                                <input type="text" name="services[${serviceCounter}][name]" placeholder="e.g., General Pest Control" onchange="updateServiceTitle(this, ${serviceCounter})">
+                            </div>
+                            <div class="form-group">
+                                <label>Service Category:</label>
+                                <select name="services[${serviceCounter}][category]" onchange="updateServiceType(this, ${serviceCounter})">
+                                    <option value="standard">Standard Services</option>
+                                    <option value="specialty">Specialty Services</option>
+                                    <option value="termite">Termite Services</option>
+                                    <option value="inspection">Inspection Services</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Service Type:</label>
+                                <select name="services[${serviceCounter}][type]" onchange="toggleServiceDetails(this, ${serviceCounter})">
+                                    <option value="recurring">Recurring Service</option>
+                                    <option value="one-time">One Time Service</option>
+                                    <option value="free-inspection">Free Inspection</option>
+                                    <option value="paid-inspection">Paid Inspection</option>
+                                    <option value="refer-office">Refer to Home Office</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Frequency:</label>
+                                <select name="services[${serviceCounter}][frequency]">
+                                    <option value="one-time">One Time</option>
+                                    <option value="bi-monthly">Bi-Monthly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="21-days">Every 21 Days</option>
+                                    <option value="14-days">Every 14 Days</option>
+                                    <option value="10-14-days">Every 10-14 Days</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label>Description:</label>
+                                <textarea name="services[${serviceCounter}][description]" rows="2" placeholder="Brief service description..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Pests Covered (Above Pricing) -->
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label>Pests Covered:</label>
+                                <textarea name="services[${serviceCounter}][pests]" rows="2" placeholder="List pests covered by this service..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Pricing Section -->
+                        <div class="service-pricing-section" style="background: #334155; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #475569;">
+                            <h4 style="margin-bottom: 16px; color: #f1f5f9; font-size: 1.2em; font-weight: 600;">💰 Pricing Information</h4>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Queue Ext:</label>
+                                    <input type="text" name="services[${serviceCounter}][queueExt]" placeholder="Queue extension">
+                                </div>
+                                <div class="form-group">
+                                    <label>Company Name:</label>
+                                    <input type="text" name="services[${serviceCounter}][companyName]" placeholder="Company name for this service">
+                                </div>
+                            </div>
+
+                            <!-- Insert pricing tiers container -->
+                            <div id="pricingTiers_${serviceCounter}" style="background: #475569; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #334155;">
+                                <button type="button" class="btn btn-sm btn-primary add-btn" onclick="addPricingTier(${serviceCounter})">+ Add Pricing Tier</button>
+                                <div class="pricing-tiers-list"></div>
+                            </div>
+                            <div class="help-text" style="color: #cbd5e1;">Define multiple square-footage tiers: min/max, first and recurring prices.</div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Product Type:</label>
+                                    <input type="text" name="services[${serviceCounter}][productType]" placeholder="e.g., Pest Control, Termite">
+                                </div>
+                                <div class="form-group">
+                                    <label>Sold-As Name:</label>
+                                    <input type="text" name="services[${serviceCounter}][soldAsName]" placeholder="Name as sold to customer">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Service Frequency:</label>
+                                    <select name="services[${serviceCounter}][serviceFrequency]">
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="Bi-Monthly">Bi-Monthly</option>
+                                        <option value="Quarterly">Quarterly</option>
+                                        <option value="One Time">One Time</option>
+                                        <option value="21 Days">Every 21 Days</option>
+                                        <option value="14 Days">Every 14 Days</option>
+                                        <option value="10-14 Days">Every 10-14 Days</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Billing Frequency:</label>
+                                    <select name="services[${serviceCounter}][billingFrequency]">
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="After Service Completion">After Service Completion</option>
+                                        <option value="Quarterly">Quarterly</option>
+                                        <option value="Annually">Annually</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Service Price:</label>
+                                    <input type="text" name="services[${serviceCounter}][firstPrice]" placeholder="$150">
+                                </div>
+                                <div class="form-group">
+                                    <label>Recurring Price:</label>
+                                    <input type="text" name="services[${serviceCounter}][recurringPrice]" placeholder="$120">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Sqft Min:</label>
+                                    <input type="number" name="services[${serviceCounter}][sqftMin]" placeholder="0" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Sqft Max:</label>
+                                    <input type="number" name="services[${serviceCounter}][sqftMax]" placeholder="2500" min="0">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label>Service Type:</label>
+                                    <input type="text" name="services[${serviceCounter}][serviceTypeDesc]" placeholder="e.g., Monthly Subscription / Pest Control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Note to Agent Section (Always Visible) -->
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label>Note to Agent (Optional):</label>
+                                <textarea name="services[${serviceCounter}][noteToAgent]" rows="2" placeholder="Special instructions or notes for agents..." style="background: #451a03; border-left: 4px solid #f59e0b;"></textarea>
+                                <div class="help-text">This will appear as "Note to Agent:" on the client profile</div>
+                            </div>
+                        </div>
+
+                        <!-- Service Details Section with Toggle (Always Visible) -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Service Details:</label>
+                                <select name="services[${serviceCounter}][hasDetails]" onchange="toggleServiceDetailsSection(this, ${serviceCounter})">
+                                    <option value="Yes" selected>Yes</option>
+                                    <option value="None">None</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="service-details" id="service-details-${serviceCounter}" style="display: block;">
+                            <h4>Service Details</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Contract:</label>
+                                    <input type="text" name="services[${serviceCounter}][contract]" placeholder="e.g., None, 1 Year">
+                                </div>
+                                <div class="form-group">
+                                    <label>Guarantee:</label>
+                                    <input type="text" name="services[${serviceCounter}][guarantee]" placeholder="e.g., None, Unlimited Reservices">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Call Ahead:</label>
+                                    <select name="services[${serviceCounter}][callAhead]">
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Initial Duration:</label>
+                                    <input type="text" name="services[${serviceCounter}][initialDuration]" placeholder="e.g., 30 Minutes">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Recurring Duration:</label>
+                                    <input type="text" name="services[${serviceCounter}][recurringDuration]" placeholder="e.g., 30 Minutes, N/A">
+                                </div>
+                                <div class="form-group">
+                                    <label>Leave During Service:</label>
+                                    <select name="services[${serviceCounter}][leaveDuringService]">
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Follow Up:</label>
+                                    <input type="text" name="services[${serviceCounter}][followUp]" placeholder="e.g., No, 14 Days, Every 10-14 Days">
+                                </div>
+                                <div class="form-group">
+                                    <label>Prep Sheet:</label>
+                                    <select name="services[${serviceCounter}][prepSheet]">
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="Refer to Home Office">Refer to Home Office</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Details (Collapsible) -->
+                    <div class="advanced-details">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleAdvancedDetails(${serviceCounter})" style="margin: 15px 0;">
+                            <span id="advanced-toggle-${serviceCounter}">Show Advanced Details ▼</span>
+                        </button>
+                        
+                        <div id="advanced-content-${serviceCounter}" class="advanced-content" style="display: none;">
+                            <!-- Service Variants Section -->
+                            <div class="service-variants-section">
+                                <h4>Service Variants/Options</h4>
+                                <div class="help-text">Add different variants of this service (e.g., Standard, Premium, with Mosquito, etc.)</div>
+                                <div id="variants-container-${serviceCounter}">
+                                    <!-- Service variants will be added here -->
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm" onclick="addServiceVariant(${serviceCounter})">+ Add Variant</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inspection Special Text -->
+                    <div class="inspection-text" id="inspection-text-${serviceCounter}" style="display: none;">
+                        <div class="form-group full-width">
+                            <label>Agent Instructions:</label>
+                            <textarea name="services[${serviceCounter}][agentInstructions]" rows="2" readonly style="background-color: #334155;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(serviceDiv);
+            
+            // Add initial service variant
+            addServiceVariant(serviceCounter);
+        }        // Add service variant function
+        function addServiceVariant(serviceIndex) {
+            const container = document.getElementById(`variants-container-${serviceIndex}`);
+            const variantIndex = container.children.length + 1;
+            
+            const variantDiv = document.createElement('div');
+            variantDiv.className = 'variant-item';
+            
+            variantDiv.innerHTML = `
+                <div class="item-header" style="margin-bottom: 15px;">
+                    <div class="item-title" style="color: #f1f5f9; font-weight: 600;">Variant ${variantIndex}</div>
+                    <button type="button" class="btn btn-danger" onclick="removeServiceVariant(this)" style="padding: 4px 8px; font-size: 11px;">Remove</button>
+                </div>
+                
+                <!-- Essential Fields (Same as Main Service) -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Variant Name:</label>
+                        <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][name]" placeholder="e.g., Standard, Premium, with Mosquito" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Type:</label>
+                        <select name="services[${serviceIndex}][variants][${variantIndex}][type]">
+                            <option value="regular">Regular Service</option>
+                            <option value="inspection">Inspection</option>
+                            <option value="refer-office">Refer to Office</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Description:</label>
+                        <textarea name="services[${serviceIndex}][variants][${variantIndex}][description]" rows="2" placeholder="Brief variant description..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Pests Covered (Above Pricing) -->
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Pests Covered:</label>
+                        <textarea name="services[${serviceIndex}][variants][${variantIndex}][pests]" rows="2" placeholder="List pests covered by this variant..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="service-pricing-section" style="background: #334155; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #475569;">
+                    <h4 style="margin-bottom: 16px; color: #f1f5f9; font-size: 1.2em; font-weight: 600;">💰 Pricing Information</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Queue Ext:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][queueExt]" placeholder="Queue extension">
+                        </div>
+                        <div class="form-group">
+                            <label>Company Name:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][companyName]" placeholder="Company name for this variant">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Product Type:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][productType]" placeholder="e.g., Pest Control, Termite">
+                        </div>
+                        <div class="form-group">
+                            <label>Sold-As Name:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][soldAsName]" placeholder="Name as sold to customer">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Service Frequency:</label>
+                            <select name="services[${serviceIndex}][variants][${variantIndex}][serviceFrequency]">
+                                <option value="Monthly">Monthly</option>
+                                <option value="Bi-Monthly">Bi-Monthly</option>
+                                <option value="Quarterly">Quarterly</option>
+                                <option value="One Time">One Time</option>
+                                <option value="21 Days">Every 21 Days</option>
+                                <option value="14 Days">Every 14 Days</option>
+                                <option value="10-14 Days">Every 10-14 Days</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Billing Frequency:</label>
+                            <select name="services[${serviceIndex}][variants][${variantIndex}][billingFrequency]">
+                                <option value="Monthly">Monthly</option>
+                                <option value="After Service Completion">After Service Completion</option>
+                                <option value="Quarterly">Quarterly</option>
+                                <option value="Annually">Annually</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Service Price:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][firstPrice]" placeholder="$150">
+                        </div>
+                        <div class="form-group">
+                            <label>Recurring Price:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][recurringPrice]" placeholder="$120">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Sqft Min:</label>
+                            <input type="number" name="services[${serviceIndex}][variants][${variantIndex}][sqftMin]" placeholder="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Sqft Max:</label>
+                            <input type="number" name="services[${serviceIndex}][variants][${variantIndex}][sqftMax]" placeholder="2500" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Service Type:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][serviceTypeDesc]" placeholder="e.g., Monthly Subscription / Pest Control">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Details Section (Always Visible when 'Yes') -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Service Details:</label>
+                        <select name="services[${serviceIndex}][variants][${variantIndex}][hasDetails]" onchange="toggleVariantServiceDetails(this, ${serviceIndex}, ${variantIndex})">
+                            <option value="Yes" selected>Yes</option>
+                            <option value="None">None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Note to Agent:</label>
+                        <textarea name="services[${serviceIndex}][variants][${variantIndex}][agentNote]" rows="2" placeholder="Special instructions for agents..."></textarea>
+                    </div>
+                </div>
+
+                <div class="service-details" id="variant-details-${serviceIndex}-${variantIndex}" style="display: block;">
+                    <h4>Service Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>How Often:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][frequency]" placeholder="Every 2-3 months">
+                        </div>
+                        <div class="form-group">
+                            <label>Method:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][method]" placeholder="Spray/Granules">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Areas Treated:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][areas]" placeholder="Perimeter, basement, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][notes]" placeholder="Additional service notes">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contract:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][contract]" placeholder="e.g., None, 1 Year">
+                        </div>
+                        <div class="form-group">
+                            <label>Guarantee:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][guarantee]" placeholder="e.g., None, Unlimited Reservices">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Call Ahead:</label>
+                            <select name="services[${serviceIndex}][variants][${variantIndex}][callAhead]">
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Initial Duration:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][initialDuration]" placeholder="e.g., 30 Minutes">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Recurring Duration:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][recurringDuration]" placeholder="e.g., 30 Minutes, N/A">
+                        </div>
+                        <div class="form-group">
+                            <label>Leave During Service:</label>
+                            <select name="services[${serviceIndex}][variants][${variantIndex}][leaveDuringService]">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Follow Up:</label>
+                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][followUp]" placeholder="e.g., No, 14 Days, Every 10-14 Days">
+                        </div>
+                        <div class="form-group">
+                            <label>Prep Sheet:</label>
+                            <select name="services[${serviceIndex}][variants][${variantIndex}][prepSheet]">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                                <option value="Refer to Home Office">Refer to Home Office</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(variantDiv);
+        }
+
+        // Remove service variant function
+        function removeServiceVariant(button) {
+            const variantDiv = button.closest('.variant-item');
+            const container = variantDiv.parentElement;
+            variantDiv.remove();
+            
+            // Renumber remaining variants
+            const variants = container.querySelectorAll('.variant-item');
+            variants.forEach((variant, index) => {
+                const title = variant.querySelector('.item-title');
+                title.textContent = `Variant ${index + 1}`;
+            });
+        }
+
+        // Add technician function  
+        function addTechnician() {
+            technicianCounter++;
+            const container = document.getElementById('technicians-container');
+            
+            const techDiv = document.createElement('div');
+            techDiv.className = 'technician-item';
+            techDiv.innerHTML = `
+                <div class="item-header">
+                    <div class="item-title">Technician #${technicianCounter}</div>
+                    <button type="button" class="btn btn-danger remove-btn" onclick="removeTechnician(this)">Remove</button>
+                </div>
+                
+                <!-- Order: Company Name, Tech or Inspector, Name, Schedule, Max Stops, Does NOT Service, Phone, Additional Notes, Zip Code or Branch -->
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name (Required):</label>
+                        <input type="text" name="technicians[${technicianCounter}][name]" placeholder="Technician name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tech or Inspector:</label>
+                        <select name="technicians[${technicianCounter}][role]" required>
+                            <option value="">Select Role</option>
+                            <option value="Tech">Tech</option>
+                            <option value="Inspector">Inspector</option>
+                            <option value="Both">Both</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Schedule:</label>
+                        <input type="text" name="technicians[${technicianCounter}][schedule]" placeholder="Mon-Fri 8-5, Sat 8-12">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Stops:</label>
+                        <input type="number" name="technicians[${technicianCounter}][maxStops]" min="1" max="50" placeholder="e.g., 12">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Does NOT Service:</label>
+                        <textarea name="technicians[${technicianCounter}][doesNotService]" rows="2" placeholder="e.g., Termite, Commercial Only, Mosquito/Tick"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone:</label>
+                        <input type="tel" name="technicians[${technicianCounter}][phone]" placeholder="Phone number">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Additional Notes:</label>
+                        <textarea name="technicians[${technicianCounter}][additionalNotes]" rows="2" placeholder="Any additional information about this technician"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Zip Code or Branch (Optional):</label>
+                        <input type="text" name="technicians[${technicianCounter}][zipCodeOrBranch]" placeholder="Specific zip codes or branch area">
+                        <div class="help-text">Optional: Specific zip codes served or branch assignment</div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(techDiv);
+        }
+
+        // Add service area function
+        function addServiceArea() {
+            areaCounter++;
+            const container = document.getElementById('areas-container');
+            
+            const areaDiv = document.createElement('div');
+            areaDiv.className = 'area-item';
+            areaDiv.innerHTML = `
+                <div class="item-header">
+                    <div class="item-title">Service Area #${areaCounter}</div>
+                    <button type="button" class="btn btn-danger remove-btn" onclick="removeServiceArea(this)">Remove</button>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Zip Code:</label>
+                        <input type="text" name="serviceAreas[${areaCounter}][zipCode]" placeholder="e.g., 75001" required>
+                        <div class="help-text">Single zip code for this service area</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Branch (City):</label>
+                        <input type="text" name="serviceAreas[${areaCounter}][branch]" placeholder="e.g., Dallas" required>
+                        <div class="help-text">City or branch name for this area</div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(areaDiv);
+        }
+
+        // Remove functions
+        function removeService(button) {
+            button.closest('.service-item').remove();
+        }
+
+        function removeTechnician(button) {
+            button.closest('.technician-item').remove();
+        }
+
+        function removeServiceArea(button) {
+            button.closest('.area-item').remove();
+        }
+
+        // Form submission
+        document.getElementById('clientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const clientData = {};
+            
+            // Convert FormData to object
+            for (let [key, value] of formData.entries()) {
+                if (key.includes('[') && key.includes(']')) {
+                    // Handle array data (services, technicians, etc.)
+                    const matches = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+                    if (matches) {
+                        const [, arrayName, index, fieldName] = matches;
+                        if (!clientData[arrayName]) clientData[arrayName] = [];
+                        if (!clientData[arrayName][index]) clientData[arrayName][index] = {};
+                        clientData[arrayName][index][fieldName] = value;
+                    }
+                } else if (key === 'holidays') {
+                    // Handle checkbox arrays (holidays)
+                    if (!clientData[key]) clientData[key] = [];
+                    clientData[key].push(value);
+                } else {
+                    clientData[key] = value;
+                }
+            }
+            
+            // Submit to Google Apps Script
+            google.script.run
+                .withSuccessHandler(onSuccess)
+                .withFailureHandler(onError)
+                .createClientProfileFromHTML(clientData);
+        });
+
+        function onSuccess(result) {
+            // Show success message
+            alert('Client profile created successfully!\n\nProfile URL: ' + result.profileUrl + '\nGoogle Sheet: ' + result.sheetUrl);
+            
+            // Update sidebar links
+            if (result.sheetUrl) {
+                const sheetLink = document.getElementById('sidebarSheetLink');
+                sheetLink.href = result.sheetUrl;
+                sheetLink.classList.remove('disabled');
+            }
+            
+            if (result.profileUrl) {
+                const profileLink = document.getElementById('sidebarProfileLink');
+                profileLink.href = result.profileUrl;
+                profileLink.classList.remove('disabled');
+            }
+            
+            // Drive folder link should already be updated from the input
+            const googleDriveFolder = document.getElementById('sidebarGoogleDriveFolder').value;
+            if (googleDriveFolder) {
+                const driveLink = document.getElementById('sidebarDriveLink');
+                driveLink.href = googleDriveFolder;
+                driveLink.classList.remove('disabled');
+            }
+            
+            // Scroll to top to highlight the sidebar
+            window.scrollTo(0, 0);
+        }
+
+        function onError(error) {
+            alert('Error creating profile: ' + error.message);
+        }
+
+        // Initialize with one service, technician, and area
+        document.addEventListener('DOMContentLoaded', function() {
+            addService();
+            addTechnician(); 
+            addServiceArea();
+        });
+
+        // Add pricing tier function
+        function addPricingTier(serviceIndex) {
+            const container = document.getElementById(`pricingTiers_${serviceIndex}`).querySelector('.pricing-tiers-list');
+            const tierIndex = container.children.length + 1;
+            
+            const tierDiv = document.createElement('div');
+            tierDiv.className = 'form-row';
+            tierDiv.innerHTML = `
+                <div class="form-group">
+                    <label>Tier ${tierIndex} Min Sqft:</label>
+                    <input type="number" name="services[${serviceIndex}][tiers][${tierIndex}][minSqft]" placeholder="e.g., 0" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Tier ${tierIndex} Max Sqft:</label>
+                    <input type="number" name="services[${serviceIndex}][tiers][${tierIndex}][maxSqft]" placeholder="e.g., 2500" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Tier ${tierIndex} First Price:</label>
+                    <input type="text" name="services[${serviceIndex}][tiers][${tierIndex}][firstPrice]" placeholder="$150" required>
+                </div>
+                <div class="form-group">
+                    <label>Tier ${tierIndex} Recurring Price:</label>
+                    <input type="text" name="services[${serviceIndex}][tiers][${tierIndex}][recurringPrice]" placeholder="$120" required>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger" onclick="removePricingTier(this)">Remove Tier</button>
+                </div>
+            `;
+            
+            container.appendChild(tierDiv);
+        }
+
+        // Remove pricing tier function
+        function removePricingTier(button) {
+            const tierDiv = button.closest('.form-row');
+            tierDiv.remove();
+            
+            // Renumber remaining tiers
+            const serviceIndex = tierDiv.closest('.service-item').querySelector('.service-title').textContent.split('#')[1].split(' -')[0];
+            const tiers = tierDiv.parentElement.querySelectorAll('.form-row');
+            tiers.forEach((tier, index) => {
+                const minSqftLabel = tier.querySelector('label');
+                minSqftLabel.textContent = `Tier ${index + 1} Min Sqft:`;
+                
+                const maxSqftLabel = tier.querySelector('label');
+                maxSqftLabel.textContent = `Tier ${index + 1} Max Sqft:`;
+                
+                const firstPriceLabel = tier.querySelector('label');
+                firstPriceLabel.textContent = `Tier ${index + 1} First Price:`;
+                
+                const recurringPriceLabel = tier.querySelector('label');
+                recurringPriceLabel.textContent = `Tier ${index + 1} Recurring Price:`;
+            });
+        }
+    </script>
+</body>
+</html>

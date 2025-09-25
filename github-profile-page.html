@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Profile - Dynamic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-size: 1.2rem;
+            color: #60a5fa;
+        }
+
+        .error {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-size: 1.2rem;
+            color: #ef4444;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #3b82f6;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .company-info h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+        }
+
+        .company-info .location {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .current-time {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border: 1px solid #3b82f6;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section h2 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: rgba(51, 65, 85, 0.5);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .info-item strong {
+            color: #60a5fa;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .services-grid, .technicians-grid, .areas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .service-card, .technician-card, .area-card {
+            background: rgba(51, 65, 85, 0.5);
+            border: 1px solid #475569;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .service-card h3, .technician-card h3, .area-card h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .service-card .frequency-badge {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-forecast {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .weather-forecast h2 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .weather-forecast-content {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+        }
+
+        .weather-day {
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .weather-day-name {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-temp {
+            font-size: 1.2rem;
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .weather-desc {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #1e40af, #3b82f6);
+            border: 1px solid #60a5fa;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <div>
+            <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+            Loading profile data...
+        </div>
+    </div>
+
+    <div id="error" class="error" style="display: none;">
+        <div>
+            <h2>Profile Not Found</h2>
+            <p>The requested profile could not be loaded.</p>
+        </div>
+    </div>
+
+    <div id="content" style="display: none;">
+        <div class="header">
+            <div class="header-content">
+                <div class="company-info">
+                    <h1 id="companyName">Loading...</h1>
+                    <div class="location" id="location">Loading...</div>
+                </div>
+                <div class="current-time" id="currentTime">Loading...</div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn active" onclick="showSection('services')">Services</button>
+            <button class="nav-btn" onclick="showSection('technicians')">Technicians</button>
+            <button class="nav-btn" onclick="showSection('areas')">Service Areas</button>
+            <button class="nav-btn" onclick="showSection('info')">Contact Info</button>
+        </div>
+
+        <div class="content">
+            <div id="services-section">
+                <div class="section">
+                    <h2>Services</h2>
+                    <div class="services-grid" id="servicesGrid">
+                        <!-- Services will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="technicians-section" class="hidden">
+                <div class="section">
+                    <h2>Technicians</h2>
+                    <div class="technicians-grid" id="techniciansGrid">
+                        <!-- Technicians will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="areas-section" class="hidden">
+                <div class="section">
+                    <h2>Service Areas</h2>
+                    <div class="areas-grid" id="areasGrid">
+                        <!-- Service Areas will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="info-section" class="hidden">
+                <div class="section">
+                    <h2>Contact Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Phone</strong>
+                            <div id="phoneNumber">-</div>
+                        </div>
+                        <div class="info-item">
+                            <strong>Email</strong>
+                            <div id="emailAddress">-</div>
+                        </div>
+                        <div class="info-item">
+                            <strong>Website</strong>
+                            <div id="websiteUrl">-</div>
+                        </div>
+                        <div class="info-item">
+                            <strong>Address</strong>
+                            <div id="physicalAddress">-</div>
+                        </div>
+                        <div class="info-item">
+                            <strong>Hours</strong>
+                            <div id="officeHours">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Additional Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Company Bulletin</strong>
+                            <div id="bulletin">-</div>
+                        </div>
+                        <div class="info-item">
+                            <strong>Pests Not Covered</strong>
+                            <div id="pestsNotCovered">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config-github.js"></script>
+    <script>
+        let clientData = {};
+
+        // Get profile ID from URL
+        function getProfileIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('profileId');
+        }
+
+        // Load profile data from Apps Script
+        async function loadProfileData() {
+            const profileId = getProfileIdFromUrl();
+
+            if (!profileId) {
+                showError('No profile ID provided in URL');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${window.CONFIG.GOOGLE_SHEETS.WEB_APP_URL}?profileId=${encodeURIComponent(profileId)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                clientData = data;
+                populateProfile();
+                updateTime();
+                setInterval(updateTime, 60000);
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showError('Error loading profile data');
+            }
+        }
+
+        function populateProfile() {
+            // Update header
+            document.getElementById('companyName').textContent = clientData.companyName || 'Unknown Company';
+            document.getElementById('location').textContent = clientData.location || 'Unknown Location';
+
+            // Populate contact info
+            document.getElementById('phoneNumber').textContent = clientData.officeInfo?.phone || '-';
+            document.getElementById('emailAddress').textContent = clientData.officeInfo?.email || '-';
+            document.getElementById('websiteUrl').innerHTML = clientData.officeInfo?.website ?
+                `<a href="${clientData.officeInfo.website}" target="_blank">${clientData.officeInfo.website}</a>` : '-';
+            document.getElementById('physicalAddress').textContent = clientData.officeInfo?.address || '-';
+            document.getElementById('officeHours').textContent = clientData.officeInfo?.hours || '-';
+            document.getElementById('bulletin').textContent = clientData.bulletin || '-';
+            document.getElementById('pestsNotCovered').textContent = clientData.pestsNotCovered || '-';
+
+            // Populate services
+            populateServices();
+
+            // Populate technicians
+            populateTechnicians();
+
+            // Populate service areas
+            populateServiceAreas();
+
+            // Show content
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+
+        function populateServices() {
+            const servicesGrid = document.getElementById('servicesGrid');
+            servicesGrid.innerHTML = '';
+
+            if (!clientData.services || clientData.services.length === 0) {
+                servicesGrid.innerHTML = '<p style="color: #94a3b8; font-style: italic;">No services defined</p>';
+                return;
+            }
+
+            clientData.services.forEach(service => {
+                const serviceCard = document.createElement('div');
+                serviceCard.className = 'service-card';
+
+                serviceCard.innerHTML = `
+                    <h3>${service.name || 'Unnamed Service'}</h3>
+                    ${service.frequency ? `<div class="frequency-badge">${service.frequency}</div>` : ''}
+                    ${service.description ? `<p style="margin-bottom: 1rem; color: #cbd5e1;">${service.description}</p>` : ''}
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                        ${service.contract ? `<div><strong>Contract:</strong> ${service.contract}</div>` : ''}
+                        ${service.guarantee ? `<div><strong>Guarantee:</strong> ${service.guarantee}</div>` : ''}
+                        ${service.duration ? `<div><strong>Duration:</strong> ${service.duration}</div>` : ''}
+                        ${service.serviceType ? `<div><strong>Type:</strong> ${service.serviceType}</div>` : ''}
+                        ${service.pests ? `<div><strong>Pests:</strong> ${service.pests}</div>` : ''}
+                    </div>
+                `;
+
+                servicesGrid.appendChild(serviceCard);
+            });
+        }
+
+        function populateTechnicians() {
+            const techniciansGrid = document.getElementById('techniciansGrid');
+            techniciansGrid.innerHTML = '';
+
+            if (!clientData.technicians || clientData.technicians.length === 0) {
+                techniciansGrid.innerHTML = '<p style="color: #94a3b8; font-style: italic;">No technicians assigned</p>';
+                return;
+            }
+
+            clientData.technicians.forEach(tech => {
+                const techCard = document.createElement('div');
+                techCard.className = 'technician-card';
+
+                techCard.innerHTML = `
+                    <h3>${tech.name || 'Unnamed Technician'}</h3>
+                    ${tech.role ? `<p style="color: #60a5fa; margin-bottom: 1rem;"><strong>Role:</strong> ${tech.role}</p>` : ''}
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                        ${tech.schedule ? `<div><strong>Schedule:</strong> ${tech.schedule}</div>` : ''}
+                        ${tech.maxStops ? `<div><strong>Max Stops:</strong> ${tech.maxStops}</div>` : ''}
+                        ${tech.phone ? `<div><strong>Phone:</strong> ${tech.phone}</div>` : ''}
+                        ${tech.zipCode ? `<div><strong>ZIP Code:</strong> ${tech.zipCode}</div>` : ''}
+                    </div>
+                    ${tech.doesNotService ? `<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; border-radius: 0.5rem; color: #fca5a5;"><strong>Does NOT Service:</strong> ${tech.doesNotService}</div>` : ''}
+                    ${tech.notes ? `<div style="margin-top: 1rem; color: #cbd5e1;"><strong>Notes:</strong> ${tech.notes}</div>` : ''}
+                `;
+
+                techniciansGrid.appendChild(techCard);
+            });
+        }
+
+        function populateServiceAreas() {
+            const areasGrid = document.getElementById('areasGrid');
+            areasGrid.innerHTML = '';
+
+            if (!clientData.serviceAreas || clientData.serviceAreas.length === 0) {
+                areasGrid.innerHTML = '<p style="color: #94a3b8; font-style: italic;">No service areas defined</p>';
+                return;
+            }
+
+            clientData.serviceAreas.forEach(area => {
+                const areaCard = document.createElement('div');
+                areaCard.className = 'area-card';
+
+                const statusColor = area.inService ? '#10b981' : '#ef4444';
+                const statusText = area.inService ? 'Active' : 'Inactive';
+
+                areaCard.innerHTML = `
+                    <h3>${area.zip} - ${area.city}, ${area.state}</h3>
+                    ${area.branch ? `<p style="color: #60a5fa; margin-bottom: 0.5rem;"><strong>Branch:</strong> ${area.branch}</p>` : ''}
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <div style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">
+                            ${statusText}
+                        </div>
+                    </div>
+                    ${area.notes ? `<div style="margin-top: 1rem; color: #cbd5e1;"><strong>Notes:</strong> ${area.notes}</div>` : ''}
+                `;
+
+                areasGrid.appendChild(areaCard);
+            });
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.getElementById('services-section').classList.add('hidden');
+            document.getElementById('technicians-section').classList.add('hidden');
+            document.getElementById('areas-section').classList.add('hidden');
+            document.getElementById('info-section').classList.add('hidden');
+
+            // Show selected section
+            document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+
+            // Update button states
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function updateTime() {
+            const timezone = clientData.timezone || 'Central';
+            const timeZoneMap = {
+                'Pacific': 'America/Los_Angeles',
+                'Mountain': 'America/Denver',
+                'Central': 'America/Chicago',
+                'Eastern': 'America/New_York'
+            };
+
+            const timeZone = timeZoneMap[timezone] || 'America/Chicago';
+            const now = new Date();
+            const localTime = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: timeZone
+            });
+
+            document.getElementById('currentTime').textContent = localTime;
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').querySelector('p').textContent = message;
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileData();
+        });
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Call Center Profile - Dynamic</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Inter', sans-serif;
+background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+color: #e2e8f0;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* Cyberpunk Header */
+.header {
+background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+padding: 1.5rem 2rem;
+border-bottom: 2px solid #3b82f6;
+position: relative;
+overflow: hidden;
+}
+
+.header::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+animation: scan 3s infinite;
+}
+
+@keyframes scan {
+0% { left: -100%; }
+100% { left: 100%; }
+}
+
+.header-content {
+display: flex;
+justify-content: space-between;
+align-items: center;
+position: relative;
+z-index: 2;
+}
+
+.company-info h1 {
+font-family: 'Poppins', sans-serif;
+font-size: 2.5rem;
+font-weight: 600;
+color: #60a5fa;
+text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+margin-bottom: 0.5rem;
+letter-spacing: -0.02em;
+}
+
+.company-info .location {
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.2rem;
+color: #94a3b8;
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+
+.time-weather-container {
+display: flex;
+gap: 1rem;
+align-items: center;
+}
+
+.current-time {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #3b82f6;
+padding: 0.5rem 1rem;
+border-radius: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+color: #60a5fa;
+text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+}
+
+.weather-forecast {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #3b82f6;
+padding: 0.75rem 1.25rem;
+border-radius: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+color: #60a5fa;
+text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+min-width: 300px;
+}
+
+.weather-forecast-content {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 0.75rem;
+font-size: 1rem;
+}
+
+.weather-day {
+text-align: center;
+padding: 0.3rem;
+}
+
+.weather-day-name {
+font-size: 0.8rem;
+color: #94a3b8;
+margin-bottom: 0.2rem;
+}
+
+.weather-temp {
+font-size: 1rem;
+color: #60a5fa;
+font-weight: 600;
+}
+
+.weather-desc {
+font-size: 0.8rem;
+color: #cbd5e1;
+}
+
+.header-actions {
+display: flex;
+gap: 1rem;
+}
+
+/* Search Section */
+.search-section {
+background: rgba(30, 41, 59, 0.8);
+border: 1px solid #334155;
+border-radius: 1rem;
+padding: 1.5rem;
+margin: 1rem 2rem;
+backdrop-filter: blur(10px);
+}
+
+.search-container {
+display: flex;
+gap: 1rem;
+align-items: center;
+margin-bottom: 1rem;
+}
+
+.search-input {
+flex: 1;
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+color: #e2e8f0;
+padding: 1rem 1.5rem;
+border-radius: 0.75rem;
+font-family: 'Inter', sans-serif;
+font-size: 1rem;
+transition: all 0.3s ease;
+}
+
+.search-input:focus {
+outline: none;
+border-color: #3b82f6;
+box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+color: #64748b;
+}
+
+.search-btn {
+background: linear-gradient(45deg, #1e40af, #3b82f6);
+border: 1px solid #60a5fa;
+color: white;
+padding: 1rem 2rem;
+border-radius: 0.75rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+background: linear-gradient(45deg, #3b82f6, #60a5fa);
+box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.clear-search-btn {
+background: linear-gradient(45deg, #dc2626, #ef4444);
+border: 1px solid #f87171;
+color: white;
+padding: 1rem 1.5rem;
+border-radius: 0.75rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+.clear-search-btn:hover {
+background: linear-gradient(45deg, #ef4444, #f87171);
+box-shadow: 0 0 20px rgba(248, 113, 113, 0.4);
+}
+
+.search-results {
+font-family: 'Inter', sans-serif;
+color: #cbd5e1;
+font-size: 0.9rem;
+}
+
+.search-highlight {
+background: rgba(59, 130, 246, 0.2);
+border: 1px solid #3b82f6;
+border-radius: 0.25rem;
+padding: 0.2rem 0.4rem;
+}
+
+/* Service Details and Pricing Calculator */
+.service-details {
+background: rgba(15, 23, 42, 0.7);
+border: 1px solid #334155;
+border-radius: 0.75rem;
+padding: 1rem;
+margin: 1rem 0;
+font-size: 0.9rem;
+}
+
+.service-details-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+gap: 0.75rem;
+margin-bottom: 1rem;
+}
+
+.detail-item {
+display: flex;
+flex-direction: column;
+}
+
+.detail-label {
+font-size: 0.75rem;
+color: #94a3b8;
+text-transform: uppercase;
+margin-bottom: 0.25rem;
+}
+
+.detail-value {
+color: #e2e8f0;
+font-weight: 500;
+}
+
+.pricing-calculator {
+background: linear-gradient(135deg, #1e40af, #3b82f6);
+border: 1px solid #60a5fa;
+border-radius: 0.75rem;
+padding: 1rem;
+margin-top: 1rem;
+}
+
+.calculator-title {
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+color: white;
+font-size: 1rem;
+margin-bottom: 0.75rem;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.sqft-input-container {
+display: flex;
+gap: 0.75rem;
+align-items: center;
+margin-bottom: 1rem;
+}
+
+.sqft-input {
+flex: 1;
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.2);
+border-radius: 0.5rem;
+padding: 0.5rem 0.75rem;
+color: white;
+font-family: 'Inter', sans-serif;
+}
+
+.sqft-input:focus {
+outline: none;
+border-color: rgba(255, 255, 255, 0.4);
+box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.sqft-input::placeholder {
+color: rgba(255, 255, 255, 0.6);
+}
+
+.calculate-btn {
+background: rgba(255, 255, 255, 0.2);
+border: 1px solid rgba(255, 255, 255, 0.3);
+color: white;
+padding: 0.5rem 1rem;
+border-radius: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+.calculate-btn:hover {
+background: rgba(255, 255, 255, 0.3);
+}
+
+.pricing-result {
+background: rgba(255, 255, 255, 0.1);
+border-radius: 0.5rem;
+padding: 0.75rem;
+display: none;
+}
+
+.pricing-result.show {
+display: block;
+}
+
+.pricing-display {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+gap: 0.75rem;
+}
+
+.price-display-item {
+text-align: center;
+}
+
+.price-display-label {
+font-size: 0.75rem;
+color: rgba(255, 255, 255, 0.8);
+margin-bottom: 0.25rem;
+}
+
+.price-display-value {
+font-size: 1.1rem;
+font-weight: 600;
+color: white;
+}
+
+.sqft-range-info {
+font-size: 0.8rem;
+color: rgba(255, 255, 255, 0.7);
+margin-top: 0.5rem;
+text-align: center;
+}
+
+/* Pests Covered Section */
+.pests-covered-section {
+background: rgba(16, 185, 129, 0.05);
+border: 1px solid rgba(16, 185, 129, 0.2);
+border-radius: 0.5rem;
+padding: 0.75rem;
+margin: 1rem 0;
+}
+
+.pests-covered-title {
+font-size: 0.8rem;
+font-weight: 600;
+color: #10b981;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+margin-bottom: 0.5rem;
+}
+
+.pests-covered-list {
+color: #cbd5e1;
+font-size: 0.9rem;
+line-height: 1.4;
+}
+
+/* Subservices Section */
+.subservices-container {
+margin: 1rem 0;
+}
+
+.subservice-item {
+background: rgba(15, 23, 42, 0.3);
+border: 1px solid #334155;
+border-radius: 0.75rem;
+margin: 1rem 0;
+padding: 1.25rem;
+transition: all 0.3s ease;
+}
+
+.subservice-item:hover {
+background: rgba(15, 23, 42, 0.5);
+border-color: #475569;
+}
+
+.subservice-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 0.75rem;
+}
+
+.subservice-name {
+font-size: 1.1rem;
+font-weight: 600;
+color: #94a3b8;
+margin: 0;
+}
+
+.subservice-frequency {
+background: rgba(59, 130, 246, 0.1);
+border: 1px solid rgba(59, 130, 246, 0.3);
+border-radius: 0.4rem;
+padding: 0.2rem 0.6rem;
+font-size: 0.75rem;
+font-weight: 600;
+color: #60a5fa;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+
+.subservice-description {
+color: #cbd5e1;
+font-size: 0.9rem;
+margin-bottom: 0.75rem;
+line-height: 1.4;
+}
+
+.subservice-pests {
+background: rgba(16, 185, 129, 0.03);
+border: 1px solid rgba(16, 185, 129, 0.15);
+border-radius: 0.4rem;
+padding: 0.5rem;
+margin-bottom: 0.75rem;
+}
+
+.subservice-pests-title {
+font-size: 0.7rem;
+font-weight: 600;
+color: #10b981;
+text-transform: uppercase;
+letter-spacing: 0.3px;
+margin-bottom: 0.3rem;
+}
+
+.subservice-pests-list {
+color: #94a3b8;
+font-size: 0.8rem;
+line-height: 1.3;
+}
+
+/* Agent Notes */
+.agent-note {
+background: rgba(251, 191, 36, 0.1);
+border: 1px solid rgba(251, 191, 36, 0.3);
+border-radius: 0.5rem;
+padding: 0.75rem;
+margin: 1rem 0;
+}
+
+.agent-note-title {
+font-size: 0.8rem;
+font-weight: 600;
+color: #fbbf24;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+margin-bottom: 0.5rem;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.agent-note-title::before {
+content: "⚠️";
+}
+
+.agent-note-content {
+color: #fde68a;
+font-size: 0.9rem;
+line-height: 1.4;
+font-style: italic;
+}
+
+.subservice-details {
+background: rgba(15, 23, 42, 0.4);
+border: 1px solid #334155;
+border-radius: 0.5rem;
+padding: 0.75rem;
+margin: 0.75rem 0;
+font-size: 0.85rem;
+}
+
+.subservice-details-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+gap: 0.5rem;
+}
+
+.subservice-detail-item {
+display: flex;
+flex-direction: column;
+}
+
+.subservice-detail-label {
+font-size: 0.7rem;
+color: #94a3b8;
+text-transform: uppercase;
+margin-bottom: 0.2rem;
+}
+
+.subservice-detail-value {
+color: #cbd5e1;
+font-weight: 500;
+font-size: 0.8rem;
+}
+
+/* Policies Page Styling */
+.policies-container {
+display: grid;
+grid-template-columns: 1fr 300px;
+gap: 2rem;
+}
+
+.policies-main {
+display: flex;
+flex-direction: column;
+gap: 2rem;
+}
+
+.policies-sidebar {
+background: rgba(30, 41, 59, 0.8);
+border: 1px solid #334155;
+border-radius: 1rem;
+padding: 1.5rem;
+height: fit-content;
+backdrop-filter: blur(10px);
+}
+
+.policy-group {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+border-radius: 1rem;
+padding: 1.5rem;
+margin-bottom: 1.5rem;
+}
+
+.policy-group-title {
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.4rem;
+font-weight: 600;
+color: #60a5fa;
+margin-bottom: 1.25rem;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+display: flex;
+align-items: center;
+gap: 0.75rem;
+}
+
+.policy-group-title::before {
+content: "";
+width: 4px;
+height: 1.5rem;
+background: linear-gradient(135deg, #3b82f6, #60a5fa);
+border-radius: 2px;
+}
+
+.policy-item {
+background: rgba(15, 23, 42, 0.6);
+border: 1px solid #334155;
+border-radius: 0.75rem;
+padding: 1.25rem;
+margin-bottom: 1rem;
+transition: all 0.3s ease;
+}
+
+.policy-item:hover {
+background: rgba(15, 23, 42, 0.8);
+border-color: #475569;
+transform: translateY(-1px);
+}
+
+.policy-item:last-child {
+margin-bottom: 0;
+}
+
+.policy-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 0.75rem;
+}
+
+.policy-title {
+font-size: 1.1rem;
+font-weight: 600;
+color: #e2e8f0;
+margin: 0;
+flex: 1;
+}
+
+.policy-type-badge {
+background: rgba(59, 130, 246, 0.1);
+border: 1px solid rgba(59, 130, 246, 0.3);
+border-radius: 0.4rem;
+padding: 0.2rem 0.6rem;
+font-size: 0.75rem;
+font-weight: 600;
+color: #60a5fa;
+text-transform: uppercase;
+letter-spacing: 0.3px;
+white-space: nowrap;
+margin-left: 1rem;
+}
+
+.policy-description {
+color: #cbd5e1;
+font-size: 0.95rem;
+line-height: 1.5;
+margin-bottom: 1rem;
+}
+
+.policy-details {
+background: rgba(15, 23, 42, 0.5);
+border: 1px solid #334155;
+border-radius: 0.5rem;
+padding: 0.75rem;
+margin: 0.75rem 0;
+}
+
+.policy-details-title {
+font-size: 0.8rem;
+font-weight: 600;
+color: #94a3b8;
+text-transform: uppercase;
+margin-bottom: 0.5rem;
+}
+
+.policy-details-content {
+color: #e2e8f0;
+font-size: 0.9rem;
+line-height: 1.4;
+}
+
+.policy-options {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+gap: 0.5rem;
+margin: 0.75rem 0;
+}
+
+.policy-option {
+background: rgba(16, 185, 129, 0.05);
+border: 1px solid rgba(16, 185, 129, 0.2);
+border-radius: 0.4rem;
+padding: 0.4rem 0.6rem;
+font-size: 0.85rem;
+color: #94a3b8;
+text-align: center;
+}
+
+.policy-option.default {
+background: rgba(16, 185, 129, 0.1);
+border-color: rgba(16, 185, 129, 0.4);
+color: #10b981;
+font-weight: 600;
+}
+
+.policy-default {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+margin-top: 0.75rem;
+}
+
+.policy-default-label {
+font-size: 0.8rem;
+color: #94a3b8;
+font-weight: 600;
+text-transform: uppercase;
+}
+
+.policy-default-value {
+background: rgba(16, 185, 129, 0.1);
+border: 1px solid rgba(16, 185, 129, 0.3);
+border-radius: 0.3rem;
+padding: 0.2rem 0.5rem;
+font-size: 0.8rem;
+color: #10b981;
+font-weight: 600;
+}
+
+.applicable-services {
+margin-top: 0.75rem;
+}
+
+.applicable-services-title {
+font-size: 0.8rem;
+color: #94a3b8;
+font-weight: 600;
+text-transform: uppercase;
+margin-bottom: 0.4rem;
+}
+
+.applicable-services-list {
+display: flex;
+flex-wrap: wrap;
+gap: 0.4rem;
+}
+
+.service-tag {
+background: rgba(59, 130, 246, 0.1);
+border: 1px solid rgba(59, 130, 246, 0.2);
+border-radius: 0.3rem;
+padding: 0.2rem 0.5rem;
+font-size: 0.75rem;
+color: #60a5fa;
+}
+
+/* Additional Information Sidebar */
+.additional-info-title {
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.2rem;
+font-weight: 600;
+color: #fbbf24;
+margin-bottom: 1rem;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.additional-info-title::before {
+content: "ℹ️";
+}
+
+.additional-info-item {
+background: rgba(251, 191, 36, 0.05);
+border: 1px solid rgba(251, 191, 36, 0.2);
+border-radius: 0.75rem;
+padding: 1rem;
+margin-bottom: 1rem;
+}
+
+.additional-info-item:last-child {
+margin-bottom: 0;
+}
+
+.additional-info-header {
+font-size: 1rem;
+font-weight: 600;
+color: #fbbf24;
+margin-bottom: 0.5rem;
+}
+
+.additional-info-content {
+color: #fde68a;
+font-size: 0.9rem;
+line-height: 1.4;
+}
+
+.agent-only-badge {
+background: rgba(239, 68, 68, 0.1);
+border: 1px solid rgba(239, 68, 68, 0.3);
+border-radius: 0.3rem;
+padding: 0.2rem 0.5rem;
+font-size: 0.7rem;
+color: #ef4444;
+font-weight: 600;
+text-transform: uppercase;
+margin-bottom: 0.5rem;
+display: inline-block;
+}
+
+/* Pests Not Covered Alert */
+.pests-not-covered-alert {
+background: rgba(239, 68, 68, 0.1);
+border: 1px solid #ef4444;
+border-radius: 1rem;
+padding: 1rem;
+margin: 1rem 2rem;
+display: none;
+}
+
+.pests-not-covered-alert.show {
+display: block;
+}
+
+.alert-title {
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+color: #f87171;
+font-size: 1.1rem;
+margin-bottom: 0.5rem;
+}
+
+.alert-content {
+color: #fecaca;
+font-size: 0.9rem;
+}
+
+.cyber-btn {
+background: linear-gradient(45deg, #1e40af, #3b82f6);
+border: 1px solid #60a5fa;
+color: white;
+padding: 0.75rem 1.5rem;
+border-radius: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+text-decoration: none;
+transition: all 0.3s ease;
+position: relative;
+overflow: hidden;
+}
+
+.cyber-btn:hover {
+background: linear-gradient(45deg, #3b82f6, #60a5fa);
+box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+transform: translateY(-2px);
+}
+
+/* Main Layout */
+.main-container {
+display: grid;
+grid-template-columns: 200px 1fr 300px;
+gap: 2rem;
+padding: 2rem;
+max-width: 1600px;
+margin: 0 auto;
+min-height: calc(100vh - 120px);
+}
+
+/* Navigation Sidebar */
+.nav-sidebar {
+background: rgba(30, 41, 59, 0.8);
+border: 1px solid #334155;
+border-radius: 1rem;
+padding: 1.5rem;
+height: fit-content;
+backdrop-filter: blur(10px);
+}
+
+.nav-btn {
+display: block;
+width: 100%;
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+color: #e2e8f0;
+padding: 1rem;
+margin-bottom: 0.75rem;
+border-radius: 0.75rem;
+font-family: 'Inter', sans-serif;
+font-weight: 500;
+cursor: pointer;
+transition: all 0.3s ease;
+text-align: left;
+}
+
+.nav-btn:hover {
+background: linear-gradient(135deg, #334155, #475569);
+border-color: #3b82f6;
+color: #60a5fa;
+transform: translateX(5px);
+}
+
+.nav-btn.active {
+background: linear-gradient(135deg, #1e40af, #3b82f6);
+border-color: #60a5fa;
+color: white;
+}
+
+/* Content Area */
+.content-area {
+background: rgba(30, 41, 59, 0.6);
+border: 1px solid #334155;
+border-radius: 1rem;
+padding: 2rem;
+backdrop-filter: blur(10px);
+}
+
+.content-section {
+display: none;
+}
+
+.content-section.active {
+display: block;
+}
+
+.services-grid {
+display: grid;
+gap: 1.5rem;
+}
+
+.service-card {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+border-radius: 1rem;
+padding: 1.5rem;
+transition: all 0.3s ease;
+position: relative;
+}
+
+.service-card:hover {
+border-color: #3b82f6;
+box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+transform: translateY(-2px);
+}
+
+.service-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 0.75rem;
+}
+
+.service-name {
+font-size: 1.25rem;
+font-weight: 600;
+color: #60a5fa;
+margin: 0;
+flex: 1;
+}
+
+.service-frequency {
+background: rgba(16, 185, 129, 0.1);
+border: 1px solid rgba(16, 185, 129, 0.3);
+border-radius: 0.5rem;
+padding: 0.25rem 0.75rem;
+font-size: 0.8rem;
+font-weight: 600;
+color: #10b981;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+white-space: nowrap;
+margin-left: 1rem;
+}
+
+.service-description {
+color: #cbd5e1;
+margin-bottom: 1rem;
+line-height: 1.6;
+}
+
+.service-pricing {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+gap: 0.75rem;
+margin-top: 1rem;
+}
+
+.price-item {
+background: rgba(15, 23, 42, 0.5);
+padding: 0.5rem;
+border-radius: 0.5rem;
+border: 1px solid #334155;
+}
+
+.price-label {
+font-size: 0.7rem;
+color: #94a3b8;
+text-transform: uppercase;
+margin-bottom: 0.25rem;
+}
+
+.price-value {
+font-weight: 600;
+color: #10b981;
+font-size: 0.9rem;
+}
+
+/* Tools Sidebar */
+.tools-sidebar {
+background: rgba(30, 41, 59, 0.8);
+border: 1px solid #334155;
+border-radius: 1rem;
+padding: 1.5rem;
+height: fit-content;
+backdrop-filter: blur(10px);
+}
+
+.tool-section {
+margin-bottom: 2rem;
+}
+
+.tool-title {
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.1rem;
+font-weight: 600;
+color: #60a5fa;
+margin-bottom: 1rem;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+
+.tool-input {
+width: 100%;
+background: rgba(15, 23, 42, 0.7);
+border: 1px solid #334155;
+border-radius: 0.5rem;
+padding: 0.75rem;
+color: #e2e8f0;
+font-family: 'Inter', sans-serif;
+margin-bottom: 0.75rem;
+}
+
+.tool-input:focus {
+outline: none;
+border-color: #3b82f6;
+box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tool-btn {
+width: 100%;
+background: linear-gradient(135deg, #1e40af, #3b82f6);
+border: none;
+color: white;
+padding: 0.75rem;
+border-radius: 0.5rem;
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+margin-bottom: 0.75rem;
+}
+
+.tool-btn:hover {
+background: linear-gradient(135deg, #3b82f6, #60a5fa);
+transform: translateY(-1px);
+}
+
+.tool-result {
+background: rgba(15, 23, 42, 0.5);
+border: 1px solid #334155;
+border-radius: 0.5rem;
+padding: 0.75rem;
+color: #10b981;
+font-weight: 500;
+min-height: 2.5rem;
+display: flex;
+align-items: center;
+}
+
+.time-display {
+background: rgba(15, 23, 42, 0.7);
+border: 1px solid #334155;
+border-radius: 0.5rem;
+padding: 0.75rem;
+margin-bottom: 0.5rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.time-zone {
+font-family: 'Rajdhani', sans-serif;
+font-weight: 600;
+color: #94a3b8;
+}
+
+.time-value {
+font-family: monospace;
+color: #60a5fa;
+font-weight: 600;
+}
+
+/* Bulletin and Pests Not Covered */
+.info-section {
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+border-radius: 1rem;
+padding: 1.5rem;
+margin-bottom: 1.5rem;
+}
+
+.info-title {
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.25rem;
+font-weight: 600;
+color: #60a5fa;
+margin-bottom: 1rem;
+}
+
+.info-content {
+color: #cbd5e1;
+line-height: 1.6;
+white-space: pre-line;
+}
+
+/* Office Info Modal */
+.modal {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.8);
+z-index: 1000;
+}
+
+.modal-content {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: linear-gradient(135deg, #1e293b, #334155);
+border: 1px solid #475569;
+border-radius: 1rem;
+padding: 2rem;
+max-width: 500px;
+width: 90%;
+max-height: 80vh;
+overflow-y: auto;
+}
+
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1.5rem;
+}
+
+.modal-title {
+font-family: 'Rajdhani', sans-serif;
+font-size: 1.5rem;
+font-weight: 600;
+color: #60a5fa;
+}
+
+.close-btn {
+background: none;
+border: none;
+color: #94a3b8;
+font-size: 1.5rem;
+cursor: pointer;
+padding: 0.25rem;
+}
+
+.close-btn:hover {
+color: #e2e8f0;
+}
+
+.office-info {
+display: grid;
+gap: 1rem;
+}
+
+.office-item {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+padding: 0.75rem;
+background: rgba(15, 23, 42, 0.5);
+border-radius: 0.5rem;
+border: 1px solid #334155;
+}
+
+.office-label {
+font-weight: 600;
+color: #94a3b8;
+margin-right: 1rem;
+}
+
+.office-value {
+color: #e2e8f0;
+text-align: right;
+white-space: pre-line;
+}
+
+/* Loading States */
+.loading {
+text-align: center;
+padding: 3rem;
+color: #94a3b8;
+font-size: 1.1rem;
+}
+
+.error {
+text-align: center;
+padding: 3rem;
+color: #ef4444;
+font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+.main-container {
+grid-template-columns: 180px 1fr 250px;
+gap: 1.5rem;
+padding: 1.5rem;
+}
+}
+
+@media (max-width: 768px) {
+.main-container {
+grid-template-columns: 1fr;
+gap: 1rem;
+padding: 1rem;
+}
+
+.header-content {
+flex-direction: column;
+gap: 1rem;
+text-align: center;
+}
+
+.time-weather-container {
+flex-direction: column;
+}
+
+.header-actions {
+flex-wrap: wrap;
+justify-content: center;
+}
+
+.company-info h1 {
+font-size: 2rem;
+}
+}
+</style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+<div class="header-content">
+<div class="company-info">
+<h1 id="companyName">Loading...</h1>
+<div class="location">
+<span id="locationInfo">Loading location...</span>
+</div>
+</div>
+<div class="time-weather-container">
+<div class="current-time" id="currentTime">--:-- --</div>
+<div class="weather-forecast" id="weatherForecast">
+<div class="weather-forecast-content" id="weatherContent">
+Loading weather...
+</div>
+</div>
+</div>
+<div class="header-actions">
+<a href="#" id="websiteLink" class="cyber-btn" target="_blank">Website</a>
+<a href="#" id="fieldRoutesLink" class="cyber-btn" target="_blank">FieldRoutes</a>
+<button class="cyber-btn" onclick="openOfficeModal()">Office Info</button>
+</div>
+</div>
+</header>
+
+<!-- Search Section -->
+<div class="search-section">
+<div class="search-container">
+<input type="text" class="search-input" id="pestSearch" placeholder="Search for pests (e.g., ants, roaches, spiders...)">
+<button class="search-btn" onclick="searchPests()">Search</button>
+<button class="clear-search-btn" onclick="clearSearch()">Clear</button>
+</div>
+<div class="search-results" id="searchResults"></div>
+</div>
+
+<!-- Pests Not Covered Alert -->
+<div class="pests-not-covered-alert" id="pestsNotCoveredAlert">
+<div class="alert-title">⚠️ Pest Not Covered</div>
+<div class="alert-content" id="alertContent"></div>
+</div>
+
+<!-- Main Container -->
+<div class="main-container">
+<!-- Navigation Sidebar -->
+<nav class="nav-sidebar">
+<button class="nav-btn active" onclick="showSection('services')">Services</button>
+<button class="nav-btn" onclick="showSection('policies')">Policies</button>
+<button class="nav-btn" onclick="showSection('technicians')">Scheduling</button>
+<button class="nav-btn" onclick="showSection('bulletin')">Bulletin</button>
+</nav>
+
+<!-- Content Area -->
+<main class="content-area">
+<!-- Loading State -->
+<div id="loadingState" class="loading">
+<div>Loading client profile...</div>
+</div>
+
+<!-- Error State -->
+<div id="errorState" class="error" style="display: none;">
+<div>Error loading profile data</div>
+</div>
+
+<!-- Services Section -->
+<div id="servicesSection" class="content-section">
+<div id="servicesGrid" class="services-grid">
+<!-- Services will be populated here -->
+</div>
+</div>
+
+<!-- Technicians Section -->
+<div id="techniciansSection" class="content-section">
+<div id="techniciansGrid" class="services-grid">
+<!-- Technicians will be populated here -->
+</div>
+</div>
+
+<!-- Policies Section -->
+<div id="policiesSection" class="content-section">
+<div id="policiesGrid" class="services-grid">
+<!-- Policies will be populated here -->
+</div>
+</div>
+
+<!-- Service Areas Section -->
+<div id="serviceAreasSection" class="content-section">
+<div id="serviceAreasGrid" class="services-grid">
+<!-- Service areas will be populated here -->
+</div>
+</div>
+
+<!-- Bulletin Section -->
+<div id="bulletinSection" class="content-section">
+<div class="info-section">
+<h2 class="info-title">Company Bulletin</h2>
+<div class="info-content" id="bulletinContent">
+<!-- Bulletin content will be populated here -->
+</div>
+</div>
+</div>
+
+<!-- Pests Not Covered Section -->
+<div id="pestsNotCoveredSection" class="content-section">
+<div class="info-section">
+<h2 class="info-title">Pests Not Covered</h2>
+<div class="info-content" id="pestsNotCoveredContent">
+<!-- Pests not covered content will be populated here -->
+</div>
+</div>
+</div>
+</main>
+
+<!-- Tools Sidebar -->
+<aside class="tools-sidebar">
+<!-- Zip Code Lookup -->
+<div class="tool-section">
+<div class="tool-title">Service Area Check</div>
+<input type="text" class="tool-input" id="zipInput" placeholder="Enter ZIP code" maxlength="5">
+<button class="tool-btn" onclick="checkZip()">Check Area</button>
+<div class="tool-result" id="zipResult">Enter ZIP to check</div>
+</div>
+
+<!-- Acreage Converter -->
+<div class="tool-section">
+<div class="tool-title">Acreage Converter</div>
+<input type="number" class="tool-input" id="acresInput" placeholder="Enter acres" step="0.01">
+<button class="tool-btn" onclick="convertAcres()">Convert to Sq Ft</button>
+<div class="tool-result" id="conversionResult">Enter acres to convert</div>
+</div>
+
+<!-- Current Time Zone -->
+<div class="tool-section" id="currentTimeZoneSection">
+<div class="tool-title">Current Time</div>
+<div class="time-display">
+<span class="time-zone" id="clientTimeZoneName">Central</span>
+<span class="time-value" id="clientCurrentTime">--:--</span>
+</div>
+</div>
+</aside>
+</div>
+
+<!-- Office Info Modal -->
+<div id="officeModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 class="modal-title">Office Information</h3>
+<button class="close-btn" onclick="closeOfficeModal()">&times;</button>
+</div>
+<div class="office-info" id="officeInfo">
+<!-- Office information will be populated here -->
+</div>
+</div>
+</div>
+
+<script>
+let clientData = {};
+
+// Load client data from URL parameters or use sample data
+function loadClientData() {
+const urlParams = new URLSearchParams(window.location.search);
+
+// Check if data is passed from Wix
+if (urlParams.has('companyName')) {
+clientData = {
+companyName: urlParams.get('companyName') || 'Unknown Company',
+location: urlParams.get('location') || '',
+timezone: urlParams.get('timezone') || '',
+officeInfo: {
+phone: urlParams.get('phone') || '',
+email: urlParams.get('email') || '',
+website: urlParams.get('website') || '',
+fieldRoutesLink: urlParams.get('fieldRoutesLink') || '',
+physicalAddress: urlParams.get('address') || '',
+officeHours: urlParams.get('hours') || ''
+},
+bulletin: urlParams.get('bulletin') || '',
+pestsNotCovered: urlParams.get('pestsNotCovered') || '',
+services: [],
+technicians: [],
+policies: [],
+serviceAreas: []
+};
+
+// Parse services JSON if provided
+const servicesParam = urlParams.get('services');
+if (servicesParam) {
+try {
+clientData.services = JSON.parse(decodeURIComponent(servicesParam));
+} catch (e) {
+console.error('Error parsing services:', e);
+clientData.services = [];
+}
+}
+
+// Parse technicians JSON if provided
+const techniciansParam = urlParams.get('technicians');
+if (techniciansParam) {
+try {
+clientData.technicians = JSON.parse(decodeURIComponent(techniciansParam));
+} catch (e) {
+console.error('Error parsing technicians:', e);
+clientData.technicians = [];
+}
+}
+
+// Parse policies JSON if provided
+const policiesParam = urlParams.get('policies');
+if (policiesParam) {
+try {
+clientData.policies = JSON.parse(decodeURIComponent(policiesParam));
+} catch (e) {
+console.error('Error parsing policies:', e);
+clientData.policies = [];
+}
+}
+
+// Parse service areas JSON if provided
+const serviceAreasParam = urlParams.get('serviceAreas');
+if (serviceAreasParam) {
+try {
+clientData.serviceAreas = JSON.parse(decodeURIComponent(serviceAreasParam));
+} catch (e) {
+console.error('Error parsing service areas:', e);
+clientData.serviceAreas = [];
+}
+}
+} else {
+// Fallback sample data for testing
+clientData = {
+companyName: "SOS Exterminating",
+location: "Dallas, TX",
+timezone: "Central",
+officeInfo: {
+phone: "(214) 555-4567",
+email: "dallas@sosexterminating.com",
+website: "https://sosexterminating.com",
+fieldRoutesLink: "https://fieldroutes.com",
+physicalAddress: "123 Main Street\nDallas, TX 75201",
+officeHours: "Monday-Friday: 8 AM - 5 PM"
+},
+bulletin: "This is test data - no Wix connection detected",
+pestsNotCovered: "Carpenter Ants, Bed Bugs, Termites (requires separate treatment)",
+services: [{
+name: "General Pest Control",
+description: "Comprehensive pest control service with multiple frequency options to meet your specific needs",
+serviceType: "General Pest Control",
+queueExt: "6884",
+productType: "General Pest Control",
+contract: "12 Months",
+guarantee: "90-day guarantee",
+duration: "45 minutes",
+billingFrequency: "After service completion",
+agentNote: "IMPORTANT: Always confirm property square footage before quoting. Ask about previous pest issues to recommend appropriate frequency.",
+subServices: [
+{
+name: "Monthly GPC",
+frequency: "Monthly",
+description: "Premium monthly pest control for maximum protection year-round",
+pests: "Ants, Roaches, Spiders, Crickets, Silverfish, Earwigs, Pill Bugs",
+contract: "12 Months",
+guarantee: "90-day guarantee",
+duration: "45-60 minutes",
+serviceType: "Monthly GPC",
+productType: "General Pest Control - Monthly",
+billingFrequency: "Monthly after service",
+agentNote: "Monthly service recommended for high pest pressure areas or customers with pest phobia. Emphasize year-round protection.",
+pricingTiers: [
+{
+sqftMin: 0,
+sqftMax: 2500,
+firstPrice: "$135.00",
+recurringPrice: "$130.00",
+serviceType: "Monthly GPC"
+},
+{
+sqftMin: 2501,
+sqftMax: 3000,
+firstPrice: "$145.00",
+recurringPrice: "$140.00",
+serviceType: "Monthly GPC"
+},
+{
+sqftMin: 3001,
+sqftMax: 4000,
+firstPrice: "$155.00",
+recurringPrice: "$150.00",
+serviceType: "Monthly GPC"
+},
+{
+sqftMin: 4001,
+sqftMax: 999999,
+firstPrice: "Requires Client Follow-Up",
+recurringPrice: "",
+serviceType: "Monthly GPC"
+}
+]
+},
+{
+name: "Quarterly GPC",
+frequency: "Quarterly",
+description: "Standard quarterly pest control service with seasonal treatments",
+pests: "Ants, Roaches, Spiders, Crickets, Silverfish",
+contract: "12 Months",
+guarantee: "90-day guarantee",
+duration: "45 minutes",
+serviceType: "Quarterly GPC",
+productType: "General Pest Control - Quarterly",
+billingFrequency: "Quarterly after service",
+agentNote: "Most popular option. Good for moderate pest pressure. Remind customers about seasonal variations in pest activity.",
+pricingTiers: [
+{
+sqftMin: 0,
+sqftMax: 2500,
+firstPrice: "$125.00",
+recurringPrice: "$120.00",
+serviceType: "Quarterly GPC"
+},
+{
+sqftMin: 2501,
+sqftMax: 3000,
+firstPrice: "$130.00",
+recurringPrice: "$125.00",
+serviceType: "Quarterly GPC"
+},
+{
+sqftMin: 3001,
+sqftMax: 4000,
+firstPrice: "$140.00",
+recurringPrice: "$135.00",
+serviceType: "Quarterly GPC"
+},
+{
+sqftMin: 4001,
+sqftMax: 999999,
+firstPrice: "Requires Client Follow-Up",
+recurringPrice: "",
+serviceType: "Quarterly GPC"
+}
+]
+},
+{
+name: "Bi-Monthly GPC",
+frequency: "Bi-Monthly",
+description: "Enhanced bi-monthly service for moderate to high pest pressure areas",
+pests: "Ants, Roaches, Spiders, Crickets, Silverfish, Centipedes",
+contract: "12 Months",
+guarantee: "90-day guarantee",
+duration: "45-50 minutes",
+serviceType: "Bi-Monthly GPC",
+productType: "General Pest Control - Bi-Monthly",
+billingFrequency: "Bi-monthly after service",
+agentNote: "Good middle-ground option. Recommend for customers who want more than quarterly but find monthly excessive.",
+pricingTiers: [
+{
+sqftMin: 0,
+sqftMax: 2500,
+firstPrice: "$130.00",
+recurringPrice: "$125.00",
+serviceType: "Bi-Monthly GPC"
+},
+{
+sqftMin: 2501,
+sqftMax: 3000,
+firstPrice: "$138.00",
+recurringPrice: "$133.00",
+serviceType: "Bi-Monthly GPC"
+},
+{
+sqftMin: 3001,
+sqftMax: 4000,
+firstPrice: "$148.00",
+recurringPrice: "$143.00",
+serviceType: "Bi-Monthly GPC"
+},
+{
+sqftMin: 4001,
+sqftMax: 999999,
+firstPrice: "Requires Client Follow-Up",
+recurringPrice: "",
+serviceType: "Bi-Monthly GPC"
+}
+]
+}
+]
+}, {
+name: "Monthly Mosquito Service",
+description: "Monthly mosquito, flea, and tick control",
+contract: "Seasonal",
+guarantee: "30-day guarantee",
+duration: "30 minutes",
+pests: "Mosquitoes, Fleas, Ticks",
+serviceType: "Monthly Mosquito",
+queueExt: "6884",
+productType: "Mosquito - Flea - Tick",
+frequency: "Monthly",
+billingFrequency: "After service completion",
+agentNote: "Seasonal service typically runs April through October. Emphasize outdoor living enhancement and tick disease prevention.",
+pricingTiers: [
+{
+sqftMin: 0,
+sqftMax: 10890,
+firstPrice: "$108.00",
+recurringPrice: "$108.00",
+serviceType: "Monthly Mosquito"
+},
+{
+sqftMin: 10891,
+sqftMax: 21780,
+firstPrice: "$120.00",
+recurringPrice: "$118.00",
+serviceType: "Monthly Mosquito"
+},
+{
+sqftMin: 21781,
+sqftMax: 32680,
+firstPrice: "$132.00",
+recurringPrice: "$128.00",
+serviceType: "Monthly Mosquito"
+},
+{
+sqftMin: 32681,
+sqftMax: 43560,
+firstPrice: "$144.00",
+recurringPrice: "$138.00",
+serviceType: "Monthly Mosquito"
+},
+{
+sqftMin: 43561,
+sqftMax: 999999,
+firstPrice: "Requires Client Follow-Up",
+recurringPrice: "",
+serviceType: "Monthly Mosquito"
+}
+]
+}],
+technicians: [{
+name: "John Smith",
+phone: "(214) 555-0001",
+email: "john@sosexterminating.com",
+specializations: "General Pest Control",
+certifications: "Licensed PCO",
+experience: "5 years",
+territory: "North Dallas"
+}],
+policies: [{
+category: "Service Coverage",
+type: "guarantee",
+title: "Service Guarantee Policy",
+description: "We guarantee our service for 90 days on general pest control treatments. If pests return within the guarantee period, we will return at no additional charge.",
+options: ["30 days", "60 days", "90 days"],
+default: "90 days",
+applicableServices: ["General Pest Control", "Monthly GPC", "Quarterly GPC"]
+}, {
+category: "Service Coverage",
+type: "coverage",
+title: "Pest Coverage Limitations",
+description: "Standard services cover common household pests. Specialized pests require additional treatments and separate contracts.",
+details: "Covered: Ants, Roaches, Spiders, Crickets, Silverfish. Not Covered: Bed Bugs, Termites, Carpenter Ants (require specialized treatment)",
+default: "Standard Coverage"
+}, {
+category: "Service Coverage",
+type: "treatment",
+title: "Re-treatment Policy",
+description: "If pests return within guarantee period, we provide free re-treatment. Customer must contact office within guarantee timeframe.",
+options: ["Same day callback", "Next business day", "Within 48 hours"],
+default: "Next business day"
+}, {
+category: "Scheduling and Operations",
+type: "scheduling",
+title: "Appointment Scheduling",
+description: "Standard appointments are scheduled during business hours. Emergency services available for additional fee.",
+options: ["Morning (8AM-12PM)", "Afternoon (12PM-5PM)", "Emergency (After hours)"],
+default: "Morning (8AM-12PM)",
+additionalInfo: "24-hour notice required for cancellations to avoid fees"
+}, {
+category: "Scheduling and Operations",
+type: "access",
+title: "Property Access Policy",
+description: "Customer must provide access to all treatment areas. Locked areas cannot be treated and may void guarantee.",
+default: "Full property access required",
+details: "Includes: Interior, exterior, basement, attic, garage, storage areas"
+}, {
+category: "Scheduling and Operations",
+type: "weather",
+title: "Weather Policy",
+description: "Exterior treatments may be postponed due to inclement weather. Interior treatments proceed as scheduled.",
+options: ["Reschedule automatically", "Proceed with interior only", "Customer choice"],
+default: "Reschedule automatically"
+}, {
+category: "Service Policies",
+type: "preparation",
+title: "Pre-Service Preparation",
+description: "Customer preparation requirements to ensure effective treatment and safety.",
+details: "Remove pets during treatment, clear access to baseboards, secure food items, provide access to all areas",
+default: "Standard preparation required"
+}, {
+category: "Service Policies",
+type: "safety",
+title: "Safety and Chemical Policy",
+description: "All treatments use EPA-approved materials. Safety data sheets available upon request.",
+details: "Minimum 2-4 hour re-entry time for interior treatments. Pets and children should avoid treated areas during this period.",
+default: "EPA-approved materials only"
+}, {
+category: "Service Policies",
+type: "modification",
+title: "Service Modification Policy",
+description: "Service frequency and scope can be modified with 30-day notice. Contract terms may apply.",
+options: ["Increase frequency", "Decrease frequency", "Add services", "Suspend service"],
+default: "30-day notice required"
+}, {
+category: "Payment and Financial",
+type: "payment",
+title: "Payment Terms",
+description: "Payment is due upon service completion unless alternative arrangements are made.",
+options: ["Due on service", "Net 15", "Net 30", "Monthly billing"],
+default: "Due on service"
+}, {
+category: "Payment and Financial",
+type: "cancellation",
+title: "Cancellation Policy",
+description: "Contract cancellations require 30-day written notice. Early termination fees may apply.",
+details: "Cancellation fee: $75 for contracts cancelled before 12 months. No fee after 12 months with proper notice.",
+default: "30-day written notice"
+}, {
+category: "Payment and Financial",
+type: "pricing",
+title: "Price Change Policy",
+description: "Prices may be adjusted annually with 60-day advance notice to customer.",
+options: ["Annual adjustment", "No increases during contract", "Market rate adjustment"],
+default: "Annual adjustment"
+}, {
+category: "Additional Information",
+type: "instructions",
+title: "Special Service Instructions",
+description: "Important notes for agents regarding service delivery and customer communication.",
+details: "Always confirm square footage before quoting. Ask about pets, children, and special health considerations. Verify access to all areas before scheduling.",
+isAgentOnly: true
+}, {
+category: "Additional Information",
+type: "compliance",
+title: "Regulatory Compliance",
+description: "All services performed in compliance with state and local regulations.",
+details: "Licensed technicians only. All treatments documented. State license #PCO-2024-TX-1234",
+default: "Full regulatory compliance"
+}],
+serviceAreas: [{
+zip: "75001",
+city: "Dallas",
+state: "TX",
+branch: "Dallas North Branch",
+territory: "North Dallas",
+inService: true
+}]
+};
+}
+
+populateClientData();
+}
+
+// Populate the page with client data
+function populateClientData() {
+// Hide loading, show content
+document.getElementById('loadingState').style.display = 'none';
+
+// Update header
+document.getElementById('companyName').textContent = clientData.companyName;
+document.getElementById('locationInfo').textContent = clientData.location;
+
+// Update current time for client's timezone
+updateCurrentTime(clientData.timezone);
+
+// Load weather forecast
+loadWeatherForecast(clientData.location);
+
+// Update links
+if (clientData.officeInfo.website) {
+document.getElementById('websiteLink').href = clientData.officeInfo.website;
+}
+if (clientData.officeInfo.fieldRoutesLink) {
+document.getElementById('fieldRoutesLink').href = clientData.officeInfo.fieldRoutesLink;
+}
+
+// Populate services
+populateServices();
+
+// Populate technicians
+populateTechnicians();
+
+// Populate policies
+populatePolicies();
+
+// Populate service areas
+populateServiceAreas();
+
+// Populate bulletin
+document.getElementById('bulletinContent').textContent = 
+clientData.bulletin || 'No bulletin information available.';
+
+// Populate pests not covered
+document.getElementById('pestsNotCoveredContent').textContent = 
+clientData.pestsNotCovered || 'No pest exclusions listed.';
+
+// Show services section by default
+showSection('services');
+}
+
+// Weather functions
+async function loadWeatherForecast(location) {
+    try {
+        // Get coordinates for the location
+        const geoResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`);
+        const geoData = await geoResponse.json();
+        
+        if (geoData.length === 0) {
+            throw new Error('Location not found');
+        }
+        
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
+        
+        // Get weather forecast
+        const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=7&temperature_unit=fahrenheit`);
+        const weatherData = await weatherResponse.json();
+        
+        displayWeatherForecast(weatherData.daily);
+    } catch (error) {
+        console.error('Error loading weather:', error);
+        document.getElementById('weatherContent').innerHTML = 'Weather unavailable';
+    }
+}
+
+function displayWeatherForecast(dailyData) {
+    const weatherContent = document.getElementById('weatherContent');
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    let forecastHTML = '';
+    
+    for (let i = 0; i < 7; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() + i);
+        const dayName = days[date.getDay()];
+        
+        const maxTemp = Math.round(dailyData.temperature_2m_max[i]);
+        const minTemp = Math.round(dailyData.temperature_2m_min[i]);
+        const weatherCode = dailyData.weather_code[i];
+        const weatherDesc = getWeatherDescription(weatherCode);
+        
+        forecastHTML += `
+            <div class="weather-day">
+                <div class="weather-day-name">${dayName}</div>
+                <div class="weather-temp">${maxTemp}°</div>
+                <div class="weather-desc">${weatherDesc}</div>
+            </div>
+        `;
+    }
+    
+    weatherContent.innerHTML = forecastHTML;
+}
+
+function getWeatherDescription(code) {
+    const weatherCodes = {
+        0: '☀️',
+        1: '🌤️',
+        2: '⛅',
+        3: '☁️',
+        45: '🌫️',
+        48: '🌫️',
+        51: '🌦️',
+        53: '🌦️',
+        55: '🌦️',
+        61: '🌧️',
+        63: '🌧️',
+        65: '🌧️',
+        71: '🌨️',
+        73: '🌨️',
+        75: '🌨️',
+        95: '⛈️'
+    };
+    return weatherCodes[code] || '🌤️';
+}
+
+// Populate services grid
+function populateServices() {
+const servicesGrid = document.getElementById('servicesGrid');
+
+if (!clientData.services || clientData.services.length === 0) {
+servicesGrid.innerHTML = '<div class="info-section"><div class="info-content">No services available.</div></div>';
+return;
+}
+
+servicesGrid.innerHTML = '';
+clientData.services.forEach(service => {
+const serviceCard = createServiceCard(service);
+servicesGrid.appendChild(serviceCard);
+});
+}
+
+// Create service card element
+function createServiceCard(service) {
+const serviceCard = document.createElement('div');
+serviceCard.className = 'service-card';
+
+// Generate unique ID for this service's calculator
+const serviceId = `service_${Math.random().toString(36).substr(2, 9)}`;
+serviceCard.setAttribute('data-service-id', serviceId);
+
+// Check if this service has subservices
+if (service.subServices && service.subServices.length > 0) {
+// Service with subservices
+serviceCard.innerHTML = `
+<div class="service-header">
+<div class="service-name">${service.name || 'Unnamed Service'}</div>
+<div class="service-frequency">Multiple Options</div>
+</div>
+<div class="service-description">${service.description || 'No description available.'}</div>
+
+${service.agentNote ? `
+<!-- Agent Note for Main Service -->
+<div class="agent-note">
+<div class="agent-note-title">Agent Note</div>
+<div class="agent-note-content">${service.agentNote}</div>
+</div>
+` : ''}
+
+<!-- Service Details -->
+<div class="service-details">
+<div class="service-details-grid">
+<div class="detail-item">
+<div class="detail-label">Contract</div>
+<div class="detail-value">${service.contract || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Guarantee</div>
+<div class="detail-value">${service.guarantee || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Duration</div>
+<div class="detail-value">${service.duration || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Service Type</div>
+<div class="detail-value">${service.serviceType || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Product Type</div>
+<div class="detail-value">${service.productType || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Billing Frequency</div>
+<div class="detail-value">${service.billingFrequency || 'N/A'}</div>
+</div>
+</div>
+</div>
+
+<!-- Subservices -->
+<div class="subservices-container">
+${service.subServices.map((subService, index) => {
+const subServiceId = `${serviceId}_sub_${index}`;
+return `
+<div class="subservice-item">
+<div class="subservice-header">
+<div class="subservice-name">${subService.name}</div>
+<div class="subservice-frequency">${subService.frequency}</div>
+</div>
+<div class="subservice-description">${subService.description}</div>
+
+${subService.agentNote ? `
+<!-- Agent Note for Subservice -->
+<div class="agent-note">
+<div class="agent-note-title">Agent Note</div>
+<div class="agent-note-content">${subService.agentNote}</div>
+</div>
+` : ''}
+
+<div class="subservice-pests">
+<div class="subservice-pests-title">Pests Covered</div>
+<div class="subservice-pests-list pests-covered">${subService.pests}</div>
+</div>
+
+<!-- Subservice Details -->
+<div class="subservice-details">
+<div class="subservice-details-grid">
+<div class="subservice-detail-item">
+<div class="subservice-detail-label">Contract</div>
+<div class="subservice-detail-value">${subService.contract || 'N/A'}</div>
+</div>
+<div class="subservice-detail-item">
+<div class="subservice-detail-label">Guarantee</div>
+<div class="subservice-detail-value">${subService.guarantee || 'N/A'}</div>
+</div>
+<div class="subservice-detail-item">
+<div class="subservice-detail-label">Duration</div>
+<div class="subservice-detail-value">${subService.duration || 'N/A'}</div>
+</div>
+<div class="subservice-detail-item">
+<div class="subservice-detail-label">Service Type</div>
+<div class="subservice-detail-value">${subService.serviceType || 'N/A'}</div>
+</div>
+<div class="subservice-detail-item">
+<div class="subservice-detail-label">Product Type</div>
+<div class="subservice-detail-value">${subService.productType || 'N/A'}</div>
+</div>
+<div class="subservice-detail-item">
+<div class="subservice-detail-label">Billing Frequency</div>
+<div class="subservice-detail-value">${subService.billingFrequency || 'N/A'}</div>
+</div>
+</div>
+</div>
+
+<!-- Pricing Calculator for Subservice -->
+<div class="pricing-calculator">
+<div class="calculator-title">
+🧮 ${subService.name} Pricing Calculator
+</div>
+<div class="sqft-input-container">
+<input type="number" class="sqft-input" id="sqft_${subServiceId}" placeholder="Enter square footage" min="0" step="1">
+<button class="calculate-btn" onclick="calculateSubServicePricing('${subServiceId}', ${index})">Calculate</button>
+</div>
+<div class="pricing-result" id="result_${subServiceId}">
+<div class="pricing-display" id="pricing_${subServiceId}">
+<!-- Calculated pricing will appear here -->
+</div>
+<div class="sqft-range-info" id="range_${subServiceId}">
+<!-- Square footage range info will appear here -->
+</div>
+</div>
+</div>
+</div>
+`;
+}).join('')}
+</div>
+`;
+
+// Store subservices pricing data on the element
+serviceCard._subServicesData = service.subServices || [];
+} else {
+// Regular service without subservices
+serviceCard.innerHTML = `
+<div class="service-header">
+<div class="service-name">${service.name || 'Unnamed Service'}</div>
+<div class="service-frequency">${service.frequency || 'N/A'}</div>
+</div>
+<div class="service-description">${service.description || 'No description available.'}</div>
+
+${service.agentNote ? `
+<!-- Agent Note -->
+<div class="agent-note">
+<div class="agent-note-title">Agent Note</div>
+<div class="agent-note-content">${service.agentNote}</div>
+</div>
+` : ''}
+
+<!-- Pests Covered Section -->
+<div class="pests-covered-section">
+<div class="pests-covered-title">Pests Covered</div>
+<div class="pests-covered-list pests-covered">${service.pests || 'N/A'}</div>
+</div>
+
+<!-- Service Details -->
+<div class="service-details">
+<div class="service-details-grid">
+<div class="detail-item">
+<div class="detail-label">Contract</div>
+<div class="detail-value">${service.contract || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Guarantee</div>
+<div class="detail-value">${service.guarantee || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Duration</div>
+<div class="detail-value">${service.duration || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Service Type</div>
+<div class="detail-value">${service.serviceType || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Product Type</div>
+<div class="detail-value">${service.productType || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Billing Frequency</div>
+<div class="detail-value">${service.billingFrequency || 'N/A'}</div>
+</div>
+</div>
+</div>
+
+<!-- Pricing Calculator -->
+<div class="pricing-calculator">
+<div class="calculator-title">
+🧮 Pricing Calculator
+</div>
+<div class="sqft-input-container">
+<input type="number" class="sqft-input" id="sqft_${serviceId}" placeholder="Enter square footage" min="0" step="1">
+<button class="calculate-btn" onclick="calculatePricing('${serviceId}')">Calculate</button>
+</div>
+<div class="pricing-result" id="result_${serviceId}">
+<div class="pricing-display" id="pricing_${serviceId}">
+<!-- Calculated pricing will appear here -->
+</div>
+<div class="sqft-range-info" id="range_${serviceId}">
+<!-- Square footage range info will appear here -->
+</div>
+</div>
+</div>
+`;
+
+// Store pricing data on the element for the calculator
+serviceCard._pricingData = service.pricingTiers || [];
+}
+
+return serviceCard;
+}
+
+// Populate technicians grid
+function populateTechnicians() {
+const techniciansGrid = document.getElementById('techniciansGrid');
+
+if (!clientData.technicians || clientData.technicians.length === 0) {
+techniciansGrid.innerHTML = '<div class="info-section"><div class="info-content">No technician information available.</div></div>';
+return;
+}
+
+techniciansGrid.innerHTML = '';
+clientData.technicians.forEach(tech => {
+const techCard = document.createElement('div');
+techCard.className = 'service-card';
+techCard.innerHTML = `
+<div class="service-name">${tech.name || 'Unknown Technician'}</div>
+<div class="service-pricing">
+<div class="price-item">
+<div class="price-label">Phone</div>
+<div class="price-value">${tech.phone || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Email</div>
+<div class="price-value">${tech.email || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Experience</div>
+<div class="price-value">${tech.experience || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Specializations</div>
+<div class="price-value">${tech.specializations || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Certifications</div>
+<div class="price-value">${tech.certifications || 'N/A'}</div>
+</div>
+<div class="price-item">
+<div class="price-label">Territory</div>
+<div class="price-value">${tech.territory || 'N/A'}</div>
+</div>
+</div>
+`;
+techniciansGrid.appendChild(techCard);
+});
+}
+
+// Populate policies grid
+function populatePolicies() {
+const policiesGrid = document.getElementById('policiesGrid');
+
+if (!clientData.policies || clientData.policies.length === 0) {
+policiesGrid.innerHTML = '<div class="info-section"><div class="info-content">No policy information available.</div></div>';
+return;
+}
+
+// Group policies by category
+const groupedPolicies = clientData.policies.reduce((groups, policy) => {
+const category = policy.category || 'Uncategorized';
+if (!groups[category]) groups[category] = [];
+groups[category].push(policy);
+return groups;
+}, {});
+
+// Separate additional information items for sidebar
+const additionalInfo = groupedPolicies['Additional Information'] || [];
+delete groupedPolicies['Additional Information'];
+
+// Create main policies container
+policiesGrid.innerHTML = `
+<div class="policies-container">
+<div class="policies-main">
+${Object.entries(groupedPolicies).map(([category, policies]) => `
+<div class="policy-group">
+<div class="policy-group-title">${category}</div>
+${policies.map(policy => createPolicyCard(policy)).join('')}
+</div>
+`).join('')}
+</div>
+<div class="policies-sidebar">
+${additionalInfo.length > 0 ? `
+<div class="additional-info-title">Additional Information</div>
+${additionalInfo.map(item => `
+<div class="additional-info-item">
+${item.isAgentOnly ? '<div class="agent-only-badge">Agent Only</div>' : ''}
+<div class="additional-info-header">${item.title}</div>
+<div class="additional-info-content">${item.description}</div>
+${item.details ? `<div class="additional-info-content" style="margin-top: 0.5rem; font-style: italic;">${item.details}</div>` : ''}
+</div>
+`).join('')}
+` : '<div class="additional-info-title">No Additional Information</div>'}
+</div>
+</div>
+`;
+}
+
+// Create individual policy card
+function createPolicyCard(policy) {
+return `
+<div class="policy-item">
+<div class="policy-header">
+<div class="policy-title">${policy.title}</div>
+<div class="policy-type-badge">${policy.type}</div>
+</div>
+<div class="policy-description">${policy.description}</div>
+
+${policy.details ? `
+<div class="policy-details">
+<div class="policy-details-title">Details</div>
+<div class="policy-details-content">${policy.details}</div>
+</div>
+` : ''}
+
+${policy.options ? `
+<div class="policy-options">
+${policy.options.map(option => `
+<div class="policy-option ${option === policy.default ? 'default' : ''}">${option}</div>
+`).join('')}
+</div>
+` : ''}
+
+${policy.default ? `
+<div class="policy-default">
+<span class="policy-default-label">Default:</span>
+<span class="policy-default-value">${policy.default}</span>
+</div>
+` : ''}
+
+${policy.applicableServices ? `
+<div class="applicable-services">
+<div class="applicable-services-title">Applicable Services</div>
+<div class="applicable-services-list">
+${policy.applicableServices.map(service => `
+<span class="service-tag">${service}</span>
+`).join('')}
+</div>
+</div>
+` : ''}
+
+${policy.additionalInfo ? `
+<div class="policy-details">
+<div class="policy-details-title">Additional Information</div>
+<div class="policy-details-content">${policy.additionalInfo}</div>
+</div>
+` : ''}
+</div>
+`;
+}
+
+// Populate service areas grid
+function populateServiceAreas() {
+const serviceAreasGrid = document.getElementById('serviceAreasGrid');
+
+if (!clientData.serviceAreas || clientData.serviceAreas.length === 0) {
+serviceAreasGrid.innerHTML = '<div class="info-section"><div class="info-content">No service area information available.</div></div>';
+return;
+}
+
+// Group by branch for better organization
+const groupedAreas = clientData.serviceAreas.reduce((groups, area) => {
+const branch = area.branch || 'Unknown Branch';
+if (!groups[branch]) groups[branch] = [];
+groups[branch].push(area);
+return groups;
+}, {});
+
+serviceAreasGrid.innerHTML = '';
+Object.entries(groupedAreas).forEach(([branch, areas]) => {
+const branchCard = document.createElement('div');
+branchCard.className = 'service-card';
+branchCard.innerHTML = `
+<div class="service-name">${branch}</div>
+<div class="service-pricing" style="grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));">
+${areas.map(area => `
+<div class="price-item">
+<div class="price-label">${area.zip}</div>
+<div class="price-value" style="color: ${area.inService ? '#10b981' : '#ef4444'}">
+${area.city}, ${area.state}
+</div>
+</div>
+`).join('')}
+</div>
+`;
+serviceAreasGrid.appendChild(branchCard);
+});
+}
+
+// Navigation functions
+function showSection(sectionName) {
+// Hide all sections
+document.querySelectorAll('.content-section').forEach(section => {
+section.classList.remove('active');
+});
+
+// Remove active class from all nav buttons
+document.querySelectorAll('.nav-btn').forEach(btn => {
+btn.classList.remove('active');
+});
+
+// Show target section
+document.getElementById(sectionName + 'Section').classList.add('active');
+
+// Set active nav button
+if (event && event.target) {
+event.target.classList.add('active');
+} else {
+// Find and activate the correct button if called programmatically
+const buttons = document.querySelectorAll('.nav-btn');
+buttons.forEach(btn => {
+if (btn.textContent.toLowerCase().includes(sectionName.toLowerCase())) {
+btn.classList.add('active');
+}
+});
+}
+}
+
+// Tool functions
+function convertAcres() {
+const acres = parseFloat(document.getElementById('acresInput').value);
+const resultDiv = document.getElementById('conversionResult');
+
+if (isNaN(acres) || acres <= 0) {
+resultDiv.textContent = 'Please enter a valid number';
+resultDiv.style.color = '#ef4444';
+return;
+}
+
+const sqft = Math.round(acres * 43560);
+resultDiv.textContent = `${sqft.toLocaleString()} sq ft`;
+resultDiv.style.color = '#10b981';
+}
+
+function checkZip() {
+const zip = document.getElementById('zipInput').value.trim();
+const resultDiv = document.getElementById('zipResult');
+
+if (!/^\d{5}$/.test(zip)) {
+resultDiv.textContent = 'Please enter a valid 5-digit ZIP';
+resultDiv.style.color = '#ef4444';
+return;
+}
+
+// Check against loaded service areas if available
+if (clientData.serviceAreas && clientData.serviceAreas.length > 0) {
+const foundArea = clientData.serviceAreas.find(area => area.zip === zip);
+if (foundArea) {
+resultDiv.textContent = `✓ ${foundArea.branch} - ${foundArea.city}, ${foundArea.state}`;
+resultDiv.style.color = foundArea.inService ? '#10b981' : '#ef4444';
+} else {
+resultDiv.textContent = '✗ Not in service area';
+resultDiv.style.color = '#ef4444';
+}
+} else {
+// Fallback sample zip lookup
+const serviceAreas = {
+'75001': 'Dallas North Branch',
+'75002': 'Dallas North Branch',
+'77001': 'Houston Central Branch',
+'78701': 'Austin Branch',
+'73301': 'Austin Branch'
+};
+
+if (serviceAreas[zip]) {
+resultDiv.textContent = `✓ ${serviceAreas[zip]}`;
+resultDiv.style.color = '#10b981';
+} else {
+resultDiv.textContent = '✗ Not in service area';
+resultDiv.style.color = '#ef4444';
+}
+}
+}
+
+// Modal functions
+function openOfficeModal() {
+const modal = document.getElementById('officeModal');
+const officeInfo = document.getElementById('officeInfo');
+
+officeInfo.innerHTML = `
+<div class="office-item">
+<span class="office-label">Phone:</span>
+<span class="office-value">${clientData.officeInfo.phone || 'Not available'}</span>
+</div>
+<div class="office-item">
+<span class="office-label">Email:</span>
+<span class="office-value">${clientData.officeInfo.email || 'Not available'}</span>
+</div>
+<div class="office-item">
+<span class="office-label">Address:</span>
+<span class="office-value">${clientData.officeInfo.physicalAddress || 'Not available'}</span>
+</div>
+<div class="office-item">
+<span class="office-label">Hours:</span>
+<span class="office-value">${clientData.officeInfo.officeHours || 'Not available'}</span>
+</div>
+`;
+
+modal.style.display = 'block';
+}
+
+function closeOfficeModal() {
+document.getElementById('officeModal').style.display = 'none';
+}
+
+// Time zone updates
+function updateCurrentTime(timezone) {
+const timeZoneMap = {
+'Pacific': 'America/Los_Angeles',
+'Mountain': 'America/Denver', 
+'Central': 'America/Chicago',
+'Eastern': 'America/New_York'
+};
+
+const timeZone = timeZoneMap[timezone] || 'America/Chicago';
+
+function updateTime() {
+const now = new Date();
+const localTime = now.toLocaleTimeString('en-US', {
+hour: '2-digit',
+minute: '2-digit',
+timeZone: timeZone
+});
+
+document.getElementById('currentTime').textContent = localTime;
+document.getElementById('clientTimeZoneName').textContent = timezone || 'Central';
+document.getElementById('clientCurrentTime').textContent = localTime;
+}
+
+updateTime();
+setInterval(updateTime, 60000); // Update every minute
+}
+
+// Search functionality
+function searchPests() {
+const searchTerm = document.getElementById('pestSearch').value.toLowerCase().trim();
+if (!searchTerm) return;
+
+const searchResults = document.getElementById('searchResults');
+const pestsAlert = document.getElementById('pestsNotCoveredAlert');
+const alertContent = document.getElementById('alertContent');
+
+let foundInServices = [];
+let foundInNotCovered = false;
+
+// Search in services
+clientData.services.forEach(service => {
+// Check main service pests
+if (service.pests && service.pests.toLowerCase().includes(searchTerm)) {
+foundInServices.push(service.name);
+}
+// Check subservice pests
+if (service.subServices) {
+service.subServices.forEach(subService => {
+if (subService.pests && subService.pests.toLowerCase().includes(searchTerm)) {
+foundInServices.push(`${service.name} (${subService.name})`);
+}
+});
+}
+});
+
+// Check pests not covered
+if (clientData.pestsNotCovered && clientData.pestsNotCovered.toLowerCase().includes(searchTerm)) {
+foundInNotCovered = true;
+}
+
+// Update search results
+if (foundInNotCovered) {
+pestsAlert.classList.add('show');
+alertContent.textContent = `"${searchTerm}" appears in the pests not covered list: ${clientData.pestsNotCovered}`;
+searchResults.innerHTML = `⚠️ Found "${searchTerm}" in <strong>Pests Not Covered</strong>`;
+} else if (foundInServices.length > 0) {
+pestsAlert.classList.remove('show');
+searchResults.innerHTML = `✅ Found "${searchTerm}" in: <strong>${foundInServices.join(', ')}</strong>`;
+} else {
+pestsAlert.classList.remove('show');
+searchResults.innerHTML = `❓ No specific coverage found for "${searchTerm}". Check with service details or contact office.`;
+}
+
+// Filter services if found
+if (foundInServices.length > 0) {
+filterServicesByPest(searchTerm);
+}
+}
+
+function clearSearch() {
+document.getElementById('pestSearch').value = '';
+document.getElementById('searchResults').innerHTML = '';
+document.getElementById('pestsNotCoveredAlert').classList.remove('show');
+
+// Show all services again
+populateServices();
+}
+
+function filterServicesByPest(searchTerm) {
+const servicesGrid = document.getElementById('servicesGrid');
+servicesGrid.innerHTML = '';
+
+clientData.services.forEach(service => {
+let hasMatch = false;
+
+// Check main service pests
+if (service.pests && service.pests.toLowerCase().includes(searchTerm)) {
+hasMatch = true;
+}
+
+// Check subservice pests
+if (service.subServices) {
+service.subServices.forEach(subService => {
+if (subService.pests && subService.pests.toLowerCase().includes(searchTerm)) {
+hasMatch = true;
+}
+});
+}
+
+if (hasMatch) {
+const serviceCard = createServiceCard(service);
+
+// Add highlight to the pest term in main service
+const pestsElement = serviceCard.querySelector('.pests-covered');
+if (pestsElement) {
+pestsElement.innerHTML = pestsElement.innerHTML.replace(
+new RegExp(`(${searchTerm})`, 'gi'),
+'<span class="search-highlight">$1</span>'
+);
+}
+
+// Add highlight to the pest term in subservices
+const subServicePests = serviceCard.querySelectorAll('.subservice-pests-list');
+subServicePests.forEach(element => {
+element.innerHTML = element.innerHTML.replace(
+new RegExp(`(${searchTerm})`, 'gi'),
+'<span class="search-highlight">$1</span>'
+);
+});
+
+servicesGrid.appendChild(serviceCard);
+}
+});
+
+// Show services section
+showSection('services');
+}
+
+// Pricing calculation functions
+function calculatePricing(serviceId) {
+const sqft = parseInt(document.getElementById(`sqft_${serviceId}`).value);
+const resultDiv = document.getElementById(`result_${serviceId}`);
+const pricingDiv = document.getElementById(`pricing_${serviceId}`);
+const rangeDiv = document.getElementById(`range_${serviceId}`);
+
+if (!sqft || sqft <= 0) {
+resultDiv.classList.remove('show');
+return;
+}
+
+// Find the service card and get its pricing data
+const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
+
+if (!serviceCard || !serviceCard._pricingData) {
+pricingDiv.innerHTML = '<div class="price-display-item"><div class="price-display-value">No pricing tiers available</div></div>';
+rangeDiv.textContent = '';
+resultDiv.classList.add('show');
+return;
+}
+
+const pricingTiers = serviceCard._pricingData;
+
+// Find the appropriate pricing tier
+const tier = pricingTiers.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
+
+if (tier) {
+pricingDiv.innerHTML = `
+<div class="price-display-item">
+<div class="price-display-label">First Service</div>
+<div class="price-display-value">${tier.firstPrice}</div>
+</div>
+<div class="price-display-item">
+<div class="price-display-label">Recurring</div>
+<div class="price-display-value">${tier.recurringPrice}</div>
+</div>
+<div class="price-display-item">
+<div class="price-display-label">Service Type</div>
+<div class="price-display-value">${tier.serviceType}</div>
+</div>
+`;
+rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+} else {
+pricingDiv.innerHTML = `
+<div class="price-display-item">
+<div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div>
+</div>
+`;
+rangeDiv.textContent = 'Please contact office for custom pricing';
+}
+
+resultDiv.classList.add('show');
+}
+
+// Subservice pricing calculation function
+function calculateSubServicePricing(subServiceId, subServiceIndex) {
+const sqft = parseInt(document.getElementById(`sqft_${subServiceId}`).value);
+const resultDiv = document.getElementById(`result_${subServiceId}`);
+const pricingDiv = document.getElementById(`pricing_${subServiceId}`);
+const rangeDiv = document.getElementById(`range_${subServiceId}`);
+
+if (!sqft || sqft <= 0) {
+resultDiv.classList.remove('show');
+return;
+}
+
+// Find the parent service card and get its subservices data
+const serviceCard = document.querySelector(`[data-service-id="${subServiceId.split('_sub_')[0]}"]`);
+
+if (!serviceCard || !serviceCard._subServicesData || !serviceCard._subServicesData[subServiceIndex]) {
+pricingDiv.innerHTML = '<div class="price-display-item"><div class="price-display-value">No pricing tiers available</div></div>';
+rangeDiv.textContent = '';
+resultDiv.classList.add('show');
+return;
+}
+
+const subService = serviceCard._subServicesData[subServiceIndex];
+const pricingTiers = subService.pricingTiers || [];
+
+// Find the appropriate pricing tier
+const tier = pricingTiers.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
+
+if (tier) {
+pricingDiv.innerHTML = `
+<div class="price-display-item">
+<div class="price-display-label">First Service</div>
+<div class="price-display-value">${tier.firstPrice}</div>
+</div>
+<div class="price-display-item">
+<div class="price-display-label">Recurring</div>
+<div class="price-display-value">${tier.recurringPrice}</div>
+</div>
+<div class="price-display-item">
+<div class="price-display-label">Service Type</div>
+<div class="price-display-value">${tier.serviceType}</div>
+</div>
+`;
+rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+} else {
+pricingDiv.innerHTML = `
+<div class="price-display-item">
+<div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div>
+</div>
+`;
+rangeDiv.textContent = 'Please contact office for custom pricing';
+}
+
+resultDiv.classList.add('show');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+const modal = document.getElementById('officeModal');
+if (event.target == modal) {
+closeOfficeModal();
+}
+}
+
+// Add Enter key support for search and pricing calculators
+document.addEventListener('DOMContentLoaded', function() {
+// Handle enter key for search
+document.getElementById('pestSearch').addEventListener('keypress', function(e) {
+if (e.key === 'Enter') {
+searchPests();
+}
+});
+
+// Handle enter key for pricing calculators (delegated event handling)
+document.addEventListener('keypress', function(e) {
+if (e.key === 'Enter' && e.target.classList.contains('sqft-input')) {
+const inputId = e.target.id;
+if (inputId.includes('sqft_')) {
+const serviceId = inputId.replace('sqft_', '');
+calculatePricing(serviceId);
+}
+}
+});
+});
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+loadClientData();
+});
+</script>
+</body>
+</html>

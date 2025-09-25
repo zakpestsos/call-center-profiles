@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Client Profile</title>
+    <style>
+        body {
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #4285f4;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .actions {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3367d6;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e8f0fe;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .status.error {
+            background: #fce4ec;
+            color: #c62828;
+            border: 1px solid #f8bbd9;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4285f4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Edit Client Profile</h1>
+            <p>Update profile information - changes will sync across all systems</p>
+        </div>
+
+        <div class="content">
+            <form id="editForm">
+                <!-- Basic Information Section -->
+                <div class="section">
+                    <h2 class="section-title">📊 Basic Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="companyName">Company Name *</label>
+                            <input type="text" id="companyName" name="companyName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location *</label>
+                            <input type="text" id="location" name="location" placeholder="City, State" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="timezone">Timezone</label>
+                            <select id="timezone" name="timezone">
+                                <option value="Pacific">Pacific</option>
+                                <option value="Mountain">Mountain</option>
+                                <option value="Central">Central</option>
+                                <option value="Eastern">Eastern</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="section">
+                    <h2 class="section-title">📞 Contact Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="phone">Primary Phone</label>
+                            <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Business Email</label>
+                            <input type="email" id="email" name="email" placeholder="info@company.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="website">Website</label>
+                            <input type="url" id="website" name="website" placeholder="https://company.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Business Address</label>
+                            <textarea id="address" name="address" placeholder="Street address, City, State, ZIP"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="hours">Business Hours</label>
+                            <textarea id="hours" name="hours" placeholder="Monday-Friday: 8 AM - 5 PM"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information Section -->
+                <div class="section">
+                    <h2 class="section-title">📝 Additional Information</h2>
+                    <div class="form-group">
+                        <label for="bulletin">Company Bulletin</label>
+                        <textarea id="bulletin" name="bulletin" placeholder="Brief company description or bulletin"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="pestsNotCovered">Pests Not Covered</label>
+                        <textarea id="pestsNotCovered" name="pestsNotCovered" placeholder="List pests not covered and referral information"></textarea>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="openClientSheet()">📊 Edit in Sheet</button>
+                    <a href="javascript:window.close()" class="btn btn-secondary">❌ Cancel</a>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Saving changes...</p>
+                </div>
+
+                <div class="status" id="status"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Profile data injected by Google Apps Script
+        const profileData = <?= JSON.stringify(profileData) ?>;
+        const profileId = '<?= profileId ?>';
+
+        // Populate form with existing data
+        function populateForm() {
+            document.getElementById('companyName').value = profileData.Company_Name || '';
+            document.getElementById('location').value = profileData.Location || '';
+            document.getElementById('timezone').value = profileData.Timezone || 'Central';
+            document.getElementById('phone').value = profileData.Phone || '';
+            document.getElementById('email').value = profileData.Email || '';
+            document.getElementById('website').value = profileData.Website || '';
+            document.getElementById('address').value = profileData.Address || '';
+            document.getElementById('hours').value = profileData.Hours || '';
+            document.getElementById('bulletin').value = profileData.Bulletin || '';
+            document.getElementById('pestsNotCovered').value = profileData.Pests_Not_Covered || '';
+        }
+
+        // Submit form
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loading');
+            const status = document.getElementById('status');
+            
+            // Show loading
+            loading.style.display = 'block';
+            status.style.display = 'none';
+            
+            // Collect form data
+            const formData = {
+                profileId: profileId,
+                companyName: document.getElementById('companyName').value,
+                location: document.getElementById('location').value,
+                timezone: document.getElementById('timezone').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                website: document.getElementById('website').value,
+                address: document.getElementById('address').value,
+                hours: document.getElementById('hours').value,
+                bulletin: document.getElementById('bulletin').value,
+                pestsNotCovered: document.getElementById('pestsNotCovered').value
+            };
+            
+            // Submit to Google Apps Script
+            google.script.run
+                .withSuccessHandler(onSuccess)
+                .withFailureHandler(onError)
+                .updateProfileFromForm(formData);
+        });
+
+        function onSuccess(result) {
+            const loading = document.getElementById('loading');
+            const status = document.getElementById('status');
+            
+            loading.style.display = 'none';
+            
+            if (result.success) {
+                status.className = 'status success';
+                status.textContent = 'Profile updated successfully! Changes will sync across all systems.';
+                status.style.display = 'block';
+            } else {
+                status.className = 'status error';
+                status.textContent = 'Error: ' + (result.error || 'Unknown error occurred');
+                status.style.display = 'block';
+            }
+        }
+
+        function onError(error) {
+            const loading = document.getElementById('loading');
+            const status = document.getElementById('status');
+            
+            loading.style.display = 'none';
+            status.className = 'status error';
+            status.textContent = 'Error: ' + error.message;
+            status.style.display = 'block';
+        }
+
+        function openClientSheet() {
+            if (profileData.Client_Folder_URL) {
+                window.open(profileData.Client_Folder_URL, '_blank');
+            } else {
+                alert('Client sheet URL not available');
+            }
+        }
+
+        // Initialize form when page loads
+        window.onload = function() {
+            populateForm();
+        };
+    </script>
+</body>
+</html>

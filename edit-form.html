@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Client Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .col-half {
+            flex: 1;
+        }
+        
+        .col-third {
+            flex: 1;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .button-secondary {
+            background-color: #95a5a6;
+        }
+        
+        .button-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .button-success {
+            background-color: #27ae60;
+        }
+        
+        .button-success:hover {
+            background-color: #229954;
+        }
+        
+        .button-section {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .required {
+            color: red;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .success {
+            display: none;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .error {
+            display: none;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .info-box {
+            background-color: #e8f4f8;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .readonly {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+        
+        .sync-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .sync-synced {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .sync-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .sync-failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Client Profile</h1>
+        
+        <div class="profile-header">
+            <h2 id="profileTitle">Loading Profile...</h2>
+            <p>Profile ID: <span id="profileId"></span> | Last Updated: <span id="lastUpdated"></span></p>
+            <span id="syncStatus" class="sync-status"></span>
+        </div>
+        
+        <div class="info-box">
+            <strong>Important:</strong> Changes made here will sync to the master database and can be pushed to your Wix site. 
+            Changes are also reflected in your dedicated client Google Sheets folder.
+        </div>
+        
+        <form id="editForm">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <div class="section-title">Basic Information</div>
+                
+                <div class="row">
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="companyName">Company Name <span class="required">*</span></label>
+                            <input type="text" id="companyName" name="companyName" required>
+                        </div>
+                    </div>
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="location">Location/Branch <span class="required">*</span></label>
+                            <input type="text" id="location" name="location" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-third">
+                        <div class="form-group">
+                            <label for="timezone">Timezone <span class="required">*</span></label>
+                            <select id="timezone" name="timezone" required>
+                                <option value="">Select Timezone</option>
+                                <option value="EST">Eastern Time (EST/EDT)</option>
+                                <option value="CST">Central Time (CST/CDT)</option>
+                                <option value="MST">Mountain Time (MST/MDT)</option>
+                                <option value="PST">Pacific Time (PST/PDT)</option>
+                                <option value="AKST">Alaska Time (AKST/AKDT)</option>
+                                <option value="HST">Hawaii Time (HST)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-third">
+                        <div class="form-group">
+                            <label for="phone">Office Phone <span class="required">*</span></label>
+                            <input type="text" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                    <div class="col-third">
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="website">Website</label>
+                    <input type="url" id="website" name="website">
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Physical Address</label>
+                    <textarea id="address" name="address" placeholder="Enter full address including street, city, state, and ZIP code"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hours">Office Hours</label>
+                    <textarea id="hours" name="hours" placeholder="e.g., Monday-Friday: 8:00 AM - 5:00 PM&#10;Saturday: 9:00 AM - 2:00 PM&#10;Sunday: Closed"></textarea>
+                </div>
+            </div>
+            
+            <!-- Service Information -->
+            <div class="form-section">
+                <div class="section-title">Service Information</div>
+                
+                <div class="form-group">
+                    <label for="bulletin">Bulletin/Notes</label>
+                    <textarea id="bulletin" name="bulletin" placeholder="Important notes, special instructions, or company policies"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pestsNotCovered">Pests NOT Covered</label>
+                    <textarea id="pestsNotCovered" name="pestsNotCovered" placeholder="List any pests or services this location does NOT provide"></textarea>
+                </div>
+            </div>
+            
+            <!-- System Information (Read-only) -->
+            <div class="form-section">
+                <div class="section-title">System Information</div>
+                
+                <div class="row">
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="clientFolderUrl">Client Folder URL</label>
+                            <input type="url" id="clientFolderUrl" name="clientFolderUrl" readonly class="readonly">
+                        </div>
+                    </div>
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="wixProfileUrl">Wix Profile URL</label>
+                            <input type="url" id="wixProfileUrl" name="wixProfileUrl" readonly class="readonly">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="dateCreated">Date Created</label>
+                            <input type="text" id="dateCreated" name="dateCreated" readonly class="readonly">
+                        </div>
+                    </div>
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="createdBy">Created By</label>
+                            <input type="text" id="createdBy" name="createdBy" readonly class="readonly">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="button-section">
+                <button type="submit" class="button-success">Save Changes</button>
+                <button type="button" id="openClientFolder" class="button-secondary">Open Client Folder</button>
+                <button type="button" id="syncToWix" class="button-secondary">Sync to Wix</button>
+                <button type="button" id="refreshData">Refresh Data</button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <p>Processing...</p>
+            </div>
+            
+            <div class="success" id="success">
+                <h3>Changes Saved Successfully!</h3>
+                <p id="successMessage"></p>
+            </div>
+            
+            <div class="error" id="error">
+                <h3>Error</h3>
+                <p id="errorMessage"></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let currentProfileId = null;
+        
+        // Load profile data when page loads
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentProfileId = urlParams.get('profileId');
+            
+            if (currentProfileId) {
+                loadProfileData(currentProfileId);
+            } else {
+                showError('No profile ID specified');
+            }
+        };
+        
+        function loadProfileData(profileId) {
+            showLoading(true);
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    showLoading(false);
+                    
+                    if (result.success) {
+                        populateForm(result.data);
+                    } else {
+                        showError(result.error);
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    showLoading(false);
+                    showError('Error loading profile: ' + error.message);
+                })
+                .getProfileDataForEdit(profileId);
+        }
+        
+        function populateForm(data) {
+            // Profile header
+            document.getElementById('profileTitle').textContent = `${data.Company_Name} - ${data.Location}`;
+            document.getElementById('profileId').textContent = data.Profile_ID;
+            document.getElementById('lastUpdated').textContent = data.Last_Updated || 'Never';
+            
+            // Sync status
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.textContent = data.Sync_Status || 'Unknown';
+            syncStatus.className = 'sync-status sync-' + (data.Sync_Status || 'unknown').toLowerCase().replace('_', '-');
+            
+            // Form fields
+            document.getElementById('companyName').value = data.Company_Name || '';
+            document.getElementById('location').value = data.Location || '';
+            document.getElementById('timezone').value = data.Timezone || '';
+            document.getElementById('phone').value = data.Phone || '';
+            document.getElementById('email').value = data.Email || '';
+            document.getElementById('website').value = data.Website || '';
+            document.getElementById('address').value = data.Address || '';
+            document.getElementById('hours').value = data.Hours || '';
+            document.getElementById('bulletin').value = data.Bulletin || '';
+            document.getElementById('pestsNotCovered').value = data.Pests_Not_Covered || '';
+            
+            // System fields
+            document.getElementById('clientFolderUrl').value = data.Client_Folder_URL || '';
+            document.getElementById('wixProfileUrl').value = data.Wix_Profile_URL || '';
+            document.getElementById('dateCreated').value = data.Date_Created || '';
+            document.getElementById('createdBy').value = data.Created_By || '';
+        }
+        
+        // Form submission
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveChanges();
+        });
+        
+        function saveChanges() {
+            showLoading(true);
+            hideMessages();
+            
+            const formData = {
+                profileId: currentProfileId,
+                companyName: document.getElementById('companyName').value,
+                location: document.getElementById('location').value,
+                timezone: document.getElementById('timezone').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                website: document.getElementById('website').value,
+                address: document.getElementById('address').value,
+                hours: document.getElementById('hours').value,
+                bulletin: document.getElementById('bulletin').value,
+                pestsNotCovered: document.getElementById('pestsNotCovered').value
+            };
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    showLoading(false);
+                    
+                    if (result.success) {
+                        showSuccess('Profile updated successfully! Changes will sync across all systems.');
+                        // Reload the profile data to show updated information
+                        setTimeout(() => loadProfileData(currentProfileId), 1000);
+                    } else {
+                        showError(result.error);
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    showLoading(false);
+                    showError('Error saving changes: ' + error.message);
+                })
+                .updateClientProfileFromEdit(formData);
+        }
+        
+        // Button handlers
+        document.getElementById('openClientFolder').addEventListener('click', function() {
+            const folderUrl = document.getElementById('clientFolderUrl').value;
+            if (folderUrl) {
+                window.open(folderUrl, '_blank');
+            } else {
+                showError('No client folder URL available');
+            }
+        });
+        
+        document.getElementById('syncToWix').addEventListener('click', function() {
+            showLoading(true);
+            hideMessages();
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    showLoading(false);
+                    
+                    if (result.success) {
+                        showSuccess('Profile synced to Wix successfully!');
+                        setTimeout(() => loadProfileData(currentProfileId), 1000);
+                    } else {
+                        showError(result.error || 'Sync failed');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    showLoading(false);
+                    showError('Error syncing to Wix: ' + error.message);
+                })
+                .forceSyncToWix(currentProfileId);
+        });
+        
+        document.getElementById('refreshData').addEventListener('click', function() {
+            loadProfileData(currentProfileId);
+        });
+        
+        // Utility functions
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function showSuccess(message) {
+            hideMessages();
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('success').style.display = 'block';
+        }
+        
+        function showError(message) {
+            hideMessages();
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('error').style.display = 'block';
+        }
+        
+        function hideMessages() {
+            document.getElementById('success').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Setup Google Apps Script Project",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"-g",
+				"@google/clasp"
+			],
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}

@@ -1,0 +1,11 @@
+# Include working files from Clean Wix Client Profile System
+**/**
+!Code.gs
+!sheetsApi.gs
+!wixApi.gs
+!masterProfileSheet.gs
+!utils.gs
+!ui/client-input-form.html
+!ui/edit-form.html
+!ui/dashboard.html
+!appsscript.json

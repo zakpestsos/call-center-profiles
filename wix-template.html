@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wix Profile Template</title>
+    <style>
+        /* This CSS can be added to your Wix page's custom CSS section */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .company-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .location-info {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        
+        .nav-button {
+            padding: 12px 24px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-button:hover,
+        .nav-button.active {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .info-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #1f2937;
+        }
+        
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .tech-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .tech-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 5px;
+        }
+        
+        .tech-role {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .pricing-calculator {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .calculator-title {
+            font-weight: bold;
+            color: #0c4a6e;
+            margin-bottom: 15px;
+        }
+        
+        .sqft-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .sqft-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .calculate-btn {
+            padding: 10px 20px;
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pricing-result {
+            background: white;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- This is the structure you'll recreate in Wix using their elements -->
+    
+    <div class="profile-container">
+        <!-- Header Section -->
+        <div class="profile-header">
+            <h1 class="company-name" id="companyName">Company Name</h1>
+            <div class="location-info" id="locationInfo">Location • Timezone</div>
+            <div id="currentTime">Current Time</div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button active" onclick="showSection('services')" id="servicesBtn">
+                Services
+            </button>
+            <button class="nav-button" onclick="showSection('technicians')" id="techniciansBtn">
+                Technicians
+            </button>
+            <button class="nav-button" onclick="showSection('policies')" id="policiesBtn">
+                Policies
+            </button>
+            <button class="nav-button" onclick="showSection('serviceAreas')" id="serviceAreasBtn">
+                Service Areas
+            </button>
+        </div>
+        
+        <!-- Services Section -->
+        <div class="content-section active" id="servicesSection">
+            <div class="service-grid" id="servicesGrid">
+                <!-- Services will be populated here -->
+                <div class="info-card">
+                    <div class="card-title">Service Name</div>
+                    <p>Service description goes here...</p>
+                    
+                    <!-- Pricing Calculator -->
+                    <div class="pricing-calculator">
+                        <div class="calculator-title">🧮 Pricing Calculator</div>
+                        <div class="sqft-input-container">
+                            <input type="number" class="sqft-input" placeholder="Enter square footage">
+                            <button class="calculate-btn">Calculate</button>
+                        </div>
+                        <div class="pricing-result">
+                            Pricing will appear here
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Technicians Section -->
+        <div class="content-section" id="techniciansSection">
+            <div class="tech-grid" id="techniciansGrid">
+                <!-- Technicians will be populated here -->
+                <div class="tech-card">
+                    <div class="tech-name">Technician Name</div>
+                    <div class="tech-role">Technician</div>
+                    <div>Phone: (555) 123-4567</div>
+                    <div>Schedule: Mon-Fri 8-5</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Policies Section -->
+        <div class="content-section" id="policiesSection">
+            <div id="policiesGrid">
+                <!-- Policies will be populated here -->
+                <div class="info-card">
+                    <div class="card-title">Policy Category</div>
+                    <p>Policy details...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service Areas Section -->
+        <div class="content-section" id="serviceAreasSection">
+            <div id="serviceAreasGrid">
+                <!-- Service areas will be populated here -->
+                <div class="info-card">
+                    <div class="card-title">Service Areas</div>
+                    <p>Zip codes and coverage areas...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // This JavaScript shows the basic functionality
+        // In Wix, this will be handled by Velo code
+        
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.add('active');
+            document.getElementById(sectionName + 'Btn').classList.add('active');
+        }
+        
+        // Example of how data would be populated (in Wix this comes from collections)
+        function populateData() {
+            // This is just an example - in Wix this data comes from your collections
+            const clientData = {
+                companyName: "SOS Exterminating",
+                location: "Dallas, TX",
+                timezone: "Central"
+            };
+            
+            document.getElementById('companyName').textContent = clientData.companyName;
+            document.getElementById('locationInfo').textContent = `${clientData.location} • ${clientData.timezone} Time`;
+        }
+        
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        // Initialize
+        populateData();
+        updateTime();
+        setInterval(updateTime, 60000);
+    </script>
+</body>
+</html>

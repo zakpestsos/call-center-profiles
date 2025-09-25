@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Client Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .col-half {
+            flex: 1;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .submit-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .required {
+            color: red;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .success {
+            display: none;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .error {
+            display: none;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create New Client Profile</h1>
+        
+        <form id="clientForm">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <div class="section-title">Basic Information</div>
+                
+                <div class="row">
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="companyName">Company Name <span class="required">*</span></label>
+                            <input type="text" id="companyName" name="companyName" required>
+                        </div>
+                    </div>
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="location">Location/Branch <span class="required">*</span></label>
+                            <input type="text" id="location" name="location" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="timezone">Timezone <span class="required">*</span></label>
+                            <select id="timezone" name="timezone" required>
+                                <option value="">Select Timezone</option>
+                                <option value="EST">Eastern Time (EST/EDT)</option>
+                                <option value="CST">Central Time (CST/CDT)</option>
+                                <option value="MST">Mountain Time (MST/MDT)</option>
+                                <option value="PST">Pacific Time (PST/PDT)</option>
+                                <option value="AKST">Alaska Time (AKST/AKDT)</option>
+                                <option value="HST">Hawaii Time (HST)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="phone">Office Phone <span class="required">*</span></label>
+                            <input type="text" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="col-half">
+                        <div class="form-group">
+                            <label for="website">Website</label>
+                            <input type="url" id="website" name="website">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Physical Address</label>
+                    <textarea id="address" name="address" placeholder="Enter full address including street, city, state, and ZIP code"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hours">Office Hours</label>
+                    <textarea id="hours" name="hours" placeholder="e.g., Monday-Friday: 8:00 AM - 5:00 PM&#10;Saturday: 9:00 AM - 2:00 PM&#10;Sunday: Closed"></textarea>
+                </div>
+            </div>
+            
+            <!-- Service Information -->
+            <div class="form-section">
+                <div class="section-title">Service Information</div>
+                
+                <div class="form-group">
+                    <label for="bulletin">Bulletin/Notes</label>
+                    <textarea id="bulletin" name="bulletin" placeholder="Important notes, special instructions, or company policies"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pestsNotCovered">Pests NOT Covered</label>
+                    <textarea id="pestsNotCovered" name="pestsNotCovered" placeholder="List any pests or services this location does NOT provide"></textarea>
+                </div>
+            </div>
+            
+            <!-- Services Offered -->
+            <div class="form-section">
+                <div class="section-title">Initial Services Setup</div>
+                <p style="color: #666; margin-bottom: 15px;">
+                    Basic profile will be created first. You can add detailed services, technicians, and policies after the profile is created using the dedicated editing interface.
+                </p>
+                
+                <div class="form-group">
+                    <label for="initialServices">Initial Services (one per line)</label>
+                    <textarea id="initialServices" name="initialServices" placeholder="e.g.,&#10;General Pest Control&#10;Termite Treatment&#10;Rodent Control&#10;Bed Bug Treatment"></textarea>
+                </div>
+            </div>
+            
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <button type="submit">Create Client Profile</button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <p>Creating profile and setting up client folder...</p>
+                <p>This may take a moment.</p>
+            </div>
+            
+            <div class="success" id="success">
+                <h3>Profile Created Successfully!</h3>
+                <p id="successMessage"></p>
+            </div>
+            
+            <div class="error" id="error">
+                <h3>Error Creating Profile</h3>
+                <p id="errorMessage"></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('clientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('success').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            
+            // Collect form data
+            const formData = {
+                companyName: document.getElementById('companyName').value,
+                location: document.getElementById('location').value,
+                timezone: document.getElementById('timezone').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                website: document.getElementById('website').value,
+                address: document.getElementById('address').value,
+                hours: document.getElementById('hours').value,
+                bulletin: document.getElementById('bulletin').value,
+                pestsNotCovered: document.getElementById('pestsNotCovered').value,
+                initialServices: document.getElementById('initialServices').value
+            };
+            
+            // Submit to Google Apps Script
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    if (result.success) {
+                        document.getElementById('success').style.display = 'block';
+                        document.getElementById('successMessage').innerHTML = 
+                            `<strong>Profile ID:</strong> ${result.profileId}<br>
+                             <strong>Client Folder:</strong> <a href="${result.clientFolderUrl}" target="_blank">Open Client Folder</a><br>
+                             <strong>Edit Form:</strong> <a href="${result.editFormUrl}" target="_blank">Edit Profile</a>`;
+                        
+                        // Reset form
+                        document.getElementById('clientForm').reset();
+                    } else {
+                        document.getElementById('error').style.display = 'block';
+                        document.getElementById('errorMessage').textContent = result.error;
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('errorMessage').textContent = 'Error: ' + error.message;
+                })
+                .createClientProfileFromHTML(formData);
+        });
+    </script>
+</body>
+</html>

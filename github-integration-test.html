@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Integration Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: #00ff00;
+        }
+        .test-section {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .info { color: #00ffff; }
+        pre {
+            background-color: #2d2d2d;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        button {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #005a99;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 GitHub Integration Test</h1>
+    
+    <div class="test-section">
+        <h2>📊 Google Sheets CSV Test</h2>
+        <button onclick="testCSVFetch()">Test CSV Fetch</button>
+        <button onclick="testProfileLookup()">Test Profile Lookup</button>
+        <div id="csvResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 GitHub Profile URL Test</h2>
+        <button onclick="openProfilePage()">Open Profile Page</button>
+        <div id="urlResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📋 Test Results</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec/export?format=csv&gid=0';
+        const TEST_PROFILE_ID = 'profile_1753659290537_8ewsw4s6l';
+        const GITHUB_URL = 'https://zakpestsos.github.io/call-center-profiles/';
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('testResults');
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+            console.log(message);
+        }
+
+        async function testCSVFetch() {
+            try {
+                log('🧪 Testing CSV fetch from Google Sheets...', 'info');
+                log(`📊 URL: ${CSV_URL}`, 'info');
+                
+                const response = await fetch(CSV_URL);
+                log(`📡 Response status: ${response.status}`, 'info');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const csvText = await response.text();
+                
+                const rows = csvText.split('\\n').filter(row => row.trim());
+                log(`📊 Found ${rows.length} rows`, 'success');
+                
+                if (rows.length > 0) {
+                    log(`📋 Headers: ${rows[0]}`, 'info');
+                    if (rows.length > 1) {
+                        log(`📋 Sample data: ${rows[1].substring(0, 100)}...`, 'info');
+                    }
+                }
+                
+                document.getElementById('csvResult').innerHTML = `
+                    <h3>CSV Content Preview:</h3>
+                    <pre>${csvText.substring(0, 500)}...</pre>
+                `;
+                
+                return csvText;
+                
+            } catch (error) {
+                log(`❌ CSV Fetch Error: ${error.message}`, 'error');
+                document.getElementById('csvResult').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                return null;
+            }
+        }
+
+        async function testProfileLookup() {
+            try {
+                log(`🔍 Looking for profile: ${TEST_PROFILE_ID}`, 'info');
+                
+                const csvText = await testCSVFetch();
+                if (!csvText) return;
+                
+                const rows = csvText.split('\\n').filter(row => row.trim());
+                const headers = parseCSVRow(rows[0]);
+                
+                for (let i = 1; i < rows.length; i++) {
+                    const data = parseCSVRow(rows[i]);
+                    if (data[0] && data[0].toString().trim() === TEST_PROFILE_ID.toString().trim()) {
+                        log('✅ Profile found!', 'success');
+                        
+                        let profileInfo = '';
+                        headers.forEach((header, index) => {
+                            profileInfo += `${header}: ${data[index] || ''}\\n`;
+                        });
+                        
+                        document.getElementById('csvResult').innerHTML += `
+                            <h3>Found Profile:</h3>
+                            <pre>${profileInfo}</pre>
+                        `;
+                        
+                        return true;
+                    }
+                }
+                
+                log('❌ Profile not found', 'error');
+                return false;
+                
+            } catch (error) {
+                log(`❌ Profile Lookup Error: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        function parseCSVRow(row) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result;
+        }
+
+        function openProfilePage() {
+            const fullUrl = `${GITHUB_URL}?profileId=${TEST_PROFILE_ID}`;
+            log(`🔗 Opening: ${fullUrl}`, 'info');
+            
+            document.getElementById('urlResult').innerHTML = `
+                <p>Profile URL: <a href="${fullUrl}" target="_blank">${fullUrl}</a></p>
+                <p><strong>Click the link above to test the profile page!</strong></p>
+            `;
+            
+            window.open(fullUrl, '_blank');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 GitHub Integration Test Page Loaded', 'success');
+            log(`📊 CSV Source: ${CSV_URL}`, 'info');
+            log(`🔍 Test Profile ID: ${TEST_PROFILE_ID}`, 'info');
+            log(`🔗 GitHub Pages URL: ${GITHUB_URL}`, 'info');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Center Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .profile-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 20px;
+        }
+        
+        .company-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        
+        .location {
+            font-size: 1.2em;
+            color: #666;
+            margin: 10px 0;
+        }
+        
+        .profile-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #007acc;
+            background-color: #f8f9fa;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            color: #007acc;
+            margin-bottom: 5px;
+        }
+        
+        .section-content {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .phone-number {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #007acc;
+        }
+        
+        .bulletin {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .status-message {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .loading {
+            background-color: #cce5ff;
+            color: #0066cc;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            display: none;
+        }
+        
+        .success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            display: none;
+        }
+        
+        .profile-id {
+            font-size: 0.9em;
+            color: #888;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Status Messages -->
+        <div id="loading" class="status-message loading">
+            ⏳ Loading profile data from Google Sheets...
+        </div>
+        
+        <div id="error" class="status-message error">
+            <!-- Error message will appear here -->
+        </div>
+        
+        <div id="success" class="status-message success">
+            <!-- Success message will appear here -->
+        </div>
+        
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <h1 id="companyName" class="company-name">Loading...</h1>
+            <div id="location" class="location">Loading location...</div>
+            <div id="profileId" class="profile-id">Profile ID: Loading...</div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="profile-section">
+            <div class="section-title">📞 Contact Information</div>
+            <div class="section-content">
+                <div class="phone-number" id="phone">Loading phone...</div>
+                <div><strong>Contact Person:</strong> <span id="contactPerson">Loading...</span></div>
+                <div><strong>Website:</strong> <span id="websiteUrl">Loading...</span></div>
+            </div>
+        </div>
+        
+        <!-- Industry -->
+        <div class="profile-section">
+            <div class="section-title">🏢 Industry</div>
+            <div class="section-content" id="industry">Loading industry...</div>
+        </div>
+        
+        <!-- Morning Bulletin -->
+        <div class="profile-section">
+            <div class="section-title">📋 Morning Bulletin</div>
+            <div class="bulletin" id="bulletin">Loading bulletin information...</div>
+        </div>
+        
+        <!-- Internal Notes -->
+        <div class="profile-section">
+            <div class="section-title">📝 Internal Notes</div>
+            <div class="section-content" id="notes">Loading notes...</div>
+        </div>
+    </div>
+    
+    <!-- Include the JavaScript -->
+    <script src="github-profile-integration.js"></script>
+</body>
+</html>

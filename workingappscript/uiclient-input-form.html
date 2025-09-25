@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Profile Input Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .section-header:hover {
+            background: #e9ecef;
+        }
+
+        .section-header h2 {
+            color: #333;
+            font-size: 1.4em;
+        }
+
+        .section-header .toggle-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s;
+        }
+
+        .section-content {
+            padding: 30px;
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Help text under form groups */
+        .help-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+        /* Dynamic Lists Styling */
+        .dynamic-list {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .list-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .list-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .list-item-title {
+            font-weight: 600;
+            color: #333;
+            flex-grow: 1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .btn-primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3367d6;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.8em;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            margin-top: 30px;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .sub-service {
+            background: #f1f3f4;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid #4285f4;
+        }
+
+        .technician-item {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .service-area-item {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+
+        /* Progress indicator */
+        .progress-container {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #4285f4, #34a853);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4285f4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐛 Client Profile Creator</h1>
+            <p>Create comprehensive pest control client profiles with ease</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="form-container">
+            <form id="clientForm">
+                <!-- Basic Information Section -->
+                <div class="section">
+                    <div class="section-header" onclick="toggleSection('basic')">
+                        <h2>📋 Basic Information</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content active" id="basic-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="companyName">Company Name <span class="required">*</span></label>
+                                <input type="text" id="companyName" name="companyName" required>
+                                <div class="help-text">Enter the full legal business name</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location <span class="required">*</span></label>
+                                <input type="text" id="location" name="location" placeholder="City, State" required>
+                                <div class="help-text">Primary business location (City, State format)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bulletin">Company Bulletin</label>
+                            <textarea id="bulletin" name="bulletin" placeholder="Brief company description, specialties, years in business, etc."></textarea>
+                            <div class="help-text">This will appear as the main description on the profile</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pestsNotCovered">Pests Not Covered</label>
+                            <textarea id="pestsNotCovered" name="pestsNotCovered" placeholder="List any pests or services not provided..."></textarea>
+                            <div class="help-text">Be specific about what services are not available</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Office Information Section -->
+                <div class="section">
+                    <div class="section-header" onclick="toggleSection('office')">
+                        <h2>🏢 Office Information</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="office-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="address">Business Address <span class="required">*</span></label>
+                                <input type="text" id="address" name="address" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Primary Phone <span class="required">*</span></label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Business Email</label>
+                                <input type="email" id="email" name="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="website">Website</label>
+                                <input type="url" id="website" name="website" placeholder="https://...">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hours">Business Hours</label>
+                            <textarea id="hours" name="hours" placeholder="Monday-Friday: 8:00 AM - 5:00 PM&#10;Saturday: 8:00 AM - 12:00 PM&#10;Sunday: Closed"></textarea>
+                            <div class="help-text">Include all operating hours, emergency availability, etc.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Section -->
+                <div class="section">
+                    <div class="section-header" onclick="toggleSection('services')">
+                        <h2>🛡️ Services</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="services-content">
+                        <div class="dynamic-list">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" onclick="addService()">+ Add Service</button>
+                            </div>
+                            <div id="servicesList">
+                                <!-- Services will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technicians Section -->
+                <div class="section">
+                    <div class="section-header" onclick="toggleSection('technicians')">
+                        <h2>👨‍🔧 Technicians</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="technicians-content">
+                        <div class="dynamic-list">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" onclick="addTechnician()">+ Add Technician</button>
+                            </div>
+                            <div id="techniciansList">
+                                <!-- Technicians will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Areas Section -->
+                <div class="section">
+                    <div class="section-header" onclick="toggleSection('areas')">
+                        <h2>📍 Service Areas</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="areas-content">
+                        <div class="dynamic-list">
+                            <!-- Bulk Import Option -->
+                            <div class="form-group" style="background: #e8f4fd; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                                <h3 style="margin-bottom: 15px; color: #1565c0;">📋 Bulk Import Service Areas</h3>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>ZIP Codes (Bulk Import)</label>
+                                        <textarea id="bulkZipCodes" placeholder="Paste ZIP codes here (one per line or comma-separated):&#10;75001&#10;75002&#10;75003&#10;Or: 75001, 75002, 75003" style="min-height: 120px;"></textarea>
+                                        <div class="help-text">Enter one ZIP per line or comma-separated</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cities/Areas (Bulk Import)</label>
+                                        <textarea id="bulkCities" placeholder="Paste city names here (one per line):&#10;Dallas&#10;Plano&#10;Frisco&#10;Allen" style="min-height: 120px;"></textarea>
+                                        <div class="help-text">Enter one city per line (will match with ZIP codes by order)</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Default State</label>
+                                        <input type="text" id="defaultState" placeholder="TX" maxlength="2" style="text-transform: uppercase;">
+                                        <div class="help-text">Will apply to all imported areas</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Default Branch/Territory</label>
+                                        <input type="text" id="defaultBranch" placeholder="North Dallas Branch">
+                                        <div class="help-text">Will apply to all imported areas</div>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn btn-primary" onclick="bulkImportServiceAreas()" style="margin-top: 10px;">🚀 Import All Service Areas</button>
+                                <button type="button" class="btn" onclick="clearBulkImport()" style="margin-top: 10px; margin-left: 10px; background: #6c757d; color: white;">Clear</button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" onclick="addServiceArea()">+ Add Individual Service Area</button>
+                            </div>
+                            <div id="serviceAreasList">
+                                <!-- Service areas will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Policies Section -->
+                <div class="section">
+                    <div class="section-header" onclick="toggleSection('policies')">
+                        <h2>📜 Policies</h2>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" id="policies-content">
+                        <div class="form-group">
+                            <label for="cancellationPolicy">Cancellation Policy</label>
+                            <textarea id="cancellationPolicy" name="cancellationPolicy" placeholder="Describe cancellation terms, notice requirements, fees..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="guaranteePolicy">Guarantee Policy</label>
+                            <textarea id="guaranteePolicy" name="guaranteePolicy" placeholder="Service guarantees, warranty terms, callback policies..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="paymentTerms">Payment Terms</label>
+                            <textarea id="paymentTerms" name="paymentTerms" placeholder="Accepted payment methods, payment schedules, late fees..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="emergencyServices">Emergency Services</label>
+                            <textarea id="emergencyServices" name="emergencyServices" placeholder="Emergency availability, after-hours contact, emergency fees..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="insuranceInfo">Insurance & Bonding</label>
+                            <textarea id="insuranceInfo" name="insuranceInfo" placeholder="Insurance coverage, bonding information, license numbers..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Section -->
+                <div class="section">
+                    <div class="section-content active">
+                        <button type="submit" class="btn btn-success">🚀 Create Client Profile</button>
+                        
+                        <div class="loading" id="loadingIndicator">
+                            <div class="spinner"></div>
+                            <p>Creating your client profile...</p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global counters for dynamic elements
+        let serviceCounter = 0;
+        let technicianCounter = 0;
+        let serviceAreaCounter = 0;
+
+        // Section toggle functionality
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const icon = content.parentElement.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.textContent = '▶';
+            } else {
+                content.classList.add('active');
+                icon.textContent = '▼';
+            }
+            
+            updateProgress();
+        }
+
+        // Update progress bar based on completed sections
+        function updateProgress() {
+            const sections = document.querySelectorAll('.section-content');
+            const completedSections = Array.from(sections).filter(section => {
+                const inputs = section.querySelectorAll('input[required], textarea[required]');
+                return Array.from(inputs).every(input => input.value.trim() !== '');
+            });
+            
+            const progress = (completedSections.length / sections.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Add new service with sub-services capability
+        function addService() {
+            serviceCounter++;
+            const servicesList = document.getElementById('servicesList');
+            
+            const serviceDiv = document.createElement('div');
+            serviceDiv.className = 'list-item';
+            serviceDiv.innerHTML = `
+                <div class="list-item-header">
+                    <div class="list-item-title">Service #${serviceCounter}</div>
+                    <button type="button" class="btn btn-danger" onclick="removeElement(this.parentElement.parentElement)">Remove</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Service Name</label>
+                    <input type="text" name="services[${serviceCounter}][name]" placeholder="e.g., General Pest Control, Termite Treatment, Mosquito Control">
+                </div>
+                
+                <div class="form-group">
+                    <label>Service Description</label>
+                    <textarea name="services[${serviceCounter}][description]" placeholder="Detailed description of this service..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Service Type (for CRM)</label>
+                        <input type="text" name="services[${serviceCounter}][serviceType]" placeholder="e.g., Monthly Mosquito, Quarterly GPC">
+                    </div>
+                    <div class="form-group">
+                        <label>Queue Extension</label>
+                        <input type="text" name="services[${serviceCounter}][queueExt]" placeholder="e.g., 6884">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Product Type</label>
+                        <input type="text" name="services[${serviceCounter}][productType]" placeholder="e.g., General Pest Control, Mosquito - Flea - Tick">
+                    </div>
+                    <div class="form-group">
+                        <label>Frequency</label>
+                        <select name="services[${serviceCounter}][frequency]">
+                            <option value="One-time">One-time</option>
+                            <option value="Monthly">Monthly</option>
+                            <option value="Quarterly">Quarterly</option>
+                            <option value="Bi-annual">Bi-annual</option>
+                            <option value="Annual">Annual</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contract Length</label>
+                        <input type="text" name="services[${serviceCounter}][contract]" placeholder="e.g., 12 Months, Seasonal">
+                    </div>
+                    <div class="form-group">
+                        <label>Guarantee</label>
+                        <input type="text" name="services[${serviceCounter}][guarantee]" placeholder="e.g., 90-day guarantee">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Service Duration</label>
+                        <input type="text" name="services[${serviceCounter}][duration]" placeholder="e.g., 45 minutes">
+                    </div>
+                    <div class="form-group">
+                        <label>Billing Frequency</label>
+                        <select name="services[${serviceCounter}][billingFrequency]">
+                            <option value="After service completion">After service completion</option>
+                            <option value="Monthly">Monthly</option>
+                            <option value="Quarterly">Quarterly</option>
+                            <option value="Annually">Annually</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Pests Covered</label>
+                    <textarea name="services[${serviceCounter}][pests]" placeholder="e.g., Ants, Roaches, Spiders, Crickets, Silverfish"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Pricing Tiers</label>
+                    <div id="pricingTiers_${serviceCounter}" style="border: 2px solid #4285f4; padding: 20px; border-radius: 8px; background-color: #f0f8ff;">
+                        <button type="button" class="btn btn-primary" style="margin-bottom: 15px; font-weight: bold;" onclick="addPricingTier(${serviceCounter})">+ Add Pricing Tier</button>
+                        <div class="pricing-tiers-list"></div>
+                    </div>
+                    <div class="help-text">Add multiple price ranges based on square footage (e.g. 0-2500 sqft, 2501-3000 sqft, etc.)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Sub-Services / Frequency Options</label>
+                    <div id="subServices_${serviceCounter}">
+                        <button type="button" class="btn btn-primary" style="margin-bottom: 10px;" onclick="addSubService(${serviceCounter})">+ Add Sub-Service</button>
+                    </div>
+                </div>
+            `;
+            
+            servicesList.appendChild(serviceDiv);
+            
+            // Automatically add one pricing tier to start with (no timeout needed)
+            addPricingTier(serviceCounter);
+        }
+
+        // Add sub-service to a main service
+        function addSubService(serviceId) {
+            const subServicesContainer = document.getElementById(`subServices_${serviceId}`);
+            const subServiceCount = subServicesContainer.querySelectorAll('.sub-service').length;
+            
+            const subServiceDiv = document.createElement('div');
+            subServiceDiv.className = 'sub-service';
+            subServiceDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong>Sub-Service ${subServiceCount + 1}</strong>
+                    <button type="button" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.7em;" onclick="removeElement(this.parentElement.parentElement)">Remove</button>
+                </div>
+                <div class="form-row" style="margin-bottom: 10px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <input type="text" name="services[${serviceId}][subServices][${subServiceCount}][name]" placeholder="e.g., Quarterly, Monthly, Bi-annual">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <input type="text" name="services[${serviceId}][subServices][${subServiceCount}][price]" placeholder="$150">
+                    </div>
+                </div>
+                <textarea name="services[${serviceId}][subServices][${subServiceCount}][description]" placeholder="Specific description for this sub-service..."></textarea>
+            `;
+            
+            // Insert before the "Add Sub-Service" button
+            subServicesContainer.insertBefore(subServiceDiv, subServicesContainer.lastElementChild);
+        }
+
+        // Add pricing tier to a service
+        function addPricingTier(serviceId) {
+            console.log('Adding pricing tier for service:', serviceId);
+            const pricingTiersContainer = document.getElementById(`pricingTiers_${serviceId}`);
+            console.log('Pricing tiers container:', pricingTiersContainer);
+            
+            if (!pricingTiersContainer) {
+                console.error(`Could not find pricing tiers container for service ${serviceId}`);
+                return;
+            }
+            
+            const tiersList = pricingTiersContainer.querySelector('.pricing-tiers-list');
+            console.log('Tiers list:', tiersList);
+            
+            if (!tiersList) {
+                console.error(`Could not find pricing tiers list for service ${serviceId}`);
+                return;
+            }
+            
+            const tierCount = tiersList.querySelectorAll('.pricing-tier').length;
+            console.log('Current tier count:', tierCount);
+            
+            const tierDiv = document.createElement('div');
+            tierDiv.className = 'pricing-tier';
+            tierDiv.style.cssText = 'border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px; background-color: white;';
+            tierDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <strong>Pricing Tier ${tierCount + 1}</strong>
+                    <button type="button" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8em;" onclick="removeElement(this.parentElement.parentElement)">Remove Tier</button>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label>Square Footage Range</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" name="services[${serviceId}][pricingTiers][${tierCount}][sqftMin]" placeholder="Min" min="0" style="flex: 1;">
+                            <span>to</span>
+                            <input type="number" name="services[${serviceId}][pricingTiers][${tierCount}][sqftMax]" placeholder="Max" min="0" style="flex: 1;">
+                            <span>sq ft</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label>First Service Price</label>
+                        <input type="text" name="services[${serviceId}][pricingTiers][${tierCount}][firstPrice]" placeholder="$125.00">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label>Recurring Price</label>
+                        <input type="text" name="services[${serviceId}][pricingTiers][${tierCount}][recurringPrice]" placeholder="$120.00">
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Service Type for CRM</label>
+                    <input type="text" name="services[${serviceId}][pricingTiers][${tierCount}][serviceType]" placeholder="e.g., Monthly Mosquito">
+                </div>
+            `;
+            
+            tiersList.appendChild(tierDiv);
+            console.log('Pricing tier added successfully');
+        }
+
+        // Add new technician with all required fields
+        function addTechnician() {
+            technicianCounter++;
+            const techniciansList = document.getElementById('techniciansList');
+            
+            const technicianDiv = document.createElement('div');
+            technicianDiv.className = 'list-item technician-item';
+            technicianDiv.innerHTML = `
+                <div class="list-item-header">
+                    <div class="list-item-title">Technician #${technicianCounter}</div>
+                    <button type="button" class="btn btn-danger" onclick="removeElement(this.parentElement.parentElement)">Remove</button>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Technician Name</label>
+                        <input type="text" name="technicians[${technicianCounter}][name]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select name="technicians[${technicianCounter}][role]">
+                            <option value="Technician">Technician</option>
+                            <option value="Inspector">Inspector</option>
+                            <option value="Both">Both</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Schedule</label>
+                        <input type="text" name="technicians[${technicianCounter}][schedule]" placeholder="Mon-Fri 8-5, Sat 8-12">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Stops Per Day</label>
+                        <input type="number" name="technicians[${technicianCounter}][maxStops]" min="1" max="20">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Services NOT Provided</label>
+                    <textarea name="technicians[${technicianCounter}][doesNotService]" placeholder="e.g., Termite, Commercial Only, Mosquito/Tick"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="technicians[${technicianCounter}][phone]">
+                    </div>
+                    <div class="form-group">
+                        <label>Zip Code / Branch</label>
+                        <input type="text" name="technicians[${technicianCounter}][zipCode]" placeholder="Primary zip code or branch">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Additional Notes</label>
+                    <textarea name="technicians[${technicianCounter}][notes]" placeholder="Special instructions, certifications, restrictions..."></textarea>
+                </div>
+            `;
+            
+            techniciansList.appendChild(technicianDiv);
+        }
+
+        // Add new service area
+        function addServiceArea() {
+            serviceAreaCounter++;
+            const serviceAreasList = document.getElementById('serviceAreasList');
+            
+            const areaDiv = document.createElement('div');
+            areaDiv.className = 'list-item service-area-item';
+            areaDiv.innerHTML = `
+                <div class="list-item-header">
+                    <div class="list-item-title">Service Area #${serviceAreaCounter}</div>
+                    <button type="button" class="btn btn-danger" onclick="removeElement(this.parentElement.parentElement)">Remove</button>
+                </div>
+                
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>ZIP Code</label>
+                        <input type="text" name="serviceAreas[${serviceAreaCounter}][zip]" placeholder="75001" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" name="serviceAreas[${serviceAreaCounter}][city]" placeholder="Dallas">
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" name="serviceAreas[${serviceAreaCounter}][state]" placeholder="TX" maxlength="2">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Branch/Territory</label>
+                        <input type="text" name="serviceAreas[${serviceAreaCounter}][branch]" placeholder="North Dallas Branch">
+                    </div>
+                    <div class="form-group">
+                        <label>In Service</label>
+                        <select name="serviceAreas[${serviceAreaCounter}][inService]">
+                            <option value="true">Yes - Active</option>
+                            <option value="false">No - Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Additional Notes</label>
+                    <input type="text" name="serviceAreas[${serviceAreaCounter}][notes]" placeholder="Special fees, restrictions, etc.">
+                </div>
+            `;
+            
+            serviceAreasList.appendChild(areaDiv);
+        }
+
+        // Bulk import service areas
+        function bulkImportServiceAreas() {
+            const zipCodes = document.getElementById('bulkZipCodes').value.trim();
+            const cities = document.getElementById('bulkCities').value.trim();
+            const defaultState = document.getElementById('defaultState').value.trim().toUpperCase() || 'TX';
+            const defaultBranch = document.getElementById('defaultBranch').value.trim() || 'Main Branch';
+            
+            if (!zipCodes) {
+                alert('Please enter ZIP codes to import.');
+                return;
+            }
+            
+            // Parse ZIP codes (handle both line-separated and comma-separated)
+            let zipArray = zipCodes.split(/[,\n]/).map(zip => zip.trim()).filter(zip => zip.length > 0);
+            
+            // Parse cities (line-separated)
+            let cityArray = [];
+            if (cities) {
+                cityArray = cities.split(/\n/).map(city => city.trim()).filter(city => city.length > 0);
+            }
+            
+            // If no cities provided, create generic city names
+            if (cityArray.length === 0) {
+                cityArray = zipArray.map(zip => `Area ${zip}`);
+            }
+            
+            // If cities list is shorter than ZIP list, repeat the last city
+            while (cityArray.length < zipArray.length) {
+                cityArray.push(cityArray[cityArray.length - 1] || 'Unknown City');
+            }
+            
+            // Create service areas for each ZIP code
+            let importCount = 0;
+            zipArray.forEach((zip, index) => {
+                if (zip.length === 5 && /^\d+$/.test(zip)) { // Validate ZIP code format
+                    serviceAreaCounter++;
+                    const serviceAreasList = document.getElementById('serviceAreasList');
+                    
+                    const areaDiv = document.createElement('div');
+                    areaDiv.className = 'list-item service-area-item';
+                    areaDiv.innerHTML = `
+                        <div class="list-item-header">
+                            <div class="list-item-title">Service Area #${serviceAreaCounter} - ${zip}</div>
+                            <button type="button" class="btn btn-danger" onclick="removeElement(this.parentElement.parentElement)">Remove</button>
+                        </div>
+                        
+                        <div class="form-row-3">
+                            <div class="form-group">
+                                <label>ZIP Code</label>
+                                <input type="text" name="serviceAreas[${serviceAreaCounter}][zip]" value="${zip}" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" name="serviceAreas[${serviceAreaCounter}][city]" value="${cityArray[index] || 'Unknown City'}">
+                            </div>
+                            <div class="form-group">
+                                <label>State</label>
+                                <input type="text" name="serviceAreas[${serviceAreaCounter}][state]" value="${defaultState}" maxlength="2">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Branch/Territory</label>
+                                <input type="text" name="serviceAreas[${serviceAreaCounter}][branch]" value="${defaultBranch}">
+                            </div>
+                            <div class="form-group">
+                                <label>In Service</label>
+                                <select name="serviceAreas[${serviceAreaCounter}][inService]">
+                                    <option value="true" selected>Yes - Active</option>
+                                    <option value="false">No - Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Additional Notes</label>
+                            <input type="text" name="serviceAreas[${serviceAreaCounter}][notes]" placeholder="Special fees, restrictions, etc.">
+                        </div>
+                    `;
+                    
+                    serviceAreasList.appendChild(areaDiv);
+                    importCount++;
+                }
+            });
+            
+            // Clear the bulk import fields
+            clearBulkImport();
+            
+            // Show success message
+            alert(`✅ Successfully imported ${importCount} service areas!`);
+            updateProgress();
+        }
+
+        // Clear bulk import fields
+        function clearBulkImport() {
+            document.getElementById('bulkZipCodes').value = '';
+            document.getElementById('bulkCities').value = '';
+            document.getElementById('defaultState').value = '';
+            document.getElementById('defaultBranch').value = '';
+        }
+
+        // Remove dynamic element
+        function removeElement(element) {
+            element.remove();
+            updateProgress();
+        }
+
+        // Form submission
+        document.getElementById('clientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            
+            // Collect all form data
+            const formData = new FormData(this);
+            const clientData = {};
+            
+            // Convert FormData to a structured object
+            for (let [key, value] of formData.entries()) {
+                clientData[key] = value;
+            }
+            
+            // Send to Google Apps Script
+            google.script.run
+                .withSuccessHandler(onSuccess)
+                .withFailureHandler(onFailure)
+                .createClientProfileFromHTML(clientData);
+        });
+
+        function onSuccess(result) {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            alert('✅ Client profile created successfully!\n\nProfile URL: ' + result.profileUrl + '\nClient ID: ' + result.clientId);
+            
+            // Optionally reset form or redirect
+            if (confirm('Would you like to create another client profile?')) {
+                document.getElementById('clientForm').reset();
+                document.getElementById('servicesList').innerHTML = '';
+                document.getElementById('techniciansList').innerHTML = '';
+                document.getElementById('serviceAreasList').innerHTML = '';
+                serviceCounter = 0;
+                technicianCounter = 0;
+                serviceAreaCounter = 0;
+            }
+        }
+
+        function onFailure(error) {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            alert('❌ Error creating client profile:\n\n' + error.message);
+        }
+
+        // Initialize with one service and technician
+        window.onload = function() {
+            addService();
+            addTechnician();
+            addServiceArea();
+            updateProgress();
+        };
+
+        // Update progress on input changes
+        document.addEventListener('input', updateProgress);
+    </script>
+</body>
+</html>
