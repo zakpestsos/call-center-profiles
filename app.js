@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // Main Application JavaScript - Complete Call Center Profile System
 class CallCenterApp {
     constructor() {
@@ -1795,9 +1794,7 @@ document.addEventListener('keypress', function(e) {
         }
     }
 });
-=======
-// Main Application JavaScript - Complete Call Center Profile System with Google Sheets Integration
-// Updated with live Google Sheets CSV URL
+
 // Use Apps Script API instead of direct CSV
 const GOOGLE_SHEETS_API_URL = window.CONFIG?.GOOGLE_SHEETS?.WEB_APP_URL;
 
@@ -3709,4 +3706,3 @@ document.addEventListener('keypress', function(e) {
         }
     }
 });
->>>>>>> 2736c685fc8fe36c89bbf61e8bcaaac71c17974d
