@@ -1,52 +1,71 @@
-/**
- * Main Google Apps Script file for Wix Client Profile Automation
- * This file contains the core functions for creating and managing client profiles
- */
+// Google Apps Script Web App for GitHub Pages Integration
+// This script should be deployed as a Web App from Google Apps Script
 
-/**
- * Web App Entry Point - Serves the client input form
- * This function is called when someone visits the web app URL
- */
 function doGet(e) {
   try {
-    Logger.log('doGet called with parameters:', e.parameter);
-    
-    const action = e.parameter.action;
+    // Check if requesting data by profileId
     const profileId = e.parameter.profileId;
-    
-    // Handle API requests for production app
-    if (action === 'getProfile' && profileId) {
-      const result = getProfileDataAPI(profileId);
-      
+
+    if (profileId) {
+      return getProfileDataById(profileId);
+    }
+
+    // Legacy support for sheetId-based requests
+    const sheetId = e.parameter.sheetId;
+
+    if (!sheetId) {
       return ContentService
-        .createTextOutput(JSON.stringify(result))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders({
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type'
-        });
+        .createTextOutput(JSON.stringify({error: 'Missing profileId or sheetId parameter'}))
+        .setMimeType(ContentService.MimeType.JSON);
     }
-    
-    // Handle edit form requests
-    if (action === 'edit' && profileId) {
-      return showEditForm(profileId);
-    }
-    
-    // Test with a simple HTML first
-    if (e.parameter && e.parameter.test) {
-      return HtmlService.createHtmlOutput('<h1>Test Page Works!</h1><p>The web app is functioning.</p>')
-        .setTitle('Test')
-        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-    }
-    
-    // Serve the client input form from ui folder
-    return HtmlService.createHtmlOutputFromFile('ui/client-input-form')
-      .setTitle('Client Profile Creator')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-      
+
+    const data = getClientDataFromSheet(sheetId);
+
+    return ContentService
+      .createTextOutput(JSON.stringify(data))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
+
   } catch (error) {
-    Logger.log('Error in doGet:', error);
+    console.error('Error in doGet:', error);
+    return ContentService
+      .createTextOutput(JSON.stringify({error: error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+
+    // Generate unique profileId if not provided
+    if (!data.profileId) {
+      data.profileId = generateUniqueProfileId();
+    }
+
+    // Write to master sheet
+    const result = createClientProfileInMasterSheet(data);
+
+    return ContentService
+      .createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
+
+  } catch (error) {
+    console.error('Error in doPost:', error);
+    return ContentService
+      .createTextOutput(JSON.stringify({error: error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
     // Return detailed error information
     return HtmlService.createHtmlOutput(
       '<h1>Error Loading Form</h1>' +
@@ -2628,5 +2647,359 @@ function generateGitHubCode() {
   } catch (error) {
     console.log('❌ Code generation failed:', error.message);
     throw error;
+  }
+}
+=======
+﻿function doGet(e) {
+  try {
+    const sheetId = e.parameter.sheetId;
+    const profileId = e.parameter.profileId;
+    const action = e.parameter.action;
+    
+    let data;
+    
+    if (action === "getProfile" && profileId) {
+      data = getProfileById(profileId);
+    } else if (sheetId) {
+      data = getClientDataFromSheet(sheetId);
+    } else {
+      throw new Error("Missing required parameters");
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify(data))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    const errorResponse = {
+      error: true,
+      message: error.toString(),
+      timestamp: new Date().toISOString()
+    };
+    
+    return ContentService.createTextOutput(JSON.stringify(errorResponse))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function getProfileById(profileId) {
+  return {
+    profileId: profileId,
+    companyName: "Test Company",
+    location: "Test Location",
+    message: "This is a test profile response"
+  };
+}
+
+function getClientDataFromSheet(sheetId) {
+  try {
+    const spreadsheet = SpreadsheetApp.openById(sheetId);
+    const result = {
+      sheetId: sheetId,
+      companyName: spreadsheet.getName(),
+      lastUpdated: new Date().toISOString(),
+      services: [],
+      technicians: [],
+      policies: {},
+      serviceAreas: []
+    };
+    
+    return result;
+  } catch (error) {
+    throw new Error("Failed to access spreadsheet: " + error.message);
+  }
+}
+
+// Generate unique profile ID
+function generateUniqueProfileId() {
+  const timestamp = new Date().getTime();
+  const random = Math.floor(Math.random() * 1000);
+  return 'profile_' + timestamp + '_' + random;
+}
+
+// Create client profile in master sheet
+function createClientProfileInMasterSheet(data) {
+  try {
+    // You'll need to set this to your actual master sheet ID
+    const MASTER_SHEET_ID = 'YOUR_MASTER_SHEET_ID';
+    const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
+    const masterSheet = sheet.getSheetByName('Profiles') || sheet.getSheets()[0];
+
+    // Get existing data to check for duplicates
+    const existingData = masterSheet.getDataRange().getValues();
+
+    // Check if profileId already exists
+    for (let i = 1; i < existingData.length; i++) {
+      if (existingData[i][0] === data.profileId) {
+        throw new Error('Profile with this ID already exists');
+      }
+    }
+
+    // Prepare data for insertion
+    const profileRow = [
+      data.profileId,
+      data.companyName || '',
+      data.location || '',
+      data.timezone || 'Central',
+      data.phone || '',
+      data.email || '',
+      data.website || '',
+      data.address || '',
+      data.hours || '',
+      data.bulletin || '',
+      data.pestsNotCovered || '',
+      new Date().toISOString(), // createdAt
+      new Date().toISOString(), // updatedAt
+      'ACTIVE' // status
+    ];
+
+    // Append to master sheet
+    masterSheet.appendRow(profileRow);
+
+    // Handle related data (services, technicians, etc.)
+    if (data.services && data.services.length > 0) {
+      saveServicesData(sheet, data.profileId, data.services);
+    }
+
+    if (data.technicians && data.technicians.length > 0) {
+      saveTechniciansData(sheet, data.profileId, data.technicians);
+    }
+
+    if (data.serviceAreas && data.serviceAreas.length > 0) {
+      saveServiceAreasData(sheet, data.profileId, data.serviceAreas);
+    }
+
+    // Generate GitHub Pages URL
+    const profileUrl = 'https://YOUR_USERNAME.github.io/YOUR_REPO/?profileId=' + data.profileId;
+
+    return {
+      success: true,
+      message: 'Profile created successfully',
+      profileId: data.profileId,
+      profileUrl: profileUrl
+    };
+
+  } catch (error) {
+    console.error('Error creating profile:', error);
+    throw new Error('Failed to create profile: ' + error.message);
+  }
+}
+
+// Get profile data by ID
+function getProfileDataById(profileId) {
+  try {
+    const MASTER_SHEET_ID = 'YOUR_MASTER_SHEET_ID';
+    const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
+    const masterSheet = sheet.getSheetByName('Profiles') || sheet.getSheets()[0];
+
+    const data = masterSheet.getDataRange().getValues();
+
+    // Find the profile row
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      if (row[0] === profileId) {
+        const profileData = {
+          profileId: row[0],
+          companyName: row[1],
+          location: row[2],
+          timezone: row[3],
+          officeInfo: {
+            phone: row[4],
+            email: row[5],
+            website: row[6],
+            address: row[7],
+            hours: row[8]
+          },
+          bulletin: row[9],
+          pestsNotCovered: row[10],
+          createdAt: row[11],
+          updatedAt: row[12],
+          status: row[13]
+        };
+
+        // Get related data
+        profileData.services = getServicesData(sheet, profileId);
+        profileData.technicians = getTechniciansData(sheet, profileId);
+        profileData.serviceAreas = getServiceAreasData(sheet, profileId);
+
+        return ContentService
+          .createTextOutput(JSON.stringify(profileData))
+          .setMimeType(ContentService.MimeType.JSON)
+          .setHeaders({
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+          });
+      }
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({error: 'Profile not found'}))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    console.error('Error getting profile:', error);
+    return ContentService
+      .createTextOutput(JSON.stringify({error: error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Helper functions for related data
+function saveServicesData(sheet, profileId, services) {
+  let servicesSheet = sheet.getSheetByName('Services');
+  if (!servicesSheet) {
+    servicesSheet = sheet.insertSheet('Services');
+    servicesSheet.appendRow(['ProfileID', 'ServiceName', 'Description', 'ServiceType', 'Frequency', 'Contract', 'Guarantee', 'Duration', 'Pests', 'ProductType', 'BillingFrequency', 'QueueExt', 'PricingTiers']);
+  }
+
+  services.forEach(service => {
+    servicesSheet.appendRow([
+      profileId,
+      service.name || '',
+      service.description || '',
+      service.serviceType || '',
+      service.frequency || '',
+      service.contract || '',
+      service.guarantee || '',
+      service.duration || '',
+      service.pests || '',
+      service.productType || '',
+      service.billingFrequency || '',
+      service.queueExt || '',
+      JSON.stringify(service.pricingTiers || [])
+    ]);
+  });
+}
+
+function getServicesData(sheet, profileId) {
+  const servicesSheet = sheet.getSheetByName('Services');
+  if (!servicesSheet) return [];
+
+  const data = servicesSheet.getDataRange().getValues();
+  const services = [];
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (row[0] === profileId) {
+      services.push({
+        name: row[1],
+        description: row[2],
+        serviceType: row[3],
+        frequency: row[4],
+        contract: row[5],
+        guarantee: row[6],
+        duration: row[7],
+        pests: row[8],
+        productType: row[9],
+        billingFrequency: row[10],
+        queueExt: row[11],
+        pricingTiers: JSON.parse(row[12] || '[]')
+      });
+    }
+  }
+
+  return services;
+}
+
+function saveTechniciansData(sheet, profileId, technicians) {
+  let techSheet = sheet.getSheetByName('Technicians');
+  if (!techSheet) {
+    techSheet = sheet.insertSheet('Technicians');
+    techSheet.appendRow(['ProfileID', 'Name', 'Role', 'Schedule', 'MaxStops', 'Phone', 'ZipCode', 'ServicesNotProvided', 'Notes']);
+  }
+
+  technicians.forEach(tech => {
+    techSheet.appendRow([
+      profileId,
+      tech.name || '',
+      tech.role || '',
+      tech.schedule || '',
+      tech.maxStops || '',
+      tech.phone || '',
+      tech.zipCode || '',
+      tech.doesNotService || '',
+      tech.notes || ''
+    ]);
+  });
+}
+
+function getTechniciansData(sheet, profileId) {
+  const techSheet = sheet.getSheetByName('Technicians');
+  if (!techSheet) return [];
+
+  const data = techSheet.getDataRange().getValues();
+  const technicians = [];
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (row[0] === profileId) {
+      technicians.push({
+        name: row[1],
+        role: row[2],
+        schedule: row[3],
+        maxStops: row[4],
+        phone: row[5],
+        zipCode: row[6],
+        doesNotService: row[7],
+        notes: row[8]
+      });
+    }
+  }
+
+  return technicians;
+}
+
+function saveServiceAreasData(sheet, profileId, serviceAreas) {
+  let areaSheet = sheet.getSheetByName('ServiceAreas');
+  if (!areaSheet) {
+    areaSheet = sheet.insertSheet('ServiceAreas');
+    areaSheet.appendRow(['ProfileID', 'Zip', 'City', 'State', 'Branch', 'InService', 'Notes']);
+  }
+
+  serviceAreas.forEach(area => {
+    areaSheet.appendRow([
+      profileId,
+      area.zip || '',
+      area.city || '',
+      area.state || '',
+      area.branch || '',
+      area.inService || 'true',
+      area.notes || ''
+    ]);
+  });
+}
+
+function getServiceAreasData(sheet, profileId) {
+  const areaSheet = sheet.getSheetByName('ServiceAreas');
+  if (!areaSheet) return [];
+
+  const data = areaSheet.getDataRange().getValues();
+  const serviceAreas = [];
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (row[0] === profileId) {
+      serviceAreas.push({
+        zip: row[1],
+        city: row[2],
+        state: row[3],
+        branch: row[4],
+        inService: row[5] === 'true',
+        notes: row[6]
+      });
+    }
+  }
+
+  return serviceAreas;
+}
+
+// Test function for development
+function testGetData() {
+  const testSheetId = 'YOUR_TEST_SHEET_ID';
+  try {
+    const data = getClientDataFromSheet(testSheetId);
+    console.log('Test data:', JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Test failed:', error);
   }
 }
