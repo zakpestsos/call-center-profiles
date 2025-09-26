@@ -892,6 +892,96 @@ border-color: #3b82f6;
 box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+/* Search Container and Popup */
+.search-container {
+position: relative;
+}
+
+.search-popup {
+position: absolute;
+top: 100%;
+left: 0;
+right: 0;
+z-index: 1000;
+margin-top: 0.5rem;
+background: rgba(15, 23, 42, 0.95);
+border: 1px solid #3b82f6;
+border-radius: 0.75rem;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(59, 130, 246, 0.2);
+backdrop-filter: blur(10px);
+max-height: 300px;
+overflow-y: auto;
+animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+from {
+opacity: 0;
+transform: translateY(-10px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+.search-popup-content {
+padding: 1rem;
+}
+
+.search-popup-header {
+font-size: 0.9rem;
+font-weight: 600;
+color: #60a5fa;
+margin-bottom: 0.75rem;
+}
+
+.search-popup-item {
+padding: 0.75rem;
+border-radius: 0.5rem;
+margin-bottom: 0.5rem;
+cursor: pointer;
+transition: all 0.2s ease;
+border: 1px solid transparent;
+}
+
+.search-popup-item:hover {
+background: rgba(59, 130, 246, 0.2);
+border-color: #3b82f6;
+transform: translateX(2px);
+}
+
+.search-popup-item.covered {
+background: rgba(16, 185, 129, 0.1);
+border-color: rgba(16, 185, 129, 0.3);
+}
+
+.search-popup-item.not-covered {
+background: rgba(239, 68, 68, 0.1);
+border-color: rgba(239, 68, 68, 0.3);
+}
+
+.search-popup-item.warning {
+background: rgba(251, 191, 36, 0.1);
+border-color: rgba(251, 191, 36, 0.3);
+}
+
+.search-popup-item-icon {
+display: inline-block;
+width: 20px;
+font-weight: bold;
+}
+
+.search-popup-item-text {
+color: #e2e8f0;
+}
+
+.search-popup-item-detail {
+font-size: 0.8rem;
+color: #94a3b8;
+margin-top: 0.25rem;
+}
+
 .tool-btn {
 width: 100%;
 background: linear-gradient(135deg, #1e40af, #3b82f6);
@@ -2093,10 +2183,18 @@ Loading weather...
 <!-- Pest Search -->
 <div class="tool-section">
 <div class="tool-title">Pest Search</div>
+<div class="search-container">
 <input type="text" class="tool-input" id="pestSearch" placeholder="Search pests..." maxlength="50">
 <button class="tool-btn" onclick="searchPests()">Search</button>
 <button class="tool-btn" onclick="clearSearch()" style="background: linear-gradient(135deg, #64748b, #94a3b8);">Clear</button>
-<div class="tool-result" id="searchResults">Enter pest name to search</div>
+
+<!-- Search Results Popup -->
+<div class="search-popup" id="searchPopup" style="display: none;">
+<div class="search-popup-content" id="searchPopupContent">
+<!-- Search results will appear here -->
+</div>
+</div>
+</div>
 </div>
 
 <!-- Service Area Check -->
@@ -3619,14 +3717,13 @@ function updateStickyWeather(weatherText) {
 document.getElementById('stickyWeather').textContent = weatherText;
 }
 
-// Search functionality
+// Search functionality with popup
 function searchPests() {
 const searchTerm = document.getElementById('pestSearch').value.toLowerCase().trim();
-if (!searchTerm) return;
-
-const searchResults = document.getElementById('searchResults');
-const pestsAlert = document.getElementById('pestsNotCoveredAlert');
-const alertContent = document.getElementById('alertContent');
+if (!searchTerm) {
+hideSearchPopup();
+return;
+}
 
 let foundInServices = [];
 let foundInNotCovered = false;
@@ -3698,37 +3795,92 @@ foundInNotCovered = true;
 }
 }
 
-// Update search results - prioritize service coverage
-if (foundInServices.length > 0) {
-pestsAlert.classList.remove('show');
+// Show popup with results
+showSearchPopup(searchTerm, foundInServices, foundInNotCovered, exactMatchInServices);
+}
 
+function showSearchPopup(searchTerm, foundInServices, foundInNotCovered, exactMatchInServices) {
+const popup = document.getElementById('searchPopup');
+const content = document.getElementById('searchPopupContent');
+
+let popupHTML = '';
+
+// Show service results first if any
+if (foundInServices.length > 0) {
 // Sort results to show exact matches first
 foundInServices.sort((a, b) => b.exactMatch - a.exactMatch);
 
-const serviceLinks = foundInServices.map(service => {
+const headerText = exactMatchInServices ? 
+`<div class="search-popup-header">✅ "${searchTerm}" is COVERED in:</div>` :
+`<div class="search-popup-header">🔍 Found "${searchTerm}" in:</div>`;
+
+popupHTML += headerText;
+
+foundInServices.forEach(service => {
 const matchType = service.exactMatch ? '✅' : '🔍';
-return `<div class="search-result-item" onclick="navigateToService('${service.name}', '${searchTerm}')" style="cursor: pointer; color: #60a5fa; text-decoration: underline; padding: 0.5rem 0.75rem; border-bottom: 1px solid #334155; margin-bottom: 0.5rem; display: block; width: 100%; background: rgba(30, 41, 59, 0.5); border-radius: 0.25rem; transition: background 0.2s ease;" onmouseover="this.style.background='rgba(59, 130, 246, 0.2)'" onmouseout="this.style.background='rgba(30, 41, 59, 0.5)'">${matchType} ${service.name}</div>`;
-}).join('');
-
-let resultText = exactMatchInServices ? 
-`<div style="margin-bottom: 0.75rem; font-weight: 600;">✅ "${searchTerm}" is COVERED in:</div>` :
-`<div style="margin-bottom: 0.75rem; font-weight: 600;">🔍 Found "${searchTerm}" in:</div>`;
-
-searchResults.innerHTML = `${resultText}<div style="display: flex; flex-direction: column; gap: 0.25rem;">${serviceLinks}</div>`;
-
-// Show warning if also found in not covered but services are available
-if (foundInNotCovered) {
-searchResults.innerHTML += `<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(251, 191, 36, 0.1); border: 1px solid #f59e0b; border-radius: 0.5rem; color: #fbbf24;"><strong>Note:</strong> Some types of "${searchTerm}" may not be covered. Check service details.</div>`;
+const cssClass = service.exactMatch ? 'covered' : '';
+popupHTML += `
+<div class="search-popup-item ${cssClass}" onclick="selectSearchResult('${service.name}', '${searchTerm}')">
+<div>
+<span class="search-popup-item-icon">${matchType}</span>
+<span class="search-popup-item-text">${service.name}</span>
+</div>
+<div class="search-popup-item-detail">Click to view service details</div>
+</div>
+`;
+});
 }
 
-} else if (foundInNotCovered) {
-pestsAlert.classList.add('show');
-alertContent.textContent = `"${searchTerm}" appears in the pests not covered list: ${clientData.pestsNotCovered}`;
-searchResults.innerHTML = `⚠️ Found "${searchTerm}" in <strong>Pests Not Covered</strong>`;
-} else {
-pestsAlert.classList.remove('show');
-searchResults.innerHTML = `❓ No specific coverage found for "${searchTerm}". Check with service details or contact office.`;
+// Show not covered warning if relevant
+if (foundInNotCovered && foundInServices.length > 0) {
+popupHTML += `
+<div class="search-popup-item warning">
+<div>
+<span class="search-popup-item-icon">⚠️</span>
+<span class="search-popup-item-text">Some types may not be covered</span>
+</div>
+<div class="search-popup-item-detail">Check service details for specifics</div>
+</div>
+`;
+} else if (foundInNotCovered && foundInServices.length === 0) {
+popupHTML += `
+<div class="search-popup-header">⚠️ "${searchTerm}" is NOT COVERED</div>
+<div class="search-popup-item not-covered">
+<div>
+<span class="search-popup-item-icon">🚫</span>
+<span class="search-popup-item-text">Found in exclusions list</span>
+</div>
+<div class="search-popup-item-detail">${clientData.pestsNotCovered}</div>
+</div>
+`;
 }
+
+// No results found
+if (foundInServices.length === 0 && !foundInNotCovered) {
+popupHTML += `
+<div class="search-popup-header">❓ No coverage found for "${searchTerm}"</div>
+<div class="search-popup-item">
+<div>
+<span class="search-popup-item-icon">📞</span>
+<span class="search-popup-item-text">Contact office for details</span>
+</div>
+<div class="search-popup-item-detail">Pest may require special treatment</div>
+</div>
+`;
+}
+
+content.innerHTML = popupHTML;
+popup.style.display = 'block';
+}
+
+function selectSearchResult(serviceName, searchTerm) {
+hideSearchPopup();
+navigateToService(serviceName, searchTerm);
+}
+
+function hideSearchPopup() {
+const popup = document.getElementById('searchPopup');
+if (popup) popup.style.display = 'none';
 }
 
 // Navigate to service function
@@ -3758,8 +3910,11 @@ card.style.boxShadow = 'none';
 
 function clearSearch() {
 document.getElementById('pestSearch').value = '';
-document.getElementById('searchResults').innerHTML = '';
-document.getElementById('pestsNotCoveredAlert').classList.remove('show');
+hideSearchPopup();
+
+// Remove any alerts
+const pestsAlert = document.getElementById('pestsNotCoveredAlert');
+if (pestsAlert) pestsAlert.classList.remove('show');
 
 // Show all services again
 populateServices();
@@ -3940,6 +4095,26 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('pestSearch').addEventListener('keypress', function(e) {
 if (e.key === 'Enter') {
 searchPests();
+}
+});
+
+// Handle input changes for real-time search
+document.getElementById('pestSearch').addEventListener('input', function(e) {
+const value = e.target.value.trim();
+if (value.length > 2) {
+searchPests();
+} else {
+hideSearchPopup();
+}
+});
+
+// Hide popup when clicking outside
+document.addEventListener('click', function(e) {
+const searchContainer = e.target.closest('.search-container');
+const popup = document.getElementById('searchPopup');
+
+if (!searchContainer && popup && popup.style.display === 'block') {
+hideSearchPopup();
 }
 });
 
