@@ -1,6 +1,46 @@
 // GitHub Pages Profile Viewer - Clean Implementation
 let clientData = {};
 
+// JSONP helper function to bypass CORS
+function fetchWithJSONP(url) {
+    return new Promise((resolve, reject) => {
+        // Create a unique callback name
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+        
+        // Create the script element
+        const script = document.createElement('script');
+        
+        // Set up the callback
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(data);
+        };
+        
+        // Handle errors
+        script.onerror = function() {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            reject(new Error('JSONP request failed'));
+        };
+        
+        // Set the script source
+        script.src = url.replace('callback=handleProfileData', `callback=${callbackName}`);
+        
+        // Add to DOM to trigger the request
+        document.body.appendChild(script);
+        
+        // Timeout after 10 seconds
+        setTimeout(() => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('JSONP request timeout'));
+            }
+        }, 10000);
+    });
+}
+
 // Get profile ID from URL
 function getProfileIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -26,13 +66,12 @@ async function loadProfileData() {
         console.log('🔗 URL:', apiUrl);
         console.log('🔍 Looking for Profile ID:', profileId);
 
-        const response = await fetch(`${apiUrl}?profileId=${encodeURIComponent(profileId)}`);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // Try JSONP approach to bypass CORS
+        const data = await fetchWithJSONP(`${apiUrl}?profileId=${encodeURIComponent(profileId)}&callback=handleProfileData`);
+        
+        if (!data) {
+            throw new Error('No data received from API');
         }
-
-        const data = await response.json();
         console.log('✅ Data received from Apps Script:', data);
 
         if (data.error) {
@@ -207,9 +246,22 @@ function updateTime() {
 }
 
 function showError(message) {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error').style.display = 'block';
-    document.getElementById('error').querySelector('p').textContent = message;
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (errorEl) {
+        errorEl.style.display = 'block';
+        const errorParagraph = errorEl.querySelector('p');
+        if (errorParagraph) {
+            errorParagraph.textContent = message;
+        } else {
+            errorEl.innerHTML = `<p>${message}</p>`;
+        }
+    } else {
+        console.error('Error:', message);
+        alert('Error: ' + message);
+    }
 }
 
 // Initialize when page loads
