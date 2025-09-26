@@ -139,6 +139,10 @@ function populateProfile() {
 
 function populateServices() {
     const servicesGrid = document.getElementById('servicesGrid');
+    if (!servicesGrid) {
+        console.log('servicesGrid element not found');
+        return;
+    }
     servicesGrid.innerHTML = '';
 
     if (!clientData.services || clientData.services.length === 0) {
@@ -169,6 +173,10 @@ function populateServices() {
 
 function populateTechnicians() {
     const techniciansGrid = document.getElementById('techniciansGrid');
+    if (!techniciansGrid) {
+        console.log('techniciansGrid element not found');
+        return;
+    }
     techniciansGrid.innerHTML = '';
 
     if (!clientData.technicians || clientData.technicians.length === 0) {
@@ -198,7 +206,11 @@ function populateTechnicians() {
 }
 
 function populateServiceAreas() {
-    const areasGrid = document.getElementById('areasGrid');
+    const areasGrid = document.getElementById('serviceAreasGrid');
+    if (!areasGrid) {
+        console.log('serviceAreasGrid element not found');
+        return;
+    }
     areasGrid.innerHTML = '';
 
     if (!clientData.serviceAreas || clientData.serviceAreas.length === 0) {
