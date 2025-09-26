@@ -3630,45 +3630,101 @@ const alertContent = document.getElementById('alertContent');
 
 let foundInServices = [];
 let foundInNotCovered = false;
+let exactMatchInServices = false;
 
-// Search in services
+// Search in services - check for exact matches first
 clientData.services.forEach(service => {
 // Check main service pests
-if (service.pests && service.pests.toLowerCase().includes(searchTerm)) {
+if (service.pests) {
+const pestsLower = service.pests.toLowerCase();
+const pestsList = pestsLower.split(',').map(p => p.trim());
+
+// Check for exact match first
+if (pestsList.includes(searchTerm)) {
 foundInServices.push({
 name: service.name,
-type: 'main'
+type: 'main',
+exactMatch: true
+});
+exactMatchInServices = true;
+} else if (pestsLower.includes(searchTerm)) {
+foundInServices.push({
+name: service.name,
+type: 'main',
+exactMatch: false
 });
 }
+}
+
 // Check subservice pests
 if (service.subServices) {
 service.subServices.forEach(subService => {
-if (subService.pests && subService.pests.toLowerCase().includes(searchTerm)) {
+if (subService.pests) {
+const subPestsLower = subService.pests.toLowerCase();
+const subPestsList = subPestsLower.split(',').map(p => p.trim());
+
+// Check for exact match first
+if (subPestsList.includes(searchTerm)) {
 foundInServices.push({
 name: `${service.name} (${subService.name})`,
-type: 'sub'
+type: 'sub',
+exactMatch: true
 });
+exactMatchInServices = true;
+} else if (subPestsLower.includes(searchTerm)) {
+foundInServices.push({
+name: `${service.name} (${subService.name})`,
+type: 'sub',
+exactMatch: false
+});
+}
 }
 });
 }
 });
 
-// Check pests not covered
-if (clientData.pestsNotCovered && clientData.pestsNotCovered.toLowerCase().includes(searchTerm)) {
+// Check pests not covered - but be more specific about matches
+let exactMatchInNotCovered = false;
+if (clientData.pestsNotCovered) {
+const notCoveredLower = clientData.pestsNotCovered.toLowerCase();
+const notCoveredList = notCoveredLower.split(',').map(p => p.trim());
+
+// Check for exact match in not covered
+exactMatchInNotCovered = notCoveredList.includes(searchTerm);
+
+// Only flag as "not covered" if no exact service match AND either exact not-covered match OR partial match
+if (!exactMatchInServices && (exactMatchInNotCovered || notCoveredLower.includes(searchTerm))) {
 foundInNotCovered = true;
 }
+}
 
-// Update search results
+// Update search results - prioritize service coverage
+if (foundInServices.length > 0) {
+pestsAlert.classList.remove('show');
+
+// Sort results to show exact matches first
+foundInServices.sort((a, b) => b.exactMatch - a.exactMatch);
+
+const serviceLinks = foundInServices.map(service => {
+const matchType = service.exactMatch ? '✅' : '🔍';
+return `<div class="search-result-item" onclick="navigateToService('${service.name}', '${searchTerm}')" style="cursor: pointer; color: #60a5fa; text-decoration: underline; padding: 0.5rem 0.75rem; border-bottom: 1px solid #334155; margin-bottom: 0.5rem; display: block; width: 100%; background: rgba(30, 41, 59, 0.5); border-radius: 0.25rem; transition: background 0.2s ease;" onmouseover="this.style.background='rgba(59, 130, 246, 0.2)'" onmouseout="this.style.background='rgba(30, 41, 59, 0.5)'">${matchType} ${service.name}</div>`;
+}).join('');
+
+let resultText = exactMatchInServices ? 
+`<div style="margin-bottom: 0.75rem; font-weight: 600;">✅ "${searchTerm}" is COVERED in:</div>` :
+`<div style="margin-bottom: 0.75rem; font-weight: 600;">🔍 Found "${searchTerm}" in:</div>`;
+
+searchResults.innerHTML = `${resultText}<div style="display: flex; flex-direction: column; gap: 0.25rem;">${serviceLinks}</div>`;
+
+// Show warning if also found in not covered but services are available
 if (foundInNotCovered) {
+searchResults.innerHTML += `<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(251, 191, 36, 0.1); border: 1px solid #f59e0b; border-radius: 0.5rem; color: #fbbf24;"><strong>Note:</strong> Some types of "${searchTerm}" may not be covered. Check service details.</div>`;
+}
+
+} else if (foundInNotCovered) {
 pestsAlert.classList.add('show');
 alertContent.textContent = `"${searchTerm}" appears in the pests not covered list: ${clientData.pestsNotCovered}`;
 searchResults.innerHTML = `⚠️ Found "${searchTerm}" in <strong>Pests Not Covered</strong>`;
-} else if (foundInServices.length > 0) {
-pestsAlert.classList.remove('show');
-const serviceLinks = foundInServices.map(service => 
-`<div class="search-result-item" onclick="navigateToService('${service.name}', '${searchTerm}')" style="cursor: pointer; color: #60a5fa; text-decoration: underline; padding: 0.5rem 0.75rem; border-bottom: 1px solid #334155; margin-bottom: 0.5rem; display: block; width: 100%; background: rgba(30, 41, 59, 0.5); border-radius: 0.25rem; transition: background 0.2s ease;" onmouseover="this.style.background='rgba(59, 130, 246, 0.2)'" onmouseout="this.style.background='rgba(30, 41, 59, 0.5)'">• ${service.name}</div>`
-).join('');
-searchResults.innerHTML = `<div style="margin-bottom: 0.75rem; font-weight: 600;">✅ Found "${searchTerm}" in:</div><div style="display: flex; flex-direction: column; gap: 0.25rem;">${serviceLinks}</div>`;
 } else {
 pestsAlert.classList.remove('show');
 searchResults.innerHTML = `❓ No specific coverage found for "${searchTerm}". Check with service details or contact office.`;
