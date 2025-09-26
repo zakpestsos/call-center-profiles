@@ -2186,7 +2186,7 @@ Loading weather...
 <div class="search-container">
 <input type="text" class="tool-input" id="pestSearch" placeholder="Search pests..." maxlength="50">
 <button class="tool-btn" onclick="searchPests()">Search</button>
-<button class="tool-btn" onclick="clearSearch()" style="background: linear-gradient(135deg, #64748b, #94a3b8);">Clear</button>
+<div class="tool-result" id="pestSearchResult">Enter pest name to search</div>
 
 <!-- Search Results Popup -->
 <div class="search-popup" id="searchPopup" style="display: none;">
@@ -2287,7 +2287,7 @@ function showError(message) {
     if (errorEl) {
         errorEl.style.display = 'block';
         errorEl.innerHTML = `<div>Error: ${message}</div>`;
-    } else {
+} else {
         console.error('Error:', message);
         alert('Error: ' + message);
     }
@@ -3871,6 +3871,21 @@ popupHTML += `
 
 content.innerHTML = popupHTML;
 popup.style.display = 'block';
+
+// Update the tool result text
+const resultEl = document.getElementById('pestSearchResult');
+if (resultEl) {
+if (foundInServices.length > 0) {
+resultEl.textContent = exactMatchInServices ? `✅ "${searchTerm}" is covered` : `🔍 Found "${searchTerm}"`;
+resultEl.style.color = exactMatchInServices ? '#10b981' : '#60a5fa';
+} else if (foundInNotCovered) {
+resultEl.textContent = `⚠️ "${searchTerm}" not covered`;
+resultEl.style.color = '#ef4444';
+} else {
+resultEl.textContent = `❓ No results for "${searchTerm}"`;
+resultEl.style.color = '#94a3b8';
+}
+}
 }
 
 function selectSearchResult(serviceName, searchTerm) {
@@ -3911,6 +3926,10 @@ card.style.boxShadow = 'none';
 function clearSearch() {
 document.getElementById('pestSearch').value = '';
 hideSearchPopup();
+
+// Reset the result text to match other tools
+const resultEl = document.getElementById('pestSearchResult');
+if (resultEl) resultEl.textContent = 'Enter pest name to search';
 
 // Remove any alerts
 const pestsAlert = document.getElementById('pestsNotCoveredAlert');
@@ -4130,7 +4149,7 @@ calculatePricing(serviceId);
 });
 });
 
-// Initialize the page  
+// Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
 loadProfileData();
 });
