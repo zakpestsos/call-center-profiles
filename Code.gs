@@ -5,35 +5,65 @@ function doGet(e) {
   try {
     // Check if requesting data by profileId
     const profileId = e.parameter.profileId;
+    const callback = e.parameter.callback;
 
     if (profileId) {
-      return getProfileDataById(profileId);
+      const profileData = getProfileDataById(profileId);
+      
+      // Handle JSONP callback
+      if (callback) {
+        return ContentService
+          .createTextOutput(`${callback}(${JSON.stringify(profileData)});`)
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      
+      return ContentService
+        .createTextOutput(JSON.stringify(profileData))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
     // Legacy support for sheetId-based requests
     const sheetId = e.parameter.sheetId;
 
     if (!sheetId) {
+      const errorResponse = {error: 'Missing profileId or sheetId parameter'};
+      
+      if (callback) {
+        return ContentService
+          .createTextOutput(`${callback}(${JSON.stringify(errorResponse)});`)
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      
       return ContentService
-        .createTextOutput(JSON.stringify({error: 'Missing profileId or sheetId parameter'}))
+        .createTextOutput(JSON.stringify(errorResponse))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
     const data = getClientDataFromSheet(sheetId);
 
+    if (callback) {
+      return ContentService
+        .createTextOutput(`${callback}(${JSON.stringify(data)});`)
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+
     return ContentService
       .createTextOutput(JSON.stringify(data))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders({
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      });
+      .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
     console.error('Error in doGet:', error);
+    const errorResponse = {error: error.toString()};
+    
+    const callback = e.parameter.callback;
+    if (callback) {
+      return ContentService
+        .createTextOutput(`${callback}(${JSON.stringify(errorResponse)});`)
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    
     return ContentService
-      .createTextOutput(JSON.stringify({error: error.toString()}))
+      .createTextOutput(JSON.stringify(errorResponse))
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
@@ -52,12 +82,7 @@ function doPost(e) {
 
     return ContentService
       .createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders({
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      });
+      .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
     console.error('Error in doPost:', error);
@@ -2652,7 +2677,7 @@ function generateUniqueProfileId() {
 function createClientProfileInMasterSheet(data) {
   try {
     // You'll need to set this to your actual master sheet ID
-    const MASTER_SHEET_ID = 'YOUR_MASTER_SHEET_ID';
+    const MASTER_SHEET_ID = '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec';
     const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
     const masterSheet = sheet.getSheetByName('Profiles') || sheet.getSheets()[0];
 
@@ -2716,36 +2741,57 @@ function createClientProfileInMasterSheet(data) {
   }
 }
 
-// Get profile data by ID
+// Get profile data by ID - returns data object (not ContentService)
 function getProfileDataById(profileId) {
   try {
-    const MASTER_SHEET_ID = 'YOUR_MASTER_SHEET_ID';
+    const MASTER_SHEET_ID = '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec';
     const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
-    const masterSheet = sheet.getSheetByName('Profiles') || sheet.getSheets()[0];
+    
+    // Look specifically for the Client_Profiles tab, as seen in your sheet
+    let masterSheet = sheet.getSheetByName('Client_Profiles');
+    if (!masterSheet) {
+      masterSheet = sheet.getSheets()[0]; // Fallback to first sheet
+    }
 
     const data = masterSheet.getDataRange().getValues();
+    console.log('Sheet data rows:', data.length);
+    console.log('Looking for profileId:', profileId);
+    
+    // Debug: Log first few rows
+    for (let i = 0; i < Math.min(3, data.length); i++) {
+      console.log(`Row ${i}:`, data[i][0]);
+    }
 
-    // Find the profile row
+    // Find the profile row - check both exact match and trimmed match
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (row[0] === profileId) {
+      const rowProfileId = row[0] ? row[0].toString().trim() : '';
+      const searchProfileId = profileId.toString().trim();
+      
+      console.log(`Comparing: "${rowProfileId}" vs "${searchProfileId}"`);
+      
+      if (rowProfileId === searchProfileId) {
+        console.log('Profile found at row', i);
+        
         const profileData = {
           profileId: row[0],
-          companyName: row[1],
-          location: row[2],
-          timezone: row[3],
+          companyName: row[1],        // Company_Name
+          location: row[2],           // Location  
+          timezone: row[3],           // Timezone
           officeInfo: {
-            phone: row[4],
-            email: row[5],
-            website: row[6],
-            address: row[7],
-            hours: row[8]
+            phone: row[4],            // Phone
+            email: row[5],            // Email
+            website: row[6],          // Website
+            address: row[7],          // Address
+            hours: row[8]             // Hours
           },
-          bulletin: row[9],
-          pestsNotCovered: row[10],
-          createdAt: row[11],
-          updatedAt: row[12],
-          status: row[13]
+          bulletin: row[9],           // Bulletin
+          pestsNotCovered: row[10],   // Pests_Not_Covered
+          clientFolderUrl: row[11],   // Client_Folder_URL
+          wixProfileUrl: row[12],     // Wix_Profile_URL
+          lastUpdated: row[13],       // Last_Updated
+          syncStatus: row[14],        // Sync_Status
+          editFormUrl: row[15]        // Edit_Form_URL
         };
 
         // Get related data
@@ -2753,26 +2799,16 @@ function getProfileDataById(profileId) {
         profileData.technicians = getTechniciansData(sheet, profileId);
         profileData.serviceAreas = getServiceAreasData(sheet, profileId);
 
-        return ContentService
-          .createTextOutput(JSON.stringify(profileData))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders({
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
-          });
+        return profileData;
       }
     }
 
-    return ContentService
-      .createTextOutput(JSON.stringify({error: 'Profile not found'}))
-      .setMimeType(ContentService.MimeType.JSON);
+    console.log('Profile not found. Available IDs:', data.slice(1).map(row => row[0]).filter(id => id));
+    return {error: 'Profile not found', availableIds: data.slice(1).map(row => row[0]).filter(id => id)};
 
   } catch (error) {
     console.error('Error getting profile:', error);
-    return ContentService
-      .createTextOutput(JSON.stringify({error: error.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return {error: error.toString()};
   }
 }
 
@@ -2810,22 +2846,28 @@ function getServicesData(sheet, profileId) {
   const data = servicesSheet.getDataRange().getValues();
   const services = [];
 
+  // Expected columns based on your sheet:
+  // Profile_ID(0), Service_Name(1), Service_Type(2), Frequency(3), Description(4), 
+  // Pests_Covered(5), Contract(6), Guarantee(7), Duration(8), Product_Type(9), 
+  // Billing_Frequency(10), Agent_Note(11), Queue_Ext(12), Pricing_Data(13)
+
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     if (row[0] === profileId) {
       services.push({
-        name: row[1],
-        description: row[2],
-        serviceType: row[3],
-        frequency: row[4],
-        contract: row[5],
-        guarantee: row[6],
-        duration: row[7],
-        pests: row[8],
-        productType: row[9],
-        billingFrequency: row[10],
-        queueExt: row[11],
-        pricingTiers: JSON.parse(row[12] || '[]')
+        name: row[1],              // Service_Name
+        serviceType: row[2],       // Service_Type
+        frequency: row[3],         // Frequency
+        description: row[4],       // Description
+        pests: row[5],             // Pests_Covered
+        contract: row[6],          // Contract
+        guarantee: row[7],         // Guarantee
+        duration: row[8],          // Duration
+        productType: row[9],       // Product_Type
+        billingFrequency: row[10], // Billing_Frequency
+        agentNote: row[11],        // Agent_Note
+        queueExt: row[12],         // Queue_Ext
+        pricingTiers: JSON.parse(row[13] || '[]') // Pricing_Data
       });
     }
   }
@@ -2862,18 +2904,23 @@ function getTechniciansData(sheet, profileId) {
   const data = techSheet.getDataRange().getValues();
   const technicians = [];
 
+  // Expected columns for Technicians sheet:
+  // Profile_ID(0), Name(1), Company(2), Role(3), Phone(4), Schedule(5), 
+  // Max_Stops(6), Does_Not_Service(7), Additional_Notes(8), Zip_Codes(9)
+
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     if (row[0] === profileId) {
       technicians.push({
-        name: row[1],
-        role: row[2],
-        schedule: row[3],
-        maxStops: row[4],
-        phone: row[5],
-        zipCode: row[6],
-        doesNotService: row[7],
-        notes: row[8]
+        name: row[1],              // Name
+        company: row[2],           // Company
+        role: row[3],              // Role
+        phone: row[4],             // Phone
+        schedule: row[5],          // Schedule
+        maxStops: row[6],          // Max_Stops
+        doesNotService: row[7],    // Does_Not_Service
+        additionalNotes: row[8],   // Additional_Notes
+        zipCodes: parseZipCodes(row[9]) // Zip_Codes
       });
     }
   }
@@ -2923,6 +2970,41 @@ function getServiceAreasData(sheet, profileId) {
   }
 
   return serviceAreas;
+}
+
+// Helper function to parse ZIP codes from various formats
+function parseZipCodes(zipData) {
+  if (!zipData) return [];
+  
+  const zipString = zipData.toString().trim();
+  console.log('Raw ZIP data:', zipString);
+  
+  // If it's already a JSON array string like '["75001", "75002"]'
+  if (zipString.startsWith('[') && zipString.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(zipString);
+      console.log('Parsed JSON ZIP codes:', parsed);
+      return parsed;
+    } catch (e) {
+      console.log('Failed to parse ZIP JSON, falling back to string parsing');
+    }
+  }
+  
+  // If it's a comma-separated string like "75001, 75002, 75003"
+  if (zipString.includes(',')) {
+    const zips = zipString.split(',').map(z => z.trim()).filter(z => z);
+    console.log('Parsed comma-separated ZIP codes:', zips);
+    return zips;
+  }
+  
+  // If it's a single ZIP code
+  if (/^\d{5}$/.test(zipString)) {
+    console.log('Single ZIP code:', [zipString]);
+    return [zipString];
+  }
+  
+  console.log('No valid ZIP codes found');
+  return [];
 }
 
 // Test function for development
