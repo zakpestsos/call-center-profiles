@@ -66,12 +66,13 @@ async function loadProfileData() {
         console.log('🔗 URL:', apiUrl);
         console.log('🔍 Looking for Profile ID:', profileId);
 
-        // Try JSONP approach to bypass CORS
-        const data = await fetchWithJSONP(`${apiUrl}?profileId=${encodeURIComponent(profileId)}&callback=handleProfileData`);
-        
-        if (!data) {
-            throw new Error('No data received from API');
+        const response = await fetch(`${apiUrl}?profileId=${encodeURIComponent(profileId)}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const data = await response.json();
         console.log('✅ Data received from Apps Script:', data);
 
         if (data.error) {
