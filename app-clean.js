@@ -133,8 +133,11 @@ function populateProfile() {
     populateServiceAreas();
 
     // Show content
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) loadingEl.style.display = 'none';
+    
+    const contentEl = document.getElementById('content');
+    if (contentEl) contentEl.style.display = 'block';
 }
 
 function populateServices() {
