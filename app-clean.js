@@ -92,18 +92,36 @@ async function loadProfileData() {
 
 function populateProfile() {
     // Update header
-    document.getElementById('companyName').textContent = clientData.companyName || 'Unknown Company';
-    document.getElementById('location').textContent = clientData.location || 'Unknown Location';
+    const companyNameEl = document.getElementById('companyName');
+    if (companyNameEl) companyNameEl.textContent = clientData.companyName || 'Unknown Company';
+    
+    const locationEl = document.getElementById('locationInfo');
+    if (locationEl) locationEl.textContent = clientData.location || 'Unknown Location';
 
-    // Populate contact info
-    document.getElementById('phoneNumber').textContent = clientData.officeInfo?.phone || '-';
-    document.getElementById('emailAddress').textContent = clientData.officeInfo?.email || '-';
-    document.getElementById('websiteUrl').innerHTML = clientData.officeInfo?.website ?
-        `<a href="${clientData.officeInfo.website}" target="_blank">${clientData.officeInfo.website}</a>` : '-';
-    document.getElementById('physicalAddress').textContent = clientData.officeInfo?.address || '-';
-    document.getElementById('officeHours').textContent = clientData.officeInfo?.hours || '-';
-    document.getElementById('bulletin').textContent = clientData.bulletin || '-';
-    document.getElementById('pestsNotCovered').textContent = clientData.pestsNotCovered || '-';
+    // Populate contact info (check if elements exist)
+    const phoneEl = document.getElementById('phoneNumber');
+    if (phoneEl) phoneEl.textContent = clientData.officeInfo?.phone || '-';
+    
+    const emailEl = document.getElementById('emailAddress');
+    if (emailEl) emailEl.textContent = clientData.officeInfo?.email || '-';
+    
+    const websiteEl = document.getElementById('websiteUrl');
+    if (websiteEl) {
+        websiteEl.innerHTML = clientData.officeInfo?.website ?
+            `<a href="${clientData.officeInfo.website}" target="_blank">${clientData.officeInfo.website}</a>` : '-';
+    }
+    
+    const addressEl = document.getElementById('physicalAddress');
+    if (addressEl) addressEl.textContent = clientData.officeInfo?.address || '-';
+    
+    const hoursEl = document.getElementById('officeHours');
+    if (hoursEl) hoursEl.textContent = clientData.officeInfo?.hours || '-';
+    
+    const bulletinEl = document.getElementById('bulletin');
+    if (bulletinEl) bulletinEl.textContent = clientData.bulletin || '-';
+    
+    const pestsEl = document.getElementById('pestsNotCovered');
+    if (pestsEl) pestsEl.textContent = clientData.pestsNotCovered || '-';
 
     // Populate services
     populateServices();
