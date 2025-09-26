@@ -117,11 +117,23 @@ function populateProfile() {
     const hoursEl = document.getElementById('officeHours');
     if (hoursEl) hoursEl.textContent = clientData.officeInfo?.hours || '-';
     
-    const bulletinEl = document.getElementById('bulletin');
-    if (bulletinEl) bulletinEl.textContent = clientData.bulletin || '-';
+    // Update info cards
+    const topBulletinEl = document.getElementById('topBulletinContent');
+    if (topBulletinEl) topBulletinEl.textContent = clientData.bulletin || '-';
     
-    const pestsEl = document.getElementById('pestsNotCovered');
-    if (pestsEl) pestsEl.textContent = clientData.pestsNotCovered || '-';
+    const topPestsEl = document.getElementById('topPestsNotCoveredContent');
+    if (topPestsEl) topPestsEl.textContent = clientData.pestsNotCovered || '-';
+    
+    // Update header links
+    const websiteLink = document.getElementById('websiteLink');
+    if (websiteLink && clientData.officeInfo?.website) {
+        websiteLink.href = clientData.officeInfo.website;
+    }
+    
+    const fieldRoutesLink = document.getElementById('fieldRoutesLink');
+    if (fieldRoutesLink && clientData.officeInfo?.website) {
+        fieldRoutesLink.href = clientData.officeInfo.website;
+    }
 
     // Populate services
     populateServices();
@@ -132,12 +144,12 @@ function populateProfile() {
     // Populate service areas
     populateServiceAreas();
 
-    // Show content
-    const loadingEl = document.getElementById('loading');
-    if (loadingEl) loadingEl.style.display = 'none';
+    // Hide loading state and show sections
+    const loadingStateEl = document.getElementById('loadingState');
+    if (loadingStateEl) loadingStateEl.style.display = 'none';
     
-    const contentEl = document.getElementById('content');
-    if (contentEl) contentEl.style.display = 'block';
+    // Show services section by default
+    showSection('services');
 }
 
 function populateServices() {
@@ -245,18 +257,27 @@ function populateServiceAreas() {
 
 function showSection(sectionName) {
     // Hide all sections
-    document.getElementById('services-section').classList.add('hidden');
-    document.getElementById('technicians-section').classList.add('hidden');
-    document.getElementById('areas-section').classList.add('hidden');
-    document.getElementById('info-section').classList.add('hidden');
+    const sections = ['servicesSection', 'policiesSection', 'techniciansSection', 'bulletinSection'];
+    sections.forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        if (section) section.style.display = 'none';
+    });
 
     // Show selected section
-    document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+    const targetSection = document.getElementById(sectionName + 'Section');
+    if (targetSection) targetSection.style.display = 'block';
 
     // Update button states
     const buttons = document.querySelectorAll('.nav-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    
+    // Find and activate the correct button
+    buttons.forEach(btn => {
+        if (btn.textContent.toLowerCase().includes(sectionName.toLowerCase()) ||
+            (sectionName === 'technicians' && btn.textContent.toLowerCase().includes('scheduling'))) {
+            btn.classList.add('active');
+        }
+    });
 }
 
 function updateTime() {

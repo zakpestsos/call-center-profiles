@@ -2962,7 +2962,8 @@ grid-template-columns: 1fr;
 }
 
 .tool-input {
-    width: 100%;
+    width: calc(100% - 1rem);
+    max-width: 200px;
     background: rgba(15, 23, 42, 0.7);
     border: 1px solid #334155;
     border-radius: 0.5rem;
@@ -6134,7 +6135,8 @@ grid-template-columns: 1fr;
 }
 
 .tool-input {
-    width: 100%;
+    width: calc(100% - 1rem);
+    max-width: 200px;
     background: rgba(15, 23, 42, 0.7);
     border: 1px solid #334155;
     border-radius: 0.5rem;
