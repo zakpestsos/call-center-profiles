@@ -2129,80 +2129,73 @@ Loading weather...
 </div>
 </div>
 
+<script src="config-github.js"></script>
 <script>
 let clientData = {};
 
-// Load client data from URL parameters or use sample data
-function loadClientData() {
-const urlParams = new URLSearchParams(window.location.search);
+// Load profile data from Apps Script API
+async function loadProfileData() {
+    const profileId = getProfileIdFromUrl();
 
-// Check if data is passed from Wix
-if (urlParams.has('companyName')) {
-clientData = {
-companyName: urlParams.get('companyName') || 'Unknown Company',
-location: urlParams.get('location') || '',
-timezone: urlParams.get('timezone') || '',
-officeInfo: {
-phone: urlParams.get('phone') || '',
-email: urlParams.get('email') || '',
-website: urlParams.get('website') || '',
-fieldRoutesLink: urlParams.get('fieldRoutesLink') || '',
-physicalAddress: urlParams.get('address') || '',
-officeHours: urlParams.get('hours') || ''
-},
-bulletin: urlParams.get('bulletin') || '',
-pestsNotCovered: urlParams.get('pestsNotCovered') || '',
-services: [],
-technicians: [],
-policies: [],
-serviceAreas: []
-};
+    if (!profileId) {
+        showError('No profile ID provided in URL');
+        return;
+    }
 
-// Parse services JSON if provided
-const servicesParam = urlParams.get('services');
-if (servicesParam) {
-try {
-clientData.services = JSON.parse(decodeURIComponent(servicesParam));
-} catch (e) {
-console.error('Error parsing services:', e);
-clientData.services = [];
-}
-}
+    try {
+        const apiUrl = window.CONFIG?.GOOGLE_SHEETS?.WEB_APP_URL;
+        if (!apiUrl) {
+            throw new Error('API URL not configured');
+        }
 
-// Parse technicians JSON if provided
-const techniciansParam = urlParams.get('technicians');
-if (techniciansParam) {
-try {
-clientData.technicians = JSON.parse(decodeURIComponent(techniciansParam));
-} catch (e) {
-console.error('Error parsing technicians:', e);
-clientData.technicians = [];
-}
+        console.log('📊 Fetching data from Apps Script API...');
+        console.log('🔗 URL:', apiUrl);
+        console.log('🔍 Looking for Profile ID:', profileId);
+
+        const response = await fetch(`${apiUrl}?profileId=${encodeURIComponent(profileId)}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('✅ Data received from Apps Script:', data);
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        clientData = data;
+        populateClientData();
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 60000);
+
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        showError('Error loading profile data: ' + error.message);
+    }
 }
 
-// Parse policies JSON if provided
-const policiesParam = urlParams.get('policies');
-if (policiesParam) {
-try {
-clientData.policies = JSON.parse(decodeURIComponent(policiesParam));
-} catch (e) {
-console.error('Error parsing policies:', e);
-clientData.policies = [];
-}
+function getProfileIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('profileId');
 }
 
-// Parse service areas JSON if provided
-const serviceAreasParam = urlParams.get('serviceAreas');
-if (serviceAreasParam) {
-try {
-clientData.serviceAreas = JSON.parse(decodeURIComponent(serviceAreasParam));
-} catch (e) {
-console.error('Error parsing service areas:', e);
-clientData.serviceAreas = [];
-}
-}
-} else {
-// Fallback sample data for testing
+function showError(message) {
+    const loadingEl = document.getElementById('loadingState');
+    if (loadingEl) loadingEl.style.display = 'none';
+    
+    const errorEl = document.getElementById('errorState');
+    if (errorEl) {
+        errorEl.style.display = 'block';
+        errorEl.innerHTML = `<div>Error: ${message}</div>`;
+    } else {
+        console.error('Error:', message);
+        alert('Error: ' + message);
+    }
+
+// If no profile ID provided, show sample data
+if (!getProfileIdFromUrl()) {
 clientData = {
 companyName: "SOS Exterminating",
 location: "Dallas, TX",
@@ -3906,9 +3899,9 @@ calculatePricing(serviceId);
 });
 });
 
-// Initialize the page
+// Initialize the page  
 document.addEventListener('DOMContentLoaded', function() {
-loadClientData();
+loadProfileData();
 });
 
 // Initialize sticky header after the page is fully loaded
