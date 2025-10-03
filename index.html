@@ -367,13 +367,48 @@ color: #e2e8f0;
 font-weight: 500;
 }
 
-.pricing-calculator {
-background: linear-gradient(135deg, #1e40af, #3b82f6);
-border: 1px solid #60a5fa;
-border-radius: 0.75rem;
-padding: 1rem;
-margin-top: 1rem;
-}
+        .pricing-calculator {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 1px solid #60a5fa;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pricing-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .pricing-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+
+        .pricing-info-label {
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .pricing-info-value {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .pricing-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.5rem;
+        }
 
 .calculator-title {
 font-family: 'Rajdhani', sans-serif;
@@ -3039,28 +3074,36 @@ ${service.agentNote ? `
 <div class="service-details">
 <div class="service-details-grid">
 <div class="detail-item">
-<div class="detail-label">Contract</div>
+<div class="detail-label">Contract:</div>
 <div class="detail-value">${service.contract || 'N/A'}</div>
 </div>
 <div class="detail-item">
-<div class="detail-label">Guarantee</div>
+<div class="detail-label">Guarantee:</div>
 <div class="detail-value">${service.guarantee || 'N/A'}</div>
 </div>
 <div class="detail-item">
-<div class="detail-label">Duration</div>
+<div class="detail-label">Call Ahead:</div>
+<div class="detail-value">${service.callAhead || service.callAheadCustom || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Initial Duration:</div>
 <div class="detail-value">${service.duration || 'N/A'}</div>
 </div>
 <div class="detail-item">
-<div class="detail-label">Service Type</div>
-<div class="detail-value">${service.serviceType || 'N/A'}</div>
+<div class="detail-label">Recurring Duration:</div>
+<div class="detail-value">${service.recurringDuration || 'N/A'}</div>
 </div>
 <div class="detail-item">
-<div class="detail-label">Product Type</div>
-<div class="detail-value">${service.productType || 'N/A'}</div>
+<div class="detail-label">Leave During Service:</div>
+<div class="detail-value">${service.leaveDuringService || service.leaveDuringServiceCustom || 'N/A'}</div>
 </div>
 <div class="detail-item">
-<div class="detail-label">Billing Frequency</div>
-<div class="detail-value">${service.billingFrequency || 'N/A'}</div>
+<div class="detail-label">Follow up:</div>
+<div class="detail-value">${service.followUp || 'N/A'}</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Prep Sheet:</div>
+<div class="detail-value">${service.prepSheet || service.prepSheetCustom || 'N/A'}</div>
 </div>
 </div>
 </div>
@@ -3070,6 +3113,31 @@ ${service.agentNote ? `
 <div class="calculator-title">
 🧮 Pricing Calculator
 </div>
+
+<!-- Pricing Information Display -->
+<div class="pricing-info-grid">
+<div class="pricing-info-item">
+<div class="pricing-info-label">Product Type:</div>
+<div class="pricing-info-value">${service.productType || 'N/A'}</div>
+</div>
+<div class="pricing-info-item">
+<div class="pricing-info-label">Sold-As Name:</div>
+<div class="pricing-info-value">${service.name || 'N/A'}</div>
+</div>
+<div class="pricing-info-item">
+<div class="pricing-info-label">Service Frequency:</div>
+<div class="pricing-info-value">${service.serviceFrequencyCustom || service.frequency || 'N/A'}</div>
+</div>
+<div class="pricing-info-item">
+<div class="pricing-info-label">Billing Frequency:</div>
+<div class="pricing-info-value">${service.billingFrequencyCustom || service.billingFrequency || 'N/A'}</div>
+</div>
+<div class="pricing-info-item">
+<div class="pricing-info-label">Service Type:</div>
+<div class="pricing-info-value">${service.typeCustom || service.serviceType || 'N/A'}</div>
+</div>
+</div>
+
 <div class="sqft-input-container">
 <input type="number" class="sqft-input" id="sqft_${serviceId}" placeholder="Enter square footage" min="0" step="1">
 <button class="calculate-btn" onclick="calculatePricing('${serviceId}')">Calculate</button>
@@ -3085,8 +3153,9 @@ ${service.agentNote ? `
 </div>
 `;
 
-// Store pricing data on the element for the calculator
+// Store pricing data and service data on the element for the calculator
 serviceCard._pricingData = service.pricingTiers || [];
+serviceCard._serviceData = service;
 }
 
 return serviceCard;
