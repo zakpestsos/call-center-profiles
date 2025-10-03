@@ -3464,12 +3464,13 @@ function getProfileDataAPI(profileId) {
  * Returns a flat array that the frontend organizePolicies function can handle
  */
 function formatPoliciesForDisplay(policies) {
+  console.log('🔄 Formatting policies for display:', policies);
   const formatted = [];
   
   // Format Service Coverage policies
   if (policies.serviceCoverage) {
     const coverage = policies.serviceCoverage;
-    if (coverage.treatVehicles) {
+    if (coverage.treatVehicles && coverage.treatVehicles.trim() !== '') {
       formatted.push({
         category: 'Service Coverage',
         title: 'Vehicle Treatment',
@@ -3477,7 +3478,7 @@ function formatPoliciesForDisplay(policies) {
         description: 'Do we treat vehicles?'
       });
     }
-    if (coverage.commercialProperties) {
+    if (coverage.commercialProperties && coverage.commercialProperties.trim() !== '') {
       formatted.push({
         category: 'Service Coverage',
         title: 'Commercial Properties',
@@ -3485,7 +3486,7 @@ function formatPoliciesForDisplay(policies) {
         description: 'Commercial property service policy'
       });
     }
-    if (coverage.multiFamilyOffered) {
+    if (coverage.multiFamilyOffered && coverage.multiFamilyOffered.trim() !== '') {
       formatted.push({
         category: 'Service Coverage',
         title: 'Multi-Family Properties',
@@ -3493,7 +3494,7 @@ function formatPoliciesForDisplay(policies) {
         description: 'Multi-family property service policy'
       });
     }
-    if (coverage.trailersOffered) {
+    if (coverage.trailersOffered && coverage.trailersOffered.trim() !== '') {
       formatted.push({
         category: 'Service Coverage',
         title: 'Trailers/Mobile Homes',
@@ -3506,7 +3507,7 @@ function formatPoliciesForDisplay(policies) {
   // Format Scheduling policies
   if (policies.scheduling) {
     const sched = policies.scheduling;
-    if (sched.signedContract) {
+    if (sched.signedContract && sched.signedContract.trim() !== '') {
       formatted.push({
         category: 'Scheduling & Operations',
         title: 'Contract Required',
@@ -3514,7 +3515,7 @@ function formatPoliciesForDisplay(policies) {
         description: 'Signed contract requirement policy'
       });
     }
-    if (sched.appointmentConfirmations) {
+    if (sched.appointmentConfirmations && sched.appointmentConfirmations.trim() !== '') {
       formatted.push({
         category: 'Scheduling & Operations',
         title: 'Appointment Confirmations',
@@ -3522,7 +3523,7 @@ function formatPoliciesForDisplay(policies) {
         description: 'Appointment confirmation policy'
       });
     }
-    if (sched.sameDayServices) {
+    if (sched.sameDayServices && sched.sameDayServices.trim() !== '') {
       formatted.push({
         category: 'Scheduling & Operations',
         title: 'Same Day Services',
@@ -3530,7 +3531,15 @@ function formatPoliciesForDisplay(policies) {
         description: 'Same day service availability'
       });
     }
-    if (sched.afterHoursEmergency) {
+    if (sched.techSkilling && sched.techSkilling.trim() !== '') {
+      formatted.push({
+        category: 'Scheduling & Operations',
+        title: 'Tech Skilling',
+        value: sched.techSkilling,
+        description: 'Technician skill requirements'
+      });
+    }
+    if (sched.afterHoursEmergency && sched.afterHoursEmergency.trim() !== '') {
       formatted.push({
         category: 'Scheduling & Operations',
         title: 'After Hours Emergency',
@@ -3538,12 +3547,28 @@ function formatPoliciesForDisplay(policies) {
         description: 'Emergency service availability'
       });
     }
+    if (sched.maxDistance && sched.maxDistance.trim() !== '') {
+      formatted.push({
+        category: 'Scheduling & Operations',
+        title: 'Max Distance',
+        value: sched.maxDistance,
+        description: 'Maximum service distance'
+      });
+    }
+    if (sched.returningCustomers && sched.returningCustomers.trim() !== '') {
+      formatted.push({
+        category: 'Scheduling & Operations',
+        title: 'Returning Customers',
+        value: sched.returningCustomers,
+        description: 'Returning customer policy'
+      });
+    }
   }
   
   // Format Service Operations policies
   if (policies.serviceOperations) {
     const ops = policies.serviceOperations;
-    if (ops.reservices) {
+    if (ops.reservices && ops.reservices.trim() !== '') {
       formatted.push({
         category: 'Service Operations',
         title: 'Reservices',
@@ -3551,7 +3576,7 @@ function formatPoliciesForDisplay(policies) {
         description: 'Reservice policy and requirements'
       });
     }
-    if (ops.setServiceTypeTo) {
+    if (ops.setServiceTypeTo && ops.setServiceTypeTo.trim() !== '') {
       formatted.push({
         category: 'Service Operations',
         title: 'Service Type Setting',
@@ -3559,7 +3584,15 @@ function formatPoliciesForDisplay(policies) {
         description: 'Default service type configuration'
       });
     }
-    if (ops.toolsToSave) {
+    if (ops.setSubscriptionTypeTo && ops.setSubscriptionTypeTo.trim() !== '') {
+      formatted.push({
+        category: 'Service Operations',
+        title: 'Subscription Type Setting',
+        value: ops.setSubscriptionTypeTo,
+        description: 'Default subscription type configuration'
+      });
+    }
+    if (ops.toolsToSave && ops.toolsToSave.trim() !== '') {
       formatted.push({
         category: 'Service Operations',
         title: 'Tools to Save',
@@ -3567,12 +3600,20 @@ function formatPoliciesForDisplay(policies) {
         description: 'Required tools and equipment'
       });
     }
+    if (ops.additionalNotes && ops.additionalNotes.trim() !== '') {
+      formatted.push({
+        category: 'Service Operations',
+        title: 'Additional Notes',
+        value: ops.additionalNotes,
+        description: 'Additional operational notes'
+      });
+    }
   }
   
   // Format Payment policies
   if (policies.payment) {
     const pay = policies.payment;
-    if (pay.paymentTypes) {
+    if (pay.paymentTypes && pay.paymentTypes.trim() !== '') {
       formatted.push({
         category: 'Payment & Financial',
         title: 'Payment Types',
@@ -3580,7 +3621,7 @@ function formatPoliciesForDisplay(policies) {
         description: 'Accepted payment methods'
       });
     }
-    if (pay.pastDuePeriod) {
+    if (pay.pastDuePeriod && pay.pastDuePeriod.trim() !== '') {
       formatted.push({
         category: 'Payment & Financial',
         title: 'Past Due Period',
@@ -3594,16 +3635,19 @@ function formatPoliciesForDisplay(policies) {
   if (policies.legacy) {
     Object.keys(policies.legacy).forEach(category => {
       policies.legacy[category].forEach(policy => {
-        formatted.push({
-          category: category,
-          title: policy.title,
-          value: policy.default || policy.description,
-          description: policy.description
-        });
+        if (policy.default && policy.default.trim() !== '') {
+          formatted.push({
+            category: category,
+            title: policy.title,
+            value: policy.default,
+            description: policy.description
+          });
+        }
       });
     });
   }
   
+  console.log('✅ Formatted policies for display:', formatted);
   return formatted;
 }
 

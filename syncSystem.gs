@@ -480,42 +480,41 @@ function doGetEnhanced(e) {
 
  /**
   * Formats policy data for display in the web app
+  * Returns a flat array that the frontend organizePolicies function can handle
   */
  function formatPoliciesForDisplay(policies) {
-   const formatted = {
-     serviceCoverage: [],
-     scheduling: [],
-     serviceOperations: [],
-     payment: [],
-     legacy: []
-   };
+   const formatted = [];
    
    // Format Service Coverage policies
    if (policies.serviceCoverage) {
      const coverage = policies.serviceCoverage;
      if (coverage.treatVehicles) {
-       formatted.serviceCoverage.push({
+       formatted.push({
+         category: 'Service Coverage',
          title: 'Vehicle Treatment',
          value: coverage.treatVehicles,
          description: 'Do we treat vehicles?'
        });
      }
      if (coverage.commercialProperties) {
-       formatted.serviceCoverage.push({
+       formatted.push({
+         category: 'Service Coverage',
          title: 'Commercial Properties',
          value: coverage.commercialProperties,
          description: 'Commercial property service policy'
        });
      }
      if (coverage.multiFamilyOffered) {
-       formatted.serviceCoverage.push({
+       formatted.push({
+         category: 'Service Coverage',
          title: 'Multi-Family Properties',
          value: coverage.multiFamilyOffered,
          description: 'Multi-family property service policy'
        });
      }
      if (coverage.trailersOffered) {
-       formatted.serviceCoverage.push({
+       formatted.push({
+         category: 'Service Coverage',
          title: 'Trailers/Mobile Homes',
          value: coverage.trailersOffered,
          description: 'Trailer and mobile home service policy'
@@ -527,35 +526,40 @@ function doGetEnhanced(e) {
    if (policies.scheduling) {
      const sched = policies.scheduling;
      if (sched.signedContract) {
-       formatted.scheduling.push({
+       formatted.push({
+         category: 'Scheduling & Operations',
          title: 'Contract Required',
          value: sched.signedContract,
          description: 'Signed contract requirement policy'
        });
      }
      if (sched.appointmentConfirmations) {
-       formatted.scheduling.push({
+       formatted.push({
+         category: 'Scheduling & Operations',
          title: 'Appointment Confirmations',
          value: sched.appointmentConfirmations,
          description: 'Appointment confirmation policy'
        });
      }
      if (sched.callAhead) {
-       formatted.scheduling.push({
+       formatted.push({
+         category: 'Scheduling & Operations',
          title: 'Call Ahead',
          value: sched.callAhead,
          description: 'Call ahead policy'
        });
      }
      if (sched.sameDayServices) {
-       formatted.scheduling.push({
+       formatted.push({
+         category: 'Scheduling & Operations',
          title: 'Same Day Services',
          value: sched.sameDayServices,
          description: 'Same day service availability'
        });
      }
      if (sched.afterHoursEmergency) {
-       formatted.scheduling.push({
+       formatted.push({
+         category: 'Scheduling & Operations',
          title: 'After Hours Emergency',
          value: sched.afterHoursEmergency,
          description: 'Emergency service availability'
@@ -567,21 +571,24 @@ function doGetEnhanced(e) {
    if (policies.serviceOperations) {
      const ops = policies.serviceOperations;
      if (ops.reservices) {
-       formatted.serviceOperations.push({
+       formatted.push({
+         category: 'Service Operations',
          title: 'Reservices',
          value: ops.reservices,
          description: 'Reservice policy and requirements'
        });
      }
      if (ops.setServiceTypeTo) {
-       formatted.serviceOperations.push({
+       formatted.push({
+         category: 'Service Operations',
          title: 'Service Type Setting',
          value: ops.setServiceTypeTo,
          description: 'Default service type configuration'
        });
      }
      if (ops.toolsToSave) {
-       formatted.serviceOperations.push({
+       formatted.push({
+         category: 'Service Operations',
          title: 'Tools to Save',
          value: ops.toolsToSave,
          description: 'Required tools and equipment'
@@ -593,21 +600,24 @@ function doGetEnhanced(e) {
    if (policies.payment) {
      const pay = policies.payment;
      if (pay.paymentPlans) {
-       formatted.payment.push({
+       formatted.push({
+         category: 'Payment & Financial',
          title: 'Payment Plans',
          value: pay.paymentPlans,
          description: 'Available payment plan options'
        });
      }
      if (pay.paymentTypes) {
-       formatted.payment.push({
+       formatted.push({
+         category: 'Payment & Financial',
          title: 'Payment Types',
          value: pay.paymentTypes,
          description: 'Accepted payment methods'
        });
      }
      if (pay.pastDuePeriod) {
-       formatted.payment.push({
+       formatted.push({
+         category: 'Payment & Financial',
          title: 'Past Due Period',
          value: pay.pastDuePeriod,
          description: 'Past due account handling policy'
@@ -619,7 +629,7 @@ function doGetEnhanced(e) {
    if (policies.legacy) {
      Object.keys(policies.legacy).forEach(category => {
        policies.legacy[category].forEach(policy => {
-         formatted.legacy.push({
+         formatted.push({
            category: category,
            title: policy.title,
            value: policy.default || policy.description,

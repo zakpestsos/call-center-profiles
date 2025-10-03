@@ -792,6 +792,9 @@ function getProfilePolicies(profileId) {
   const data = policiesTab.getDataRange().getValues();
   const headers = data[0];
   
+  console.log('🔍 Looking for policies for profile:', profileId);
+  console.log('📋 Policy headers:', headers);
+  
   const policies = {
     serviceCoverage: {},
     scheduling: {},
@@ -802,9 +805,12 @@ function getProfilePolicies(profileId) {
   
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === profileId) {
+      console.log('✅ Found policy row for profile:', profileId);
+      console.log('📊 Policy row data:', data[i]);
+      
       // Legacy category-based policies
       const category = data[i][1];
-      if (category && category !== 'Comprehensive') {
+      if (category && category !== 'Comprehensive' && category !== 'General') {
         if (!policies.legacy[category]) {
           policies.legacy[category] = [];
         }
@@ -818,46 +824,44 @@ function getProfilePolicies(profileId) {
         });
       }
       
-      // New structured policy fields
-      if (category === 'Comprehensive' || !category) {
-        // Service Coverage Policies
-        policies.serviceCoverage = {
-          treatVehicles: data[i][headers.indexOf('Treat_Vehicles')] || '',
-          commercialProperties: data[i][headers.indexOf('Commercial_Properties')] || '',
-          multiFamilyOffered: data[i][headers.indexOf('Multi_Family_Offered')] || '',
-          trailersOffered: data[i][headers.indexOf('Trailers_Offered')] || ''
-        };
-        
-        // Scheduling & Operations Policies
-        policies.scheduling = {
-          signedContract: data[i][headers.indexOf('Signed_Contract')] || '',
-          returningCustomers: data[i][headers.indexOf('Returning_Customers')] || '',
-          appointmentConfirmations: data[i][headers.indexOf('Appointment_Confirmations')] || '',
-          callAhead: data[i][headers.indexOf('Call_Ahead')] || '',
-          maxDistance: data[i][headers.indexOf('Max_Distance')] || '',
-          schedulingPolicyTimes: data[i][headers.indexOf('Scheduling_Policy_Times')] || '',
-          sameDayServices: data[i][headers.indexOf('Same_Day_Services')] || '',
-          techSkilling: data[i][headers.indexOf('Tech_Skilling')] || '',
-          afterHoursEmergency: data[i][headers.indexOf('After_Hours_Emergency')] || ''
-        };
-        
-        // Service Operations Policies
-        policies.serviceOperations = {
-          reservices: data[i][headers.indexOf('Reservices')] || '',
-          setServiceTypeTo: data[i][headers.indexOf('Set_Service_Type_To')] || '',
-          setSubscriptionTypeTo: data[i][headers.indexOf('Set_Subscription_Type_To')] || '',
-          toolsToSave: data[i][headers.indexOf('Tools_To_Save')] || '',
-          additionalNotes: data[i][headers.indexOf('Additional_Notes')] || '',
-          branch: data[i][headers.indexOf('Branch')] || ''
-        };
-        
-        // Payment & Financial Policies
-        policies.payment = {
-          paymentPlans: data[i][headers.indexOf('Payment_Plans')] || '',
-          paymentTypes: data[i][headers.indexOf('Payment_Types')] || '',
-          pastDuePeriod: data[i][headers.indexOf('Past_Due_Period')] || ''
-        };
-      }
+      // Read all the new structured policy fields directly from columns
+      // Service Coverage Policies
+      policies.serviceCoverage = {
+        treatVehicles: data[i][headers.indexOf('Treat_Vehicles')] || '',
+        commercialProperties: data[i][headers.indexOf('Commercial_Properties')] || '',
+        multiFamilyOffered: data[i][headers.indexOf('Multi_Family_Offered')] || '',
+        trailersOffered: data[i][headers.indexOf('Trailers_Offered')] || ''
+      };
+      
+      // Scheduling & Operations Policies
+      policies.scheduling = {
+        signedContract: data[i][headers.indexOf('Signed_Contract')] || '',
+        returningCustomers: data[i][headers.indexOf('Returning_Customers')] || '',
+        appointmentConfirmations: data[i][headers.indexOf('Appointment_Confirmations')] || '',
+        sameDayServices: data[i][headers.indexOf('Same_Day_Services')] || '',
+        techSkilling: data[i][headers.indexOf('Tech_Skilling')] || '',
+        afterHoursEmergency: data[i][headers.indexOf('After_Hours_Emergency')] || '',
+        maxDistance: data[i][headers.indexOf('Max_Distance')] || ''
+      };
+      
+      // Service Operations Policies
+      policies.serviceOperations = {
+        reservices: data[i][headers.indexOf('Reservices')] || '',
+        setServiceTypeTo: data[i][headers.indexOf('Set_Service_Type_To')] || '',
+        setSubscriptionTypeTo: data[i][headers.indexOf('Set_Subscription_Type_To')] || '',
+        toolsToSave: data[i][headers.indexOf('Tools_To_Save')] || '',
+        additionalNotes: data[i][headers.indexOf('Additional_Notes')] || '',
+        branch: data[i][headers.indexOf('Branch')] || ''
+      };
+      
+      // Payment & Financial Policies
+      policies.payment = {
+        paymentTypes: data[i][headers.indexOf('Payment_Types')] || '',
+        pastDuePeriod: data[i][headers.indexOf('Past_Due_Period')] || ''
+      };
+      
+      console.log('📋 Parsed policies:', policies);
+      break; // Found the profile, no need to continue
     }
   }
   
