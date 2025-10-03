@@ -61,7 +61,9 @@ function syncFromClientSheet(profileId, profileRow, headers) {
     
     // Check if client sheet has been modified since last sync
     const lastUpdated = new Date(profileRow[headers.indexOf('Last_Updated')] || 0);
-    const clientLastModified = new Date(clientSpreadsheet.getLastUpdated());
+    // Use DriveApp to get the last modified date
+    const file = DriveApp.getFileById(clientSpreadsheet.getId());
+    const clientLastModified = file.getLastUpdated();
     
     if (clientLastModified <= lastUpdated) {
       return; // No changes in client sheet

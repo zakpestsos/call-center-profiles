@@ -710,8 +710,47 @@ function parseHTMLFormData(formData) {
     // Service areas array
     serviceAreas: [],
     
-    // Policies
+    // Policies - Comprehensive structure matching intake form
     policies: {
+      // Service Coverage
+      treatVehicles: formData.treatVehicles || '',
+      treatVehiclesCustom: formData.treatVehiclesCustom || '',
+      commercialProperties: formData.commercialProperties || '',
+      commercialPropertiesCustom: formData.commercialPropertiesCustom || '',
+      multiFamilyOffered: formData.multiFamilyOffered || '',
+      multiFamilyOfferedCustom: formData.multiFamilyOfferedCustom || '',
+      trailersOffered: formData.trailersOffered || '',
+      trailersOfferedCustom: formData.trailersOfferedCustom || '',
+      
+      // Scheduling & Operations
+      signedContract: formData.signedContract || '',
+      signedContractCustom: formData.signedContractCustom || '',
+      returningCustomers: formData.returningCustomers || '',
+      appointmentConfirmations: formData.appointmentConfirmations || '',
+      appointmentConfirmationsCustom: formData.appointmentConfirmationsCustom || '',
+      callAhead: formData.callAhead || '',
+      maxDistance: formData.maxDistance || '',
+      schedulingPolicyTimes: formData.schedulingPolicyTimes || '',
+      sameDayServices: formData.sameDayServices || '',
+      sameDayServicesCustom: formData.sameDayServicesCustom || '',
+      techSkilling: formData.techSkilling || '',
+      techSkillingCustom: formData.techSkillingCustom || '',
+      afterHoursEmergency: formData.afterHoursEmergency || '',
+      afterHoursEmergencyCustom: formData.afterHoursEmergencyCustom || '',
+      
+      // Service Policies
+      reservices: formData.reservices || '',
+      setServiceTypeTo: formData.setServiceTypeTo || '',
+      setServiceTypeToCustom: formData.setServiceTypeToCustom || '',
+      setSubscriptionTypeTo: formData.setSubscriptionTypeTo || '',
+      
+      // Payment & Financial
+      paymentPlans: formData.paymentPlans || '',
+      paymentPlansCustom: formData.paymentPlansCustom || '',
+      paymentTypes: formData.paymentTypes || '',
+      pastDuePeriod: formData.pastDuePeriod || '',
+      
+      // Legacy fields for backward compatibility
       cancellation: formData.cancellationPolicy || '',
       guarantee: formData.guaranteePolicy || '',
       payment: formData.paymentTerms || '',

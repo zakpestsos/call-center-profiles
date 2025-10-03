@@ -117,21 +117,172 @@ function populateProfile(headers, data) {
   // Update page elements (adjust IDs based on your HTML)
   updateElement('profileId', profile['Profile_ID'] || '');
   updateElement('companyName', profile['Company_Name'] || '');
-  updateElement('location', profile['Company_Location'] || '');
-  updateElement('phone', profile['Phone_Number'] || '');
-  updateElement('contactPerson', profile['Contact_Person'] || '');
-  updateElement('industry', profile['Industry'] || '');
-  updateElement('websiteUrl', profile['Website_URL'] || '');
-  updateElement('bulletin', profile['Morning_Bulletin'] || '');
-  updateElement('notes', profile['Internal_Notes'] || '');
+  updateElement('location', profile['Location'] || '');
+  updateElement('phone', profile['Phone'] || '');
+  updateElement('email', profile['Email'] || '');
+  updateElement('website', profile['Website'] || '');
+  updateElement('address', profile['Address'] || '');
+  updateElement('hours', profile['Hours'] || '');
+  updateElement('bulletin', profile['Bulletin'] || '');
+  updateElement('pestsNotCovered', profile['Pests_Not_Covered'] || '');
+  
+  // New address fields
+  updateElement('fieldRoutesLink', profile['FieldRoutes_Link'] || '');
+  updateElement('physicalStreet', profile['Physical_Street'] || '');
+  updateElement('physicalSuite', profile['Physical_Suite'] || '');
+  updateElement('physicalCity', profile['Physical_City'] || '');
+  updateElement('physicalState', profile['Physical_State'] || '');
+  updateElement('physicalZip', profile['Physical_Zip'] || '');
+  updateElement('mailingStreet', profile['Mailing_Street'] || '');
+  updateElement('mailingSuite', profile['Mailing_Suite'] || '');
+  updateElement('mailingCity', profile['Mailing_City'] || '');
+  updateElement('mailingState', profile['Mailing_State'] || '');
+  updateElement('mailingZip', profile['Mailing_Zip'] || '');
+  updateElement('sameAsPhysical', profile['Same_As_Physical'] || '');
+  updateElement('timezoneCustom', profile['Timezone_Custom'] || '');
+  updateElement('holidaysObserved', profile['Holidays_Observed'] || '');
   
   // Update page title
   document.title = `${profile['Company_Name'] || 'Profile'} - Call Center Profile`;
+  
+  // Display organized policy information
+  displayPolicyInformation(profile);
   
   // Show success
   showSuccess('Profile loaded successfully!');
   
   console.log('✅ Profile populated');
+}
+
+/**
+ * Display organized policy information
+ */
+function displayPolicyInformation(profile) {
+  // Create organized policy display
+  const policyContainer = document.getElementById('policyInformation');
+  if (!policyContainer) {
+    console.warn('⚠️ Policy container not found');
+    return;
+  }
+  
+  let policyHTML = '<div class="policy-sections">';
+  
+  // Service Coverage Policies
+  policyHTML += '<div class="policy-section">';
+  policyHTML += '<h4>Service Coverage</h4>';
+  policyHTML += '<div class="policy-items">';
+  
+  const serviceCoverage = [
+    { key: 'Treat_Vehicles', label: 'Vehicle Treatment', description: 'Do we treat vehicles?' },
+    { key: 'Commercial_Properties', label: 'Commercial Properties', description: 'Commercial property service policy' },
+    { key: 'Multi_Family_Offered', label: 'Multi-Family Properties', description: 'Multi-family property service policy' },
+    { key: 'Trailers_Offered', label: 'Trailers/Mobile Homes', description: 'Trailer and mobile home service policy' }
+  ];
+  
+  serviceCoverage.forEach(item => {
+    const value = profile[item.key];
+    if (value) {
+      policyHTML += `
+        <div class="policy-item">
+          <strong>${item.label}:</strong> ${value}
+          <div class="policy-description">${item.description}</div>
+        </div>
+      `;
+    }
+  });
+  
+  policyHTML += '</div></div>';
+  
+  // Scheduling Policies
+  policyHTML += '<div class="policy-section">';
+  policyHTML += '<h4>Scheduling & Operations</h4>';
+  policyHTML += '<div class="policy-items">';
+  
+  const scheduling = [
+    { key: 'Signed_Contract', label: 'Contract Required', description: 'Signed contract requirement policy' },
+    { key: 'Appointment_Confirmations', label: 'Appointment Confirmations', description: 'Appointment confirmation policy' },
+    { key: 'Same_Day_Services', label: 'Same Day Services', description: 'Same day service availability' },
+    { key: 'After_Hours_Emergency', label: 'After Hours Emergency', description: 'Emergency service availability' }
+  ];
+  
+  scheduling.forEach(item => {
+    const value = profile[item.key];
+    if (value) {
+      policyHTML += `
+        <div class="policy-item">
+          <strong>${item.label}:</strong> ${value}
+          <div class="policy-description">${item.description}</div>
+        </div>
+      `;
+    }
+  });
+  
+  policyHTML += '</div></div>';
+  
+  // Service Operations
+  policyHTML += '<div class="policy-section">';
+  policyHTML += '<h4>Service Operations</h4>';
+  policyHTML += '<div class="policy-items">';
+  
+  const operations = [
+    { key: 'Reservices', label: 'Reservices', description: 'Reservice policy and requirements' },
+    { key: 'Set_Service_Type_To', label: 'Service Type Setting', description: 'Default service type configuration' },
+    { key: 'Tools_To_Save', label: 'Tools to Save', description: 'Required tools and equipment' }
+  ];
+  
+  operations.forEach(item => {
+    const value = profile[item.key];
+    if (value) {
+      policyHTML += `
+        <div class="policy-item">
+          <strong>${item.label}:</strong> ${value}
+          <div class="policy-description">${item.description}</div>
+        </div>
+      `;
+    }
+  });
+  
+  policyHTML += '</div></div>';
+  
+  // Payment Policies
+  policyHTML += '<div class="policy-section">';
+  policyHTML += '<h4>Payment & Financial</h4>';
+  policyHTML += '<div class="policy-items">';
+  
+  const payment = [
+    { key: 'Payment_Types', label: 'Payment Types', description: 'Accepted payment methods' },
+    { key: 'Past_Due_Period', label: 'Past Due Period', description: 'Past due account handling policy' }
+  ];
+  
+  payment.forEach(item => {
+    const value = profile[item.key];
+    if (value) {
+      policyHTML += `
+        <div class="policy-item">
+          <strong>${item.label}:</strong> ${value}
+          <div class="policy-description">${item.description}</div>
+        </div>
+      `;
+    }
+  });
+  
+  policyHTML += '</div></div>';
+  policyHTML += '</div>';
+  
+  // Add some basic styling
+  policyHTML += `
+    <style>
+      .policy-sections { margin-top: 20px; }
+      .policy-section { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+      .policy-section h4 { margin: 0 0 15px 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+      .policy-item { margin-bottom: 12px; padding: 8px; background: #f8f9fa; border-radius: 4px; }
+      .policy-item strong { color: #007bff; }
+      .policy-description { font-size: 0.9em; color: #666; margin-top: 4px; font-style: italic; }
+    </style>
+  `;
+  
+  policyContainer.innerHTML = policyHTML;
+  console.log('✅ Policy information displayed');
 }
 
 /**

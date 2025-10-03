@@ -147,7 +147,12 @@ function createMasterProfilesTab(spreadsheet) {
   const headers = [
     'Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 
     'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 
-    'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL'
+    'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL',
+    // New address fields
+    'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 'Physical_City', 'Physical_State', 'Physical_Zip',
+    'Mailing_Street', 'Mailing_Suite', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical',
+    // New custom fields
+    'Timezone_Custom', 'Holidays_Observed'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -182,7 +187,11 @@ function createMasterServicesTab(spreadsheet) {
   const headers = [
     'Profile_ID', 'Service_Name', 'Service_Type', 'Frequency', 'Description', 
     'Pests_Covered', 'Contract', 'Guarantee', 'Duration', 'Product_Type',
-    'Billing_Frequency', 'Agent_Note', 'Queue_Ext', 'Pricing_Data'
+    'Billing_Frequency', 'Agent_Note', 'Queue_Ext', 'Pricing_Data',
+    // New service fields
+    'Call_Ahead', 'Leave_During_Service', 'Follow_Up', 'Prep_Sheet', 'Recurring_Duration',
+    'Service_Frequency_Custom', 'Billing_Frequency_Custom', 'Category_Custom', 'Type_Custom',
+    'Call_Ahead_Custom', 'Leave_During_Service_Custom', 'Prep_Sheet_Custom'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -203,7 +212,9 @@ function createMasterTechniciansTab(spreadsheet) {
   
   const headers = [
     'Profile_ID', 'Tech_Name', 'Company', 'Role', 'Phone', 'Schedule', 
-    'Max_Stops', 'Does_Not_Service', 'Additional_Notes', 'Zip_Codes'
+    'Max_Stops', 'Does_Not_Service', 'Additional_Notes', 'Zip_Codes',
+    // New technician fields
+    'Role_Custom'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -224,7 +235,20 @@ function createMasterPoliciesTab(spreadsheet) {
   
   const headers = [
     'Profile_ID', 'Policy_Category', 'Policy_Type', 'Policy_Title', 
-    'Policy_Description', 'Policy_Options', 'Default_Value'
+    'Policy_Description', 'Policy_Options', 'Default_Value', 'Sort_Order',
+    // Service Coverage Fields
+    'Treat_Vehicles', 'Commercial_Properties', 'Multi_Family_Offered', 'Trailers_Offered',
+    // Scheduling & Operations Fields  
+    'Signed_Contract', 'Returning_Customers', 'Appointment_Confirmations', 'Call_Ahead',
+    'Max_Distance', 'Scheduling_Policy_Times', 'Same_Day_Services', 'Tech_Skilling', 'After_Hours_Emergency',
+    // Service Policies Fields
+    'Reservices', 'Set_Service_Type_To', 'Set_Subscription_Type_To',
+    // Payment & Financial Fields
+    'Payment_Plans', 'Payment_Types', 'Past_Due_Period',
+    // Additional Policy Fields
+    'Tools_To_Save', 'Additional_Notes', 'Branch',
+    // Legacy Policy Fields (for backward compatibility)
+    'Cancellation_Policy', 'Guarantee_Policy', 'Payment_Terms', 'Emergency_Services', 'Insurance_Info'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -234,7 +258,11 @@ function createMasterPoliciesTab(spreadsheet) {
     .setFontColor('white');
   
   sheet.setFrozenRows(1);
-  Logger.log('Master policies tab created');
+  
+  // Auto-resize columns for better readability
+  sheet.autoResizeColumns(1, headers.length);
+  
+  Logger.log('Master policies tab created with comprehensive policy fields');
 }
 
 /**
@@ -535,7 +563,20 @@ function addServicesToMasterSheet(profileId, services) {
       service.billingFrequency || '',
       service.agentNote || '',
       service.queueExt || '',
-      JSON.stringify(service.pricingTiers || [])
+      JSON.stringify(service.pricingTiers || []),
+      // New service fields
+      service.callAhead || '',
+      service.leaveDuringService || '',
+      service.followUp || '',
+      service.prepSheet || '',
+      service.recurringDuration || '',
+      service.serviceFrequencyCustom || '',
+      service.billingFrequencyCustom || '',
+      service.categoryCustom || '',
+      service.typeCustom || '',
+      service.callAheadCustom || '',
+      service.leaveDuringServiceCustom || '',
+      service.prepSheetCustom || ''
     ];
     
     servicesTab.getRange(lastRow + 1, 1, 1, serviceRow.length).setValues([serviceRow]);
@@ -565,7 +606,9 @@ function addTechniciansToMasterSheet(profileId, technicians) {
       tech.maxStops || '',
       tech.doesNotService || '',
       tech.additionalNotes || '',
-      JSON.stringify(tech.zipCodes || [])
+      JSON.stringify(tech.zipCodes || []),
+      // New technician fields
+      tech.roleCustom || ''
     ];
     
     techTab.getRange(lastRow + 1, 1, 1, techRow.length).setValues([techRow]);
@@ -583,22 +626,79 @@ function addPoliciesToMasterSheet(profileId, policies) {
     return;
   }
   
+  // Handle both old structure (categories with arrays) and new structure (direct fields)
+  const lastRow = policiesTab.getLastRow();
+  
+  // Create comprehensive policy row with all fields
+  const policyRow = [
+    profileId, // Profile_ID
+    'Comprehensive', // Policy_Category
+    'All Policies', // Policy_Type
+    'Complete Policy Configuration', // Policy_Title
+    'All policy settings for this profile', // Policy_Description
+    '', // Policy_Options
+    '', // Default_Value
+    1, // Sort_Order
+    // Service Coverage Fields
+    policies.treatVehicles || policies.treatVehiclesCustom || '',
+    policies.commercialProperties || policies.commercialPropertiesCustom || '',
+    policies.multiFamilyOffered || policies.multiFamilyOfferedCustom || '',
+    policies.trailersOffered || policies.trailersOfferedCustom || '',
+    // Scheduling & Operations Fields
+    policies.signedContract || policies.signedContractCustom || '',
+    policies.returningCustomers || '',
+    policies.appointmentConfirmations || policies.appointmentConfirmationsCustom || '',
+    policies.callAhead || '',
+    policies.maxDistance || '',
+    policies.schedulingPolicyTimes || '',
+    policies.sameDayServices || policies.sameDayServicesCustom || '',
+    policies.techSkilling || policies.techSkillingCustom || '',
+    policies.afterHoursEmergency || policies.afterHoursEmergencyCustom || '',
+    // Service Policies Fields
+    policies.reservices || '',
+    policies.setServiceTypeTo || policies.setServiceTypeToCustom || '',
+    policies.setSubscriptionTypeTo || '',
+    // Payment & Financial Fields
+    policies.paymentPlans || policies.paymentPlansCustom || '',
+    policies.paymentTypes || '',
+    policies.pastDuePeriod || '',
+    // Additional Policy Fields
+    policies.toolsToSave || '',
+    policies.additionalNotes || '',
+    policies.branch || '',
+    // Legacy Policy Fields (for backward compatibility)
+    policies.cancellationPolicy || policies.cancellation || '',
+    policies.guaranteePolicy || policies.guarantee || '',
+    policies.paymentTerms || policies.payment || '',
+    policies.emergencyServices || policies.emergency || '',
+    policies.insuranceInfo || policies.insurance || ''
+  ];
+  
+  policiesTab.getRange(lastRow + 1, 1, 1, policyRow.length).setValues([policyRow]);
+  
+  // Also handle old-style category-based policies for backward compatibility
   Object.keys(policies).forEach(category => {
     const categoryPolicies = policies[category];
     if (Array.isArray(categoryPolicies)) {
-      categoryPolicies.forEach(policy => {
+      categoryPolicies.forEach((policy, index) => {
         const lastRow = policiesTab.getLastRow();
-        const policyRow = [
+        const categoryPolicyRow = [
           profileId,
           category,
           policy.type || '',
           policy.title || '',
           policy.description || '',
           JSON.stringify(policy.options || []),
-          policy.default || ''
+          policy.default || '',
+          index + 10 // Sort order offset for category policies
         ];
         
-        policiesTab.getRange(lastRow + 1, 1, 1, policyRow.length).setValues([policyRow]);
+        // Fill remaining columns with empty values to match new structure
+        while (categoryPolicyRow.length < policyRow.length) {
+          categoryPolicyRow.push('');
+        }
+        
+        policiesTab.getRange(lastRow + 1, 1, 1, categoryPolicyRow.length).setValues([categoryPolicyRow]);
       });
     }
   });
@@ -690,22 +790,74 @@ function getProfilePolicies(profileId) {
   const masterSheet = getMasterProfileSheet();
   const policiesTab = masterSheet.getSheetByName('Policies');
   const data = policiesTab.getDataRange().getValues();
+  const headers = data[0];
   
-  const policies = {};
+  const policies = {
+    serviceCoverage: {},
+    scheduling: {},
+    serviceOperations: {},
+    payment: {},
+    legacy: {}
+  };
+  
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === profileId) {
+      // Legacy category-based policies
       const category = data[i][1];
-      if (!policies[category]) {
-        policies[category] = [];
+      if (category && category !== 'Comprehensive') {
+        if (!policies.legacy[category]) {
+          policies.legacy[category] = [];
+        }
+        
+        policies.legacy[category].push({
+          type: data[i][2],
+          title: data[i][3],
+          description: data[i][4],
+          options: JSON.parse(data[i][5] || '[]'),
+          default: data[i][6]
+        });
       }
       
-      policies[category].push({
-        type: data[i][2],
-        title: data[i][3],
-        description: data[i][4],
-        options: JSON.parse(data[i][5] || '[]'),
-        default: data[i][6]
-      });
+      // New structured policy fields
+      if (category === 'Comprehensive' || !category) {
+        // Service Coverage Policies
+        policies.serviceCoverage = {
+          treatVehicles: data[i][headers.indexOf('Treat_Vehicles')] || '',
+          commercialProperties: data[i][headers.indexOf('Commercial_Properties')] || '',
+          multiFamilyOffered: data[i][headers.indexOf('Multi_Family_Offered')] || '',
+          trailersOffered: data[i][headers.indexOf('Trailers_Offered')] || ''
+        };
+        
+        // Scheduling & Operations Policies
+        policies.scheduling = {
+          signedContract: data[i][headers.indexOf('Signed_Contract')] || '',
+          returningCustomers: data[i][headers.indexOf('Returning_Customers')] || '',
+          appointmentConfirmations: data[i][headers.indexOf('Appointment_Confirmations')] || '',
+          callAhead: data[i][headers.indexOf('Call_Ahead')] || '',
+          maxDistance: data[i][headers.indexOf('Max_Distance')] || '',
+          schedulingPolicyTimes: data[i][headers.indexOf('Scheduling_Policy_Times')] || '',
+          sameDayServices: data[i][headers.indexOf('Same_Day_Services')] || '',
+          techSkilling: data[i][headers.indexOf('Tech_Skilling')] || '',
+          afterHoursEmergency: data[i][headers.indexOf('After_Hours_Emergency')] || ''
+        };
+        
+        // Service Operations Policies
+        policies.serviceOperations = {
+          reservices: data[i][headers.indexOf('Reservices')] || '',
+          setServiceTypeTo: data[i][headers.indexOf('Set_Service_Type_To')] || '',
+          setSubscriptionTypeTo: data[i][headers.indexOf('Set_Subscription_Type_To')] || '',
+          toolsToSave: data[i][headers.indexOf('Tools_To_Save')] || '',
+          additionalNotes: data[i][headers.indexOf('Additional_Notes')] || '',
+          branch: data[i][headers.indexOf('Branch')] || ''
+        };
+        
+        // Payment & Financial Policies
+        policies.payment = {
+          paymentPlans: data[i][headers.indexOf('Payment_Plans')] || '',
+          paymentTypes: data[i][headers.indexOf('Payment_Types')] || '',
+          pastDuePeriod: data[i][headers.indexOf('Past_Due_Period')] || ''
+        };
+      }
     }
   }
   

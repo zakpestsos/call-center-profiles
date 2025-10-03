@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Call Center Profile - Dynamic</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Center Profile - Dynamic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 <style>
 * {
 margin: 0;
@@ -1950,236 +1950,236 @@ grid-template-columns: 1fr;
 </style>
 </head>
 <body>
-<!-- Header -->
-<header class="header">
-<div class="header-content">
-<div class="company-info">
-<h1 id="companyName">Loading...</h1>
-<div class="location">
-<span id="locationInfo">Loading location...</span>
-</div>
-</div>
-<div class="time-weather-container">
-<div class="current-time" id="currentTime">--:-- --</div>
-<div class="weather-forecast" id="weatherForecast">
-<div class="weather-forecast-content" id="weatherContent">
-Loading weather...
-</div>
-</div>
-</div>
-<div class="header-actions">
-<a href="#" id="websiteLink" class="cyber-btn" target="_blank">Website</a>
-<a href="#" id="fieldRoutesLink" class="cyber-btn" target="_blank">FieldRoutes</a>
-<button class="cyber-btn" onclick="openOfficeModal()">Office Info</button>
-</div>
-</div>
-</header>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="company-info">
+                <h1 id="companyName">Loading...</h1>
+                <div class="location">
+                    <span id="locationInfo">Loading location...</span>
+                </div>
+            </div>
+            <div class="time-weather-container">
+                <div class="current-time" id="currentTime">--:-- --</div>
+                <div class="weather-forecast" id="weatherForecast">
+                    <div class="weather-forecast-content" id="weatherContent">
+                        Loading weather...
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="#" id="websiteLink" class="cyber-btn" target="_blank">Website</a>
+                <a href="#" id="fieldRoutesLink" class="cyber-btn" target="_blank">FieldRoutes</a>
+                <button class="cyber-btn" onclick="openOfficeModal()">Office Info</button>
+            </div>
+        </div>
+    </header>
 
-<!-- Sticky Header -->
-<header class="sticky-header" id="stickyHeader">
-<div class="sticky-content">
-<div class="sticky-company" id="stickyCompanyName">Loading...</div>
-<div class="sticky-time" id="stickyTime">--:-- --</div>
-<div class="sticky-weather" id="stickyWeather">Loading...</div>
-<div class="sticky-actions">
-<a href="#" id="stickyWebsiteLink" class="sticky-btn" target="_blank">Website</a>
-<a href="#" id="stickyFieldRoutesLink" class="sticky-btn" target="_blank">Routes</a>
-<button class="sticky-btn" onclick="openOfficeModal()">Info</button>
-</div>
-</div>
-</header>
+    <!-- Sticky Header -->
+    <header class="sticky-header" id="stickyHeader">
+        <div class="sticky-content">
+            <div class="sticky-company" id="stickyCompanyName">Loading...</div>
+            <div class="sticky-time" id="stickyTime">--:-- --</div>
+            <div class="sticky-weather" id="stickyWeather">Loading...</div>
+            <div class="sticky-actions">
+                <a href="#" id="stickyWebsiteLink" class="sticky-btn" target="_blank">Website</a>
+                <a href="#" id="stickyFieldRoutesLink" class="sticky-btn" target="_blank">Routes</a>
+                <button class="sticky-btn" onclick="openOfficeModal()">Info</button>
+            </div>
+        </div>
+    </header>
 
-<!-- Top Info Section -->
-<div class="top-info-section">
-<div class="info-cards-container">
-<div class="info-card">
-<div class="info-card-title">📢 Company Bulletin</div>
-<div class="info-card-content" id="topBulletinContent">Loading bulletin...</div>
-</div>
-<div class="info-card">
-<div class="info-card-title">🚫 Pests Not Covered</div>
-<div class="info-card-content" id="topPestsNotCoveredContent">Loading exclusions...</div>
-</div>
-</div>
-</div>
+    <!-- Top Info Section -->
+    <div class="top-info-section">
+        <div class="info-cards-container">
+            <div class="info-card">
+                <div class="info-card-title">📢 Company Bulletin</div>
+                <div class="info-card-content" id="topBulletinContent">Loading bulletin...</div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-title">🚫 Pests Not Covered</div>
+                <div class="info-card-content" id="topPestsNotCoveredContent">Loading exclusions...</div>
+            </div>
+        </div>
+    </div>
 
-<!-- Pests Not Covered Alert -->
-<div class="pests-not-covered-alert" id="pestsNotCoveredAlert">
-<div class="alert-title">⚠️ Pest Not Covered</div>
-<div class="alert-content" id="alertContent"></div>
-</div>
+    <!-- Pests Not Covered Alert -->
+    <div class="pests-not-covered-alert" id="pestsNotCoveredAlert">
+        <div class="alert-title">⚠️ Pest Not Covered</div>
+        <div class="alert-content" id="alertContent"></div>
+    </div>
 
-<!-- Main Container -->
-<div class="main-container">
-<!-- Navigation Sidebar -->
-<nav class="nav-sidebar">
-<button class="nav-btn active" onclick="showSection('services')">Services</button>
-<button class="nav-btn" onclick="showSection('policies')">Policies</button>
-<button class="nav-btn" onclick="showSection('technicians')">Scheduling</button>
-<button class="nav-btn" onclick="showSection('bulletin')">Bulletin</button>
-</nav>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Navigation Sidebar -->
+        <nav class="nav-sidebar">
+            <button class="nav-btn active" onclick="showSection('services')">Services</button>
+            <button class="nav-btn" onclick="showSection('policies')">Policies</button>
+            <button class="nav-btn" onclick="showSection('technicians')">Scheduling</button>
+            <button class="nav-btn" onclick="showSection('bulletin')">Bulletin</button>
+        </nav>
 
-<!-- Content Area -->
-<main class="content-area">
-<!-- Loading State -->
-<div id="loadingState" class="loading">
-<div>Loading client profile...</div>
-</div>
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Loading State -->
+            <div id="loadingState" class="loading">
+                <div>Loading client profile...</div>
+            </div>
 
-<!-- Error State -->
-<div id="errorState" class="error" style="display: none;">
-<div>Error loading profile data</div>
-</div>
+            <!-- Error State -->
+            <div id="errorState" class="error" style="display: none;">
+                <div>Error loading profile data</div>
+            </div>
 
-<!-- Services Section -->
-<div id="servicesSection" class="content-section">
-<div id="servicesGrid" class="services-grid">
-<!-- Services will be populated here -->
-</div>
-</div>
+            <!-- Services Section -->
+            <div id="servicesSection" class="content-section">
+                <div id="servicesGrid" class="services-grid">
+                    <!-- Services will be populated here -->
+                </div>
+            </div>
 
-<!-- Technicians Section -->
-<div id="techniciansSection" class="content-section">
-<div class="scheduling-container">
-<!-- Scheduling Tools Header -->
-<div class="scheduling-header">
-<h2 class="scheduling-title">📋 Scheduling & Technician Management</h2>
-<div class="scheduling-quick-tools">
-<div class="scheduling-tool">
-<input type="text" class="scheduling-input" id="zipLookup" placeholder="Enter ZIP code" maxlength="5">
-<button class="scheduling-btn" onclick="findTechByZip()">Find Tech by ZIP</button>
-</div>
-<div class="scheduling-tool">
-<select class="scheduling-select" id="serviceTypeLookup" onchange="filterByServiceType()">
-<option value="">All Service Types</option>
-<option value="inspection">Inspections Only</option>
-<option value="technician">Technicians Only</option>
-<option value="both">Both Services</option>
-</select>
-</div>
-<div class="scheduling-tool">
-<button class="scheduling-btn" onclick="showAllTechs()">Show All Techs</button>
-</div>
-</div>
-</div>
+            <!-- Technicians Section -->
+            <div id="techniciansSection" class="content-section">
+                <div class="scheduling-container">
+                    <!-- Scheduling Tools Header -->
+                    <div class="scheduling-header">
+                        <h2 class="scheduling-title">📋 Scheduling & Technician Management</h2>
+                        <div class="scheduling-quick-tools">
+                            <div class="scheduling-tool">
+                                <input type="text" class="scheduling-input" id="zipLookup" placeholder="Enter ZIP code" maxlength="5">
+                                <button class="scheduling-btn" onclick="findTechByZip()">Find Tech by ZIP</button>
+                            </div>
+                            <div class="scheduling-tool">
+                                <select class="scheduling-select" id="serviceTypeLookup" onchange="filterByServiceType()">
+                                    <option value="">All Service Types</option>
+                                    <option value="inspection">Inspections Only</option>
+                                    <option value="technician">Technicians Only</option>
+                                    <option value="both">Both Services</option>
+                                </select>
+                            </div>
+                            <div class="scheduling-tool">
+                                <button class="scheduling-btn" onclick="showAllTechs()">Show All Techs</button>
+                            </div>
+                        </div>
+                    </div>
 
-<!-- Scheduling Policies Section -->
-<div class="scheduling-policies">
-<div class="policy-quick-ref">
-<div class="policy-item-compact">
-<div class="policy-label">Default Scheduling Windows</div>
-<div class="policy-value" id="defaultSchedulingTimes">Loading...</div>
-</div>
-<div class="policy-item-compact">
-<div class="policy-label">Max Distance</div>
-<div class="policy-value" id="maxDistance">Loading...</div>
-</div>
-<div class="policy-item-compact">
-<div class="policy-label">Same Day Services</div>
-<div class="policy-value" id="sameDayPolicy">Loading...</div>
-</div>
-<div class="policy-item-compact">
-<div class="policy-label">Appointment Confirmations</div>
-<div class="policy-value" id="confirmationPolicy">Loading...</div>
-</div>
-</div>
-</div>
+                    <!-- Scheduling Policies Section -->
+                    <div class="scheduling-policies">
+                        <div class="policy-quick-ref">
+                            <div class="policy-item-compact">
+                                <div class="policy-label">Default Scheduling Windows</div>
+                                <div class="policy-value" id="defaultSchedulingTimes">Loading...</div>
+                            </div>
+                            <div class="policy-item-compact">
+                                <div class="policy-label">Max Distance</div>
+                                <div class="policy-value" id="maxDistance">Loading...</div>
+                            </div>
+                            <div class="policy-item-compact">
+                                <div class="policy-label">Same Day Services</div>
+                                <div class="policy-value" id="sameDayPolicy">Loading...</div>
+                            </div>
+                            <div class="policy-item-compact">
+                                <div class="policy-label">Appointment Confirmations</div>
+                                <div class="policy-value" id="confirmationPolicy">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
 
-<!-- Service Policies Section -->
-<div class="service-policies-section">
-<div class="service-policies-header">
-<h3 class="service-policies-title">📋 Service Policies</h3>
-<div class="service-policies-subtitle">Key policies for scheduling and service management</div>
-<button class="toggle-policies-btn" onclick="toggleReservicePolicies()">
-<span class="toggle-text" id="toggleText">Show Reservice Details</span>
-<span class="toggle-icon" id="toggleIcon">▼</span>
-</button>
-</div>
-<div class="service-policies-grid">
-<div class="service-policy-card reservices-card" id="reservicesCard">
-<div class="service-policy-icon">🔄</div>
-<div class="service-policy-content">
-<div class="service-policy-title">Reservices Setup</div>
-<div class="service-policy-description">Required settings for repeat service calls within guarantee period</div>
-<div class="reservices-settings" id="reservicesDetails" style="display: none;">
-<div class="reservices-setting">
-<div class="setting-label">Set Service Type to:</div>
-<div class="setting-value" id="reservicesServiceType">Reservice</div>
-</div>
-<div class="reservices-setting">
-<div class="setting-label">Set Subscription to:</div>
-<div class="setting-value" id="reservicesSubscription">Stand-Alone Service</div>
-</div>
-<div class="reservices-policy">
-<div class="policy-note-title">📖 Reservice Policy</div>
-<div class="policy-note-content" id="reservicesPolicy">Loading...</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+                    <!-- Service Policies Section -->
+                    <div class="service-policies-section">
+                        <div class="service-policies-header">
+                            <h3 class="service-policies-title">📋 Service Policies</h3>
+                            <div class="service-policies-subtitle">Key policies for scheduling and service management</div>
+                            <button class="toggle-policies-btn" onclick="toggleReservicePolicies()">
+                                <span class="toggle-text" id="toggleText">Show Reservice Details</span>
+                                <span class="toggle-icon" id="toggleIcon">▼</span>
+                            </button>
+                        </div>
+                        <div class="service-policies-grid">
+                            <div class="service-policy-card reservices-card" id="reservicesCard">
+                                <div class="service-policy-icon">🔄</div>
+                                <div class="service-policy-content">
+                                    <div class="service-policy-title">Reservices Setup</div>
+                                    <div class="service-policy-description">Required settings for repeat service calls within guarantee period</div>
+                                    <div class="reservices-settings" id="reservicesDetails" style="display: none;">
+                                        <div class="reservices-setting">
+                                            <div class="setting-label">Set Service Type to:</div>
+                                            <div class="setting-value" id="reservicesServiceType">Reservice</div>
+                                        </div>
+                                        <div class="reservices-setting">
+                                            <div class="setting-label">Set Subscription to:</div>
+                                            <div class="setting-value" id="reservicesSubscription">Stand-Alone Service</div>
+                                        </div>
+                                        <div class="reservices-policy">
+                                            <div class="policy-note-title">📖 Reservice Policy</div>
+                                            <div class="policy-note-content" id="reservicesPolicy">Loading...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-<!-- Search Results -->
-<div class="tech-search-results" id="techSearchResults" style="display: none;">
-<div class="search-results-header">
-<h3>Search Results</h3>
-<button class="close-search-btn" onclick="clearTechSearch()">×</button>
-</div>
-<div class="search-results-content" id="searchResultsContent">
-<!-- Search results will appear here -->
-</div>
-</div>
+                    <!-- Search Results -->
+                    <div class="tech-search-results" id="techSearchResults" style="display: none;">
+                        <div class="search-results-header">
+                            <h3>Search Results</h3>
+                            <button class="close-search-btn" onclick="clearTechSearch()">×</button>
+                        </div>
+                        <div class="search-results-content" id="searchResultsContent">
+                            <!-- Search results will appear here -->
+                        </div>
+                    </div>
 
-<!-- Technicians Grid -->
-<div id="techniciansGrid" class="technicians-grid">
-<!-- Technicians will be populated here -->
-</div>
-</div>
-</div>
+                    <!-- Technicians Grid -->
+                    <div id="techniciansGrid" class="technicians-grid">
+                        <!-- Technicians will be populated here -->
+                    </div>
+                </div>
+            </div>
 
-<!-- Policies Section -->
-<div id="policiesSection" class="content-section">
-<div id="policiesGrid" class="services-grid">
-<!-- Policies will be populated here -->
-</div>
-</div>
+            <!-- Policies Section -->
+            <div id="policiesSection" class="content-section">
+                <div id="policiesGrid" class="services-grid">
+                    <!-- Policies will be populated here -->
+                </div>
+            </div>
 
-<!-- Service Areas Section -->
-<div id="serviceAreasSection" class="content-section">
-<div id="serviceAreasGrid" class="services-grid">
-<!-- Service areas will be populated here -->
-</div>
-</div>
+            <!-- Service Areas Section -->
+            <div id="serviceAreasSection" class="content-section">
+                <div id="serviceAreasGrid" class="services-grid">
+                    <!-- Service areas will be populated here -->
+                </div>
+            </div>
 
-<!-- Bulletin Section -->
-<div id="bulletinSection" class="content-section">
-<div class="info-section">
-<h2 class="info-title">Company Bulletin</h2>
-<div class="info-content" id="bulletinContent">
-<!-- Bulletin content will be populated here -->
-</div>
-</div>
-</div>
+            <!-- Bulletin Section -->
+            <div id="bulletinSection" class="content-section">
+                <div class="info-section">
+                    <h2 class="info-title">Company Bulletin</h2>
+                    <div class="info-content" id="bulletinContent">
+                        <!-- Bulletin content will be populated here -->
+                    </div>
+                </div>
+            </div>
 
-<!-- Pests Not Covered Section -->
-<div id="pestsNotCoveredSection" class="content-section">
-<div class="info-section">
-<h2 class="info-title">Pests Not Covered</h2>
-<div class="info-content" id="pestsNotCoveredContent">
-<!-- Pests not covered content will be populated here -->
-</div>
-</div>
-</div>
-</main>
+            <!-- Pests Not Covered Section -->
+            <div id="pestsNotCoveredSection" class="content-section">
+                <div class="info-section">
+                    <h2 class="info-title">Pests Not Covered</h2>
+                    <div class="info-content" id="pestsNotCoveredContent">
+                        <!-- Pests not covered content will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
 
-<!-- Tools Sidebar -->
-<aside class="tools-sidebar">
-<!-- Pest Search -->
-<div class="tool-section">
-<div class="tool-title">Pest Search</div>
+        <!-- Tools Sidebar -->
+        <aside class="tools-sidebar">
+            <!-- Pest Search -->
+            <div class="tool-section">
+                <div class="tool-title">Pest Search</div>
 <input type="text" class="tool-input" id="pestSearch" placeholder="Enter pest name" maxlength="50">
-<button class="tool-btn" onclick="searchPests()">Search</button>
+                <button class="tool-btn" onclick="searchPests()">Search</button>
 <div class="tool-result" id="pestSearchResult">Enter pest name to search</div>
 
 <!-- Search Results Popup -->
@@ -2188,37 +2188,37 @@ Loading weather...
 <!-- Search results will appear here -->
 </div>
 </div>
-</div>
+            </div>
 
-<!-- Service Area Check -->
-<div class="tool-section">
-<div class="tool-title">Service Area Check</div>
-<input type="text" class="tool-input" id="zipInput" placeholder="Enter ZIP code" maxlength="5">
-<button class="tool-btn" onclick="checkZip()">Check Area</button>
-<div class="tool-result" id="zipResult">Enter ZIP to check</div>
-</div>
+            <!-- Service Area Check -->
+            <div class="tool-section">
+                <div class="tool-title">Service Area Check</div>
+                <input type="text" class="tool-input" id="zipInput" placeholder="Enter ZIP code" maxlength="5">
+                <button class="tool-btn" onclick="checkZip()">Check Area</button>
+                <div class="tool-result" id="zipResult">Enter ZIP to check</div>
+            </div>
 
-<!-- Acreage Converter -->
-<div class="tool-section">
-<div class="tool-title">Acreage Converter</div>
-<input type="number" class="tool-input" id="acresInput" placeholder="Enter acres" step="0.01">
-<button class="tool-btn" onclick="convertAcres()">Convert to Sq Ft</button>
-<div class="tool-result" id="conversionResult">Enter acres to convert</div>
-</div>
-</aside>
+            <!-- Acreage Converter -->
+            <div class="tool-section">
+                <div class="tool-title">Acreage Converter</div>
+                <input type="number" class="tool-input" id="acresInput" placeholder="Enter acres" step="0.01">
+                <button class="tool-btn" onclick="convertAcres()">Convert to Sq Ft</button>
+                <div class="tool-result" id="conversionResult">Enter acres to convert</div>
+            </div>
+        </aside>
 
-<!-- Office Info Modal -->
-<div id="officeModal" class="modal">
-<div class="modal-content">
-<div class="modal-header">
-<h3 class="modal-title">Office Information</h3>
-<button class="close-btn" onclick="closeOfficeModal()">&times;</button>
-</div>
-<div class="office-info" id="officeInfo">
-<!-- Office information will be populated here -->
-</div>
-</div>
-</div>
+    <!-- Office Info Modal -->
+    <div id="officeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Office Information</h3>
+                <button class="close-btn" onclick="closeOfficeModal()">&times;</button>
+            </div>
+            <div class="office-info" id="officeInfo">
+                <!-- Office information will be populated here -->
+            </div>
+        </div>
+    </div>
 
 <script src="config-github.js"></script>
 <script>

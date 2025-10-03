@@ -1076,17 +1076,16 @@ class GitHubProfileViewer {
     populatePolicies() {
         const policiesGrid = document.getElementById('policiesGrid');
         
-        if (!this.clientData.policies || Object.keys(this.clientData.policies).length === 0) {
+        if (!this.clientData.policies) {
             policiesGrid.innerHTML = '<div class="info-section"><div class="info-content">No policy information available.</div></div>';
             return;
         }
 
-        // Filter out Service Policies (they're in scheduling section)
-        const policyGroups = Object.keys(this.clientData.policies)
-            .filter(groupName => groupName !== 'Service Policies');
-
-        if (policyGroups.length === 0) {
-            policiesGrid.innerHTML = '<div class="info-section"><div class="info-content">All policies have been moved to their respective sections.</div></div>';
+        // Create comprehensive policy display with organized categories
+        const policyCategories = this.organizePolicies(this.clientData.policies);
+        
+        if (Object.keys(policyCategories).length === 0) {
+            policiesGrid.innerHTML = '<div class="info-section"><div class="info-content">No policy information available.</div></div>';
             return;
         }
 
@@ -1094,40 +1093,42 @@ class GitHubProfileViewer {
         policiesGrid.innerHTML = `
             <div class="policies-container">
                 <div class="policies-sidebar">
-                    ${policyGroups.map(groupName => `
-                        <button class="policy-group-btn" onclick="app.showPolicyGroup('${groupName}')" id="btn-${groupName.replace(/\s+/g, '-').toLowerCase()}">
-                            ${groupName}
+                    ${Object.keys(policyCategories).map(categoryName => `
+                        <button class="policy-group-btn" onclick="app.showPolicyGroup('${categoryName}')" id="btn-${categoryName.replace(/\s+/g, '-').toLowerCase()}">
+                            ${this.getPolicyIcon(categoryName)} ${categoryName}
                         </button>
                     `).join('')}
                 </div>
                 <div class="policies-main">
-                    ${policyGroups.map(groupName => {
-                        const policies = this.clientData.policies[groupName];
-                        return `
-                            <div class="policy-group-content" id="content-${groupName.replace(/\s+/g, '-').toLowerCase()}">
-                                <div class="policy-group-title">${groupName}</div>
+                    ${Object.entries(policyCategories).map(([categoryName, policies]) => `
+                        <div class="policy-group-content" id="content-${categoryName.replace(/\s+/g, '-').toLowerCase()}">
+                            <div class="policy-group-title">
+                                ${this.getPolicyIcon(categoryName)} ${categoryName}
+                            </div>
+                            <div class="policy-items-grid">
                                 ${policies.map(policy => `
-                                    <div class="policy-item">
-                                        <div class="policy-item-title">${policy.title || 'Unknown Policy'}</div>
-                                        <div class="policy-item-description">${policy.description || 'No description available.'}</div>
-                                        <div class="policy-details">
-                                            <div class="policy-detail">
-                                                <div class="policy-detail-label">Current Setting</div>
-                                                <div class="policy-detail-value">${policy.default || 'Not specified'}</div>
-                                            </div>
+                                    <div class="policy-item ${policy.value ? 'has-value' : 'no-value'}">
+                                        <div class="policy-item-header">
+                                            <div class="policy-item-title">${policy.title}</div>
+                                            ${policy.value ? `<div class="policy-status-badge active">Set</div>` : `<div class="policy-status-badge inactive">Not Set</div>`}
                                         </div>
+                                        <div class="policy-item-value">
+                                            ${policy.value || 'Not specified'}
+                                        </div>
+                                        ${policy.description ? `<div class="policy-item-description">${policy.description}</div>` : ''}
                                     </div>
                                 `).join('')}
                             </div>
-                        `;
-                    }).join('')}
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         `;
 
         // Show first group by default
-        if (policyGroups.length > 0) {
-            this.showPolicyGroup(policyGroups[0]);
+        const firstCategory = Object.keys(policyCategories)[0];
+        if (firstCategory) {
+            this.showPolicyGroup(firstCategory);
         }
     }
 
@@ -2898,17 +2899,16 @@ document.addEventListener('keypress', function(e) {
     populatePolicies() {
         const policiesGrid = document.getElementById('policiesGrid');
         
-        if (!this.clientData.policies || Object.keys(this.clientData.policies).length === 0) {
+        if (!this.clientData.policies) {
             policiesGrid.innerHTML = '<div class="info-section"><div class="info-content">No policy information available.</div></div>';
             return;
         }
 
-        // Filter out Service Policies (they're in scheduling section)
-        const policyGroups = Object.keys(this.clientData.policies)
-            .filter(groupName => groupName !== 'Service Policies');
-
-        if (policyGroups.length === 0) {
-            policiesGrid.innerHTML = '<div class="info-section"><div class="info-content">All policies have been moved to their respective sections.</div></div>';
+        // Create comprehensive policy display with organized categories
+        const policyCategories = this.organizePolicies(this.clientData.policies);
+        
+        if (Object.keys(policyCategories).length === 0) {
+            policiesGrid.innerHTML = '<div class="info-section"><div class="info-content">No policy information available.</div></div>';
             return;
         }
 
@@ -2916,40 +2916,42 @@ document.addEventListener('keypress', function(e) {
         policiesGrid.innerHTML = `
             <div class="policies-container">
                 <div class="policies-sidebar">
-                    ${policyGroups.map(groupName => `
-                        <button class="policy-group-btn" onclick="app.showPolicyGroup('${groupName}')" id="btn-${groupName.replace(/\s+/g, '-').toLowerCase()}">
-                            ${groupName}
+                    ${Object.keys(policyCategories).map(categoryName => `
+                        <button class="policy-group-btn" onclick="app.showPolicyGroup('${categoryName}')" id="btn-${categoryName.replace(/\s+/g, '-').toLowerCase()}">
+                            ${this.getPolicyIcon(categoryName)} ${categoryName}
                         </button>
                     `).join('')}
                 </div>
                 <div class="policies-main">
-                    ${policyGroups.map(groupName => {
-                        const policies = this.clientData.policies[groupName];
-                        return `
-                            <div class="policy-group-content" id="content-${groupName.replace(/\s+/g, '-').toLowerCase()}">
-                                <div class="policy-group-title">${groupName}</div>
+                    ${Object.entries(policyCategories).map(([categoryName, policies]) => `
+                        <div class="policy-group-content" id="content-${categoryName.replace(/\s+/g, '-').toLowerCase()}">
+                            <div class="policy-group-title">
+                                ${this.getPolicyIcon(categoryName)} ${categoryName}
+                            </div>
+                            <div class="policy-items-grid">
                                 ${policies.map(policy => `
-                                    <div class="policy-item">
-                                        <div class="policy-item-title">${policy.title || 'Unknown Policy'}</div>
-                                        <div class="policy-item-description">${policy.description || 'No description available.'}</div>
-                                        <div class="policy-details">
-                                            <div class="policy-detail">
-                                                <div class="policy-detail-label">Current Setting</div>
-                                                <div class="policy-detail-value">${policy.default || 'Not specified'}</div>
-                                            </div>
+                                    <div class="policy-item ${policy.value ? 'has-value' : 'no-value'}">
+                                        <div class="policy-item-header">
+                                            <div class="policy-item-title">${policy.title}</div>
+                                            ${policy.value ? `<div class="policy-status-badge active">Set</div>` : `<div class="policy-status-badge inactive">Not Set</div>`}
                                         </div>
+                                        <div class="policy-item-value">
+                                            ${policy.value || 'Not specified'}
+                                        </div>
+                                        ${policy.description ? `<div class="policy-item-description">${policy.description}</div>` : ''}
                                     </div>
                                 `).join('')}
                             </div>
-                        `;
-                    }).join('')}
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         `;
 
         // Show first group by default
-        if (policyGroups.length > 0) {
-            this.showPolicyGroup(policyGroups[0]);
+        const firstCategory = Object.keys(policyCategories)[0];
+        if (firstCategory) {
+            this.showPolicyGroup(firstCategory);
         }
     }
 

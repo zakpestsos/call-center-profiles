@@ -3,16 +3,29 @@
 
 function doGet(e) {
   try {
+    // Check if requesting the intake form
+    const showForm = e.parameter.form;
+    if (showForm === 'intake') {
+      const htmlTemplate = HtmlService.createTemplateFromFile('ui/client-input-form');
+      
+      // Pass URL parameters to the template
+      htmlTemplate.profileId = e.parameter.profileId || '';
+      htmlTemplate.editMode = e.parameter.edit || '';
+      
+      return htmlTemplate.evaluate()
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+    
     // Check if requesting data by profileId
     const profileId = e.parameter.profileId;
     const callback = e.parameter.callback;
-
+    
     if (profileId) {
       const profileData = getProfileDataById(profileId);
       
       // Handle JSONP callback
       if (callback) {
-        return ContentService
+      return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(profileData)});`)
           .setMimeType(ContentService.MimeType.JAVASCRIPT);
       }
@@ -25,32 +38,29 @@ function doGet(e) {
     // Legacy support for sheetId-based requests
     const sheetId = e.parameter.sheetId;
 
-    if (!sheetId) {
-      const errorResponse = {error: 'Missing profileId or sheetId parameter'};
+    if (sheetId) {
+      // Handle legacy sheetId requests
+      const data = getClientDataFromSheet(sheetId);
       
       if (callback) {
         return ContentService
-          .createTextOutput(`${callback}(${JSON.stringify(errorResponse)});`)
+          .createTextOutput(`${callback}(${JSON.stringify(data)});`)
           .setMimeType(ContentService.MimeType.JAVASCRIPT);
       }
       
       return ContentService
-        .createTextOutput(JSON.stringify(errorResponse))
+        .createTextOutput(JSON.stringify(data))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    const data = getClientDataFromSheet(sheetId);
-
-    if (callback) {
-      return ContentService
-        .createTextOutput(`${callback}(${JSON.stringify(data)});`)
-        .setMimeType(ContentService.MimeType.JAVASCRIPT);
-    }
-
-    return ContentService
-      .createTextOutput(JSON.stringify(data))
-      .setMimeType(ContentService.MimeType.JSON);
-
+    // Default: serve the intake form when no parameters are provided
+    const htmlTemplate = HtmlService.createTemplateFromFile('ui/client-input-form');
+    htmlTemplate.profileId = '';
+    htmlTemplate.editMode = '';
+    
+    return htmlTemplate.evaluate()
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+      
   } catch (error) {
     console.error('Error in doGet:', error);
     const errorResponse = {error: error.toString()};
@@ -127,26 +137,156 @@ function doPost(e) {
 }
 
 /**
+ * Helper function to combine modern address fields into a single address string
+ */
+function combineAddressFields(formData) {
+  if (formData.physicalStreet) {
+    let address = formData.physicalStreet;
+    if (formData.physicalSuite) address += `, ${formData.physicalSuite}`;
+    if (formData.physicalCity) address += `, ${formData.physicalCity}`;
+    if (formData.physicalState) address += `, ${formData.physicalState}`;
+    if (formData.physicalZip) address += ` ${formData.physicalZip}`;
+    return address;
+  }
+  return '';
+}
+
+/**
+ * Creates service areas entries in the Service_Areas sheet
+ * @param {string} profileId - The profile ID
+ * @param {Array} serviceAreas - Array of {zip, city} objects
+ */
+function createServiceAreasInSheet(profileId, serviceAreas) {
+  try {
+    const masterSheetId = '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec';
+    const spreadsheet = SpreadsheetApp.openById(masterSheetId);
+    
+    // Get or create Service_Areas sheet
+    let serviceAreasSheet = spreadsheet.getSheetByName('Service_Areas');
+    if (!serviceAreasSheet) {
+      serviceAreasSheet = spreadsheet.insertSheet('Service_Areas');
+      // Add headers: Profile_ID, Zip_Code, City, State, Branch, Territory, In_Service
+      serviceAreasSheet.getRange(1, 1, 1, 7).setValues([
+        ['Profile_ID', 'Zip_Code', 'City', 'State', 'Branch', 'Territory', 'In_Service']
+      ]);
+    }
+    
+    // Prepare data for batch insert
+    const dataToInsert = serviceAreas.map(area => [
+      profileId,
+      area.zip,
+      area.city,
+      '', // State - can be auto-resolved later
+      area.city, // Branch defaults to city name
+      '', // Territory - can be assigned later
+      'Yes' // In_Service defaults to Yes
+    ]);
+    
+    if (dataToInsert.length > 0) {
+      const lastRow = serviceAreasSheet.getLastRow();
+      serviceAreasSheet.getRange(lastRow + 1, 1, dataToInsert.length, 7)
+        .setValues(dataToInsert);
+      
+      Logger.log(`Created ${dataToInsert.length} service area entries for profile ${profileId}`);
+    }
+    
+  } catch (error) {
+    Logger.log(`Error creating service areas: ${error.toString()}`);
+    throw error;
+  }
+}
+
+/**
  * Main function to create a new client profile from HTML form data
- * This function processes form submissions and creates the complete profile
+ * This function processes form submissions and creates entries in the Master Client Profiles sheet
  */
 function createClientProfileFromHTML(formData) {
   try {
     Logger.log('Creating client profile from HTML form...');
     
-    // Validate form data
-    if (!formData.companyName || !formData.location) {
-      throw new Error('Company name and location are required');
+    // Validate required fields based on Master Client Profiles sheet structure
+    if (!formData.companyName) {
+      throw new Error('Company name is required');
+    }
+    if (!formData.locations && !formData.location) {
+      throw new Error('Location is required');
+    }
+    if (!formData.officePhone && !formData.phone) {
+      throw new Error('Phone number is required');
+    }
+    if (!formData.customerContactEmail && !formData.email) {
+      throw new Error('Email is required');
     }
     
-    // Create client folder in Google Drive
-    const clientFolderUrl = createEditableClientSheet(formData);
+    // Use provided Profile_ID or generate new one
+    const profileId = formData.profileId || generateUniqueProfileId();
     
-    // Add to master profile sheet
-    const profileId = addProfileToMasterSheet(formData, clientFolderUrl);
+    // Map form field names to expanded Master Client Profiles sheet structure
+    const masterSheetData = {
+      profileId: profileId,
+      companyName: formData.companyName,
+      location: formData.locations || formData.location,
+      timezone: formData.timezone || (formData.timezoneCustom ? formData.timezoneCustom : ''),
+      phone: formData.officePhone || formData.phone,
+      email: formData.customerContactEmail || formData.email,
+      website: formData.website || '',
+      address: combineAddressFields(formData) || formData.physicalAddress || formData.address || '',
+      hours: formData.officeHours || formData.hours || '',
+      bulletin: formData.bulletin || '',
+      pestsNotCovered: formData.pestsNotCovered || '',
+      clientFolderUrl: formData.googleDriveFolder || '',
+      lastUpdated: new Date().toISOString(),
+      syncStatus: 'ACTIVE',
+      // New fields
+      fieldRoutesLink: formData.fieldRoutesLink || '',
+      physicalStreet: formData.physicalStreet || '',
+      physicalSuite: formData.physicalSuite || '',
+      physicalCity: formData.physicalCity || '',
+      physicalState: formData.physicalState || '',
+      physicalZip: formData.physicalZip || '',
+      mailingStreet: formData.mailingStreet || '',
+      mailingSuite: formData.mailingSuite || '',
+      mailingCity: formData.mailingCity || '',
+      mailingState: formData.mailingState || '',
+      mailingZip: formData.mailingZip || '',
+      sameAsPhysical: formData.sameAsPhysical || '',
+      timezoneCustom: formData.timezoneCustom || '',
+      holidays: formData.holidays || []
+    };
     
-    // Generate web app profile URL
-    const profileUrl = generateWebAppProfileUrl(profileId);
+    // Add to Master Client Profiles sheet
+    const result = createClientProfileInMasterSheet(masterSheetData);
+    
+    // Handle related data (services, technicians, etc.)
+    const MASTER_SHEET_ID = '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec';
+    const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
+    
+    if (formData.services) {
+      Logger.log(`Processing ${Object.keys(formData.services).length} services`);
+      saveServicesData(sheet, profileId, formData.services);
+    }
+
+    if (formData.technicians) {
+      Logger.log(`Processing ${Object.keys(formData.technicians).length} technicians`);
+      saveTechniciansData(sheet, profileId, formData.technicians, formData.companyName);
+    }
+
+    // Process Service Areas data if provided
+    if (formData.serviceAreasData) {
+      try {
+        const serviceAreas = JSON.parse(formData.serviceAreasData);
+        Logger.log(`Processing ${serviceAreas.length} service areas`);
+        saveServiceAreasData(sheet, profileId, serviceAreas);
+      } catch (error) {
+        Logger.log(`Warning: Could not process service areas: ${error.message}`);
+      }
+    }
+    
+    // Process Policies data
+    savePoliciesData(sheet, profileId, formData);
+    
+    // Generate GitHub Pages profile URL
+    const profileUrl = `https://zakpestsos.github.io/call-center-profiles/?profileId=${profileId}`;
     
     Logger.log(`Profile created successfully with ID: ${profileId}`);
     
@@ -154,11 +294,12 @@ function createClientProfileFromHTML(formData) {
       success: true,
       profileId: profileId,
       profileUrl: profileUrl,
-      clientFolderUrl: clientFolderUrl
+      message: 'Client profile created successfully!',
+      data: masterSheetData
     };
     
   } catch (error) {
-    Logger.log(`Error creating profile from HTML: ${error.toString()}`);
+    Logger.log(`Error in createClientProfileFromHTML: ${error.toString()}`);
     throw error;
   }
 }
@@ -620,71 +761,6 @@ function setupInputSheet() {
   }
 }
 
-/**
- * Creates a client profile from HTML form data
- * This function handles the complex, hierarchical data from the HTML form
- * @param {Object} formData - The form data from the HTML interface
- * @returns {Object} Result object with profile URL and client ID
- */
-function createClientProfileFromHTML(formData) {
-  try {
-    Logger.log('Creating client profile from HTML form data...');
-    
-    // Parse and structure the form data
-    const clientData = parseHTMLFormData(formData);
-    
-    // Validate required fields
-    validateClientData(clientData);
-    
-    // Generate unique client ID
-    const clientId = generateClientId();
-    clientData.clientId = clientId;
-    
-    // Create Wix profile
-    const wixResult = createWixProfile(clientData);
-    
-    // Generate profile URL
-    const profileUrl = generateProfileUrl(wixResult.profileId, clientData.companyName);
-    
-    // Update client tracking sheets
-    updateClientTrackingSheets(clientData, profileUrl, wixResult.profileId);
-    
-    // Create copy in company Google Drive folder if provided
-    let companySheetUrl = null;
-    if (clientData.googleDriveFolder) {
-      try {
-        companySheetUrl = createCompanyFolderCopy(clientData, clientData.googleDriveFolder);
-        Logger.log(`Company folder copy created: ${companySheetUrl}`);
-      } catch (error) {
-        Logger.log(`Warning: Could not create company folder copy: ${error.message}`);
-        // Don't fail the whole process if this fails
-      }
-    }
-    
-    // Log success
-    Logger.log(`Client profile created successfully: ${clientId}`);
-    
-    return {
-      success: true,
-      clientId: clientId,
-      profileUrl: profileUrl,
-      wixProfileId: wixResult.profileId,
-      message: 'Client profile created successfully'
-    };
-    
-  } catch (error) {
-    Logger.error('Error creating client profile from HTML:', error);
-    
-    // Update error tracking
-    try {
-      updateErrorTracking(formData.companyName || 'Unknown', error.message);
-    } catch (trackingError) {
-      Logger.error('Error updating tracking:', trackingError);
-    }
-    
-    throw new Error(`Failed to create client profile: ${error.message}`);
-  }
-}
 
 /**
  * Parses HTML form data into structured client data
@@ -721,8 +797,47 @@ function parseHTMLFormData(formData) {
     // Service areas array
     serviceAreas: [],
     
-    // Policies
+    // Policies - Comprehensive structure matching intake form
     policies: {
+      // Service Coverage
+      treatVehicles: formData.treatVehicles || '',
+      treatVehiclesCustom: formData.treatVehiclesCustom || '',
+      commercialProperties: formData.commercialProperties || '',
+      commercialPropertiesCustom: formData.commercialPropertiesCustom || '',
+      multiFamilyOffered: formData.multiFamilyOffered || '',
+      multiFamilyOfferedCustom: formData.multiFamilyOfferedCustom || '',
+      trailersOffered: formData.trailersOffered || '',
+      trailersOfferedCustom: formData.trailersOfferedCustom || '',
+      
+      // Scheduling & Operations
+      signedContract: formData.signedContract || '',
+      signedContractCustom: formData.signedContractCustom || '',
+      returningCustomers: formData.returningCustomers || '',
+      appointmentConfirmations: formData.appointmentConfirmations || '',
+      appointmentConfirmationsCustom: formData.appointmentConfirmationsCustom || '',
+      callAhead: formData.callAhead || '',
+      maxDistance: formData.maxDistance || '',
+      schedulingPolicyTimes: formData.schedulingPolicyTimes || '',
+      sameDayServices: formData.sameDayServices || '',
+      sameDayServicesCustom: formData.sameDayServicesCustom || '',
+      techSkilling: formData.techSkilling || '',
+      techSkillingCustom: formData.techSkillingCustom || '',
+      afterHoursEmergency: formData.afterHoursEmergency || '',
+      afterHoursEmergencyCustom: formData.afterHoursEmergencyCustom || '',
+      
+      // Service Policies
+      reservices: formData.reservices || '',
+      setServiceTypeTo: formData.setServiceTypeTo || '',
+      setServiceTypeToCustom: formData.setServiceTypeToCustom || '',
+      setSubscriptionTypeTo: formData.setSubscriptionTypeTo || '',
+      
+      // Payment & Financial
+      paymentPlans: formData.paymentPlans || '',
+      paymentPlansCustom: formData.paymentPlansCustom || '',
+      paymentTypes: formData.paymentTypes || '',
+      pastDuePeriod: formData.pastDuePeriod || '',
+      
+      // Legacy fields for backward compatibility
       cancellation: formData.cancellationPolicy || '',
       guarantee: formData.guaranteePolicy || '',
       payment: formData.paymentTerms || '',
@@ -1200,63 +1315,6 @@ function testSystem() {
   }
 }
 
-/**
- * Processes client data from the enhanced HTML form
- * Creates both Google Sheets for editing and Wix profile
- * @param {Object} clientData - Comprehensive client data from HTML form
- * @returns {Object} Result with URLs and status
- */
-async function createClientProfileFromHTML(clientData) {
-  try {
-    Logger.log('Creating client profile from enhanced HTML form for: ' + clientData.companyName);
-    
-    // Validate required data
-    if (!clientData.companyName) {
-      throw new Error('Company name is required');
-    }
-    
-    if (!clientData.officeInfo?.officePhone) {
-      throw new Error('Office phone is required');
-    }
-    
-    if (!clientData.officeInfo?.customerContactEmail) {
-      throw new Error('Customer contact email is required');
-    }
-    
-    // 1. Create editable Google Sheets structure
-    const sheetUrl = createEditableClientSheet(clientData);
-    Logger.log('Created editable sheet: ' + sheetUrl);
-    
-    // 2. Create Wix profile with comprehensive data
-    const wixResult = await createWixProfile(clientData);
-    Logger.log('Created Wix profile: ' + wixResult.profileUrl);
-    
-    // 3. Update sheets with Wix profile information
-    updateSheetWithWixInfo(sheetUrl, wixResult);
-    
-    // 4. Update master tracking
-    updateMasterClientList(clientData, sheetUrl, wixResult.profileUrl, wixResult.profileId);
-    
-    const result = {
-      success: true,
-      profileUrl: wixResult.profileUrl,
-      sheetUrl: sheetUrl,
-      profileId: wixResult.profileId,
-      message: 'Client profile created successfully with editable Google Sheets!'
-    };
-    
-    Logger.log('Profile creation completed successfully');
-    return result;
-    
-  } catch (error) {
-    Logger.log('Error creating client profile: ' + error.toString());
-    return {
-      success: false,
-      error: error.message,
-      details: error.toString()
-    };
-  }
-}
 
 /**
  * Creates comprehensive Wix profile with all service details
@@ -2679,7 +2737,15 @@ function createClientProfileInMasterSheet(data) {
     // You'll need to set this to your actual master sheet ID
     const MASTER_SHEET_ID = '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec';
     const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
-    const masterSheet = sheet.getSheetByName('Profiles') || sheet.getSheets()[0];
+    
+    // Debug: Log all available sheet names
+    const allSheets = sheet.getSheets();
+    Logger.log(`Available sheets: ${allSheets.map(s => s.getName()).join(', ')}`);
+    
+    const masterSheet = sheet.getSheetByName('Client_Profiles');
+    
+    Logger.log(`Writing to sheet: ${masterSheet.getName()}`);
+    Logger.log(`Sheet has ${masterSheet.getLastRow()} rows, ${masterSheet.getLastColumn()} columns`);
 
     // Get existing data to check for duplicates
     const existingData = masterSheet.getDataRange().getValues();
@@ -2691,44 +2757,54 @@ function createClientProfileInMasterSheet(data) {
       }
     }
 
-    // Prepare data for insertion
+    // Generate Edit Form URL
+    const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${data.profileId}&edit=true`;
+    
+    // Prepare data for insertion (matching expanded Master Client Profiles sheet structure)
     const profileRow = [
-      data.profileId,
-      data.companyName || '',
-      data.location || '',
-      data.timezone || 'Central',
-      data.phone || '',
-      data.email || '',
-      data.website || '',
-      data.address || '',
-      data.hours || '',
-      data.bulletin || '',
-      data.pestsNotCovered || '',
-      new Date().toISOString(), // createdAt
-      new Date().toISOString(), // updatedAt
-      'ACTIVE' // status
+      data.profileId,           // A - Profile_ID
+      data.companyName || '',   // B - Company_Name
+      data.location || '',      // C - Location
+      data.timezone || '',      // D - Timezone
+      data.phone || '',         // E - Phone
+      data.email || '',         // F - Email
+      data.website || '',       // G - Website
+      data.address || '',       // H - Address
+      data.hours || '',         // I - Hours
+      data.bulletin || '',      // J - Bulletin
+      data.pestsNotCovered || '', // K - Pests_Not_Covered
+      data.clientFolderUrl || '', // L - Client_Folder_URL
+      '', // M - Wix_Profile_URL (no longer needed)
+      new Date().toISOString(), // N - Last_Updated
+      'ACTIVE', // O - Sync_Status
+      editFormUrl, // P - Edit_Form_URL
+      data.fieldRoutesLink || '', // Q - FieldRoutes_Link
+      data.physicalStreet || '',  // R - Physical_Street
+      data.physicalSuite || '',   // S - Physical_Suite
+      data.physicalCity || '',    // T - Physical_City
+      data.physicalState || '',   // U - Physical_State
+      data.physicalZip || '',     // V - Physical_Zip
+      data.mailingStreet || '',   // W - Mailing_Street
+      data.mailingSuite || '',    // X - Mailing_Suite
+      data.mailingCity || '',     // Y - Mailing_City
+      data.mailingState || '',    // Z - Mailing_State
+      data.mailingZip || '',      // AA - Mailing_Zip
+      data.sameAsPhysical || '',  // AB - Same_As_Physical
+      data.timezoneCustom || '',  // AC - Timezone_Custom
+      Array.isArray(data.holidays) ? data.holidays.join(', ') : (data.holidays || '') // AD - Holidays_Observed
     ];
 
     // Append to master sheet
+    Logger.log(`Attempting to append row: ${JSON.stringify(profileRow)}`);
     masterSheet.appendRow(profileRow);
+    Logger.log(`Successfully appended to row ${masterSheet.getLastRow()}`);
 
-    // Handle related data (services, technicians, etc.)
-    if (data.services && data.services.length > 0) {
-      saveServicesData(sheet, data.profileId, data.services);
-    }
-
-    if (data.technicians && data.technicians.length > 0) {
-      saveTechniciansData(sheet, data.profileId, data.technicians);
-    }
-
-    if (data.serviceAreas && data.serviceAreas.length > 0) {
-      saveServiceAreasData(sheet, data.profileId, data.serviceAreas);
-    }
+    // Note: Related data (services, technicians, etc.) is now handled in the main create function
 
     // Generate GitHub Pages URL
     const profileUrl = 'https://YOUR_USERNAME.github.io/YOUR_REPO/?profileId=' + data.profileId;
 
-    return {
+  return {
       success: true,
       message: 'Profile created successfully',
       profileId: data.profileId,
@@ -2798,6 +2874,7 @@ function getProfileDataById(profileId) {
         profileData.services = getServicesData(sheet, profileId);
         profileData.technicians = getTechniciansData(sheet, profileId);
         profileData.serviceAreas = getServiceAreasData(sheet, profileId);
+        profileData.policies = getPoliciesData(sheet, profileId);
 
         return profileData;
       }
@@ -2817,24 +2894,58 @@ function saveServicesData(sheet, profileId, services) {
   let servicesSheet = sheet.getSheetByName('Services');
   if (!servicesSheet) {
     servicesSheet = sheet.insertSheet('Services');
-    servicesSheet.appendRow(['ProfileID', 'ServiceName', 'Description', 'ServiceType', 'Frequency', 'Contract', 'Guarantee', 'Duration', 'Pests', 'ProductType', 'BillingFrequency', 'QueueExt', 'PricingTiers']);
+    // Match your expanded schema with all new columns
+    servicesSheet.appendRow(['Profile_ID', 'Service_Name', 'Service_Type', 'Frequency', 'Description', 'Pests_Covered', 'Contract', 'Guarantee', 'Duration', 'Product_Type', 'Billing_Frequency', 'Agent_Note', 'Queue_Ext', 'Pricing_Data', 'Call_Ahead', 'Leave_During_Service', 'Follow_Up', 'Prep_Sheet', 'Recurring_Duration', 'Service_Frequency_Custom', 'Billing_Frequency_Custom', 'Category_Custom', 'Type_Custom', 'Call_Ahead_Custom', 'Leave_During_Service_Custom', 'Prep_Sheet_Custom']);
   }
 
-  services.forEach(service => {
+  // Convert services object to array (form sends as services[1], services[2], etc.)
+  const serviceArray = [];
+  if (Array.isArray(services)) {
+    serviceArray.push(...services.filter(s => s && s.name));
+  } else if (typeof services === 'object') {
+    Object.values(services).forEach(service => {
+      if (service && service.name) {
+        serviceArray.push(service);
+      }
+    });
+  }
+  
+  Logger.log(`Found ${serviceArray.length} valid services to save`);
+  
+  serviceArray.forEach(service => {
     servicesSheet.appendRow([
-      profileId,
-      service.name || '',
-      service.description || '',
-      service.serviceType || '',
-      service.frequency || '',
-      service.contract || '',
-      service.guarantee || '',
-      service.duration || '',
-      service.pests || '',
-      service.productType || '',
-      service.billingFrequency || '',
-      service.queueExt || '',
-      JSON.stringify(service.pricingTiers || [])
+      profileId,                                    // Profile_ID
+      service.name || '',                          // Service_Name  
+      service.type || service.serviceTypeDesc || '', // Service_Type
+      service.frequency || '',                     // Frequency
+      service.description || '',                   // Description
+      service.pests || '',                        // Pests_Covered
+      service.contract || '',                     // Contract
+      service.guarantee || '',                    // Guarantee
+      service.initialDuration || service.recurringDuration || '', // Duration
+      service.productType || '',                  // Product_Type
+      service.billingFrequency || '',            // Billing_Frequency
+      service.noteToAgent || '',                 // Agent_Note
+      profileId,                                 // Queue_Ext (using Profile_ID as you requested)
+      JSON.stringify([{                         // Pricing_Data (as array)
+        sqftMin: parseInt(service.sqftMin) || 0,
+        sqftMax: parseInt(service.sqftMax) || 2500,
+        firstPrice: service.firstPrice || '',
+        recurringPrice: service.recurringPrice || '',
+        serviceType: (service.serviceFrequency || service.frequency || '') + ' ' + (service.serviceTypeDesc || service.name || 'Service')
+      }]),
+      service.callAhead || (service.callAheadCustom ? service.callAheadCustom : ''), // Call_Ahead
+      service.leaveDuringService || (service.leaveDuringServiceCustom ? service.leaveDuringServiceCustom : ''), // Leave_During_Service
+      service.followUp || '',                     // Follow_Up
+      service.prepSheet || (service.prepSheetCustom ? service.prepSheetCustom : ''), // Prep_Sheet
+      service.recurringDuration || '',            // Recurring_Duration
+      service.serviceFrequencyCustom || '',       // Service_Frequency_Custom
+      service.billingFrequencyCustom || '',       // Billing_Frequency_Custom
+      service.categoryCustom || '',               // Category_Custom
+      service.typeCustom || '',                   // Type_Custom
+      service.callAheadCustom || '',              // Call_Ahead_Custom
+      service.leaveDuringServiceCustom || '',     // Leave_During_Service_Custom
+      service.prepSheetCustom || ''               // Prep_Sheet_Custom
     ]);
   });
 }
@@ -2875,26 +2986,43 @@ function getServicesData(sheet, profileId) {
   return services;
 }
 
-function saveTechniciansData(sheet, profileId, technicians) {
+function saveTechniciansData(sheet, profileId, technicians, companyName) {
   let techSheet = sheet.getSheetByName('Technicians');
   if (!techSheet) {
     techSheet = sheet.insertSheet('Technicians');
-    techSheet.appendRow(['ProfileID', 'Name', 'Role', 'Schedule', 'MaxStops', 'Phone', 'ZipCode', 'ServicesNotProvided', 'Notes']);
+    // Match your expanded schema with Role_Custom column
+    techSheet.appendRow(['Profile_ID', 'Tech_Name', 'Company', 'Role', 'Phone', 'Schedule', 'Max_Stops', 'Does_Not_Service', 'Additional_Notes', 'Zip_Codes', 'Role_Custom']);
   }
 
-  technicians.forEach(tech => {
-    techSheet.appendRow([
-      profileId,
-      tech.name || '',
-      tech.role || '',
-      tech.schedule || '',
-      tech.maxStops || '',
-      tech.phone || '',
-      tech.zipCode || '',
-      tech.doesNotService || '',
-      tech.notes || ''
-    ]);
-  });
+  // Convert technicians object to array (form sends as technicians[1], technicians[2], etc.)
+  const techArray = [];
+  if (Array.isArray(technicians)) {
+    techArray.push(...technicians.filter(t => t && t.name));
+  } else if (typeof technicians === 'object') {
+    Object.values(technicians).forEach(tech => {
+      if (tech && tech.name) {
+        techArray.push(tech);
+      }
+    });
+  }
+  
+  Logger.log(`Found ${techArray.length} valid technicians to save`);
+  
+    techArray.forEach(tech => {
+      techSheet.appendRow([
+        profileId,                           // Profile_ID
+        tech.name || '',                    // Tech_Name
+        companyName || '',                  // Company (auto-populated from company name)
+        tech.role || '',                    // Role
+        tech.phone || '',                   // Phone
+        tech.schedule || '',                // Schedule
+        tech.maxStops || '',               // Max_Stops
+        tech.doesNotService || '',         // Does_Not_Service
+        tech.additionalNotes || '',        // Additional_Notes
+        tech.zipCodeOrBranch || '',        // Zip_Codes
+        tech.roleCustom || ''              // Role_Custom
+      ]);
+    });
 }
 
 function getTechniciansData(sheet, profileId) {
@@ -2929,27 +3057,28 @@ function getTechniciansData(sheet, profileId) {
 }
 
 function saveServiceAreasData(sheet, profileId, serviceAreas) {
-  let areaSheet = sheet.getSheetByName('ServiceAreas');
+  let areaSheet = sheet.getSheetByName('Service_Areas');
   if (!areaSheet) {
-    areaSheet = sheet.insertSheet('ServiceAreas');
-    areaSheet.appendRow(['ProfileID', 'Zip', 'City', 'State', 'Branch', 'InService', 'Notes']);
+    areaSheet = sheet.insertSheet('Service_Areas');
+    // Match your exact schema: Profile_ID, Zip_Code, City, State, Branch, Territory, In_Service
+    areaSheet.appendRow(['Profile_ID', 'Zip_Code', 'City', 'State', 'Branch', 'Territory', 'In_Service']);
   }
 
   serviceAreas.forEach(area => {
     areaSheet.appendRow([
-      profileId,
-      area.zip || '',
-      area.city || '',
-      area.state || '',
-      area.branch || '',
-      area.inService || 'true',
-      area.notes || ''
+      profileId,              // Profile_ID
+      area.zip || area.zipCode || '', // Zip_Code
+      area.city || '',       // City
+      area.state || '',      // State
+      area.branch || area.city || '', // Branch (defaults to city)
+      '',                    // Territory (can be filled later)
+      'TRUE'                 // In_Service (must be TRUE, not Yes)
     ]);
   });
 }
 
 function getServiceAreasData(sheet, profileId) {
-  const areaSheet = sheet.getSheetByName('ServiceAreas');
+  const areaSheet = sheet.getSheetByName('Service_Areas');
   if (!areaSheet) return [];
 
   const data = areaSheet.getDataRange().getValues();
@@ -2957,14 +3086,14 @@ function getServiceAreasData(sheet, profileId) {
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    if (row[0] === profileId) {
+    if (row[0] === profileId && row[6] === 'TRUE') { // Only include areas with In_Service = TRUE
       serviceAreas.push({
-        zip: row[1],
-        city: row[2],
-        state: row[3],
-        branch: row[4],
-        inService: row[5] === 'true',
-        notes: row[6]
+        zip: row[1],           // Zip_Code
+        city: row[2],          // City
+        state: row[3],         // State
+        branch: row[4],        // Branch
+        territory: row[5],     // Territory
+        inService: true        // In_Service (convert TRUE to boolean)
       });
     }
   }
@@ -3005,6 +3134,318 @@ function parseZipCodes(zipData) {
   
   console.log('No valid ZIP codes found');
   return [];
+}
+
+// Initialize Profile structure with empty rows in all sheets
+function initializeProfileStructure(profileId, driveUrl) {
+  try {
+    const MASTER_SHEET_ID = '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec';
+    const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
+    
+    // Generate Edit Form URL
+    const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${profileId}&edit=true`;
+    
+    // 1. Pre-create Client_Profiles row
+    let clientSheet = sheet.getSheetByName('Client_Profiles');
+    if (!clientSheet) {
+      clientSheet = sheet.insertSheet('Client_Profiles');
+      clientSheet.appendRow(['Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL', 'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 'Physical_City', 'Physical_State', 'Physical_Zip', 'Mailing_Street', 'Mailing_Suite', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical', 'Timezone_Custom', 'Holidays_Observed']);
+    }
+    
+    clientSheet.appendRow([
+      profileId, '', '', '', '', '', '', '', '', '', '', driveUrl, '', new Date().toISOString(), 'DRAFT', editFormUrl,
+      // New address fields (empty for now)
+      '', '', '', '', '', '', '', '', '', '', '', '',
+      // New custom fields (empty for now)  
+      '', ''
+    ]);
+    
+    // 2. Ensure other sheets exist with headers
+    const sheetsToCreate = [
+      {name: 'Services', headers: ['Profile_ID', 'Service_Name', 'Service_Type', 'Frequency', 'Description', 'Pests_Covered', 'Contract', 'Guarantee', 'Duration', 'Product_Type', 'Billing_Frequency', 'Agent_Note', 'Queue_Ext', 'Pricing_Data', 'Call_Ahead', 'Leave_During_Service', 'Follow_Up', 'Prep_Sheet', 'Recurring_Duration', 'Service_Frequency_Custom', 'Billing_Frequency_Custom', 'Category_Custom', 'Type_Custom', 'Call_Ahead_Custom', 'Leave_During_Service_Custom', 'Prep_Sheet_Custom']},
+      {name: 'Technicians', headers: ['Profile_ID', 'Tech_Name', 'Company', 'Role', 'Phone', 'Schedule', 'Max_Stops', 'Does_Not_Service', 'Additional_Notes', 'Zip_Codes', 'Role_Custom']},
+      {name: 'Policies', headers: ['Profile_ID', 'Policy_Category', 'Policy_Type', 'Policy_Title', 'Policy_Description', 'Policy_Options', 'Default_Value', 'Sort_Order', 'Treat_Vehicles', 'Commercial_Properties', 'Multi_Family_Offered', 'Trailers_Offered', 'Signed_Contract', 'Returning_Customers', 'Appointment_Confirmations', 'Call_Ahead', 'Max_Distance', 'Scheduling_Policy_Times', 'Same_Day_Services', 'Tech_Skilling', 'After_Hours_Emergency', 'Reservices', 'Set_Service_Type_To', 'Set_Subscription_Type_To', 'Payment_Plans', 'Payment_Types', 'Past_Due_Period', 'Tools_To_Save', 'Additional_Notes', 'Branch', 'Cancellation_Policy', 'Guarantee_Policy', 'Payment_Terms', 'Emergency_Services', 'Insurance_Info']},
+      {name: 'Service_Areas', headers: ['Profile_ID', 'Zip_Code', 'City', 'State', 'Branch', 'Territory', 'In_Service']}
+    ];
+    
+    sheetsToCreate.forEach(sheetConfig => {
+      let targetSheet = sheet.getSheetByName(sheetConfig.name);
+      if (!targetSheet) {
+        targetSheet = sheet.insertSheet(sheetConfig.name);
+        targetSheet.appendRow(sheetConfig.headers);
+      }
+    });
+    
+    Logger.log(`Profile structure initialized for ${profileId}`);
+    return {
+      success: true,
+      profileId: profileId,
+      editFormUrl: editFormUrl,
+      message: 'Profile structure created successfully'
+    };
+    
+  } catch (error) {
+    Logger.log(`Error initializing profile structure: ${error.toString()}`);
+    throw error;
+  }
+}
+
+// Update existing profile instead of creating new one
+function updateClientProfileFromHTML(formData) {
+  try {
+    const profileId = formData.profileId;
+    if (!profileId) {
+      throw new Error('Profile ID is required for updates');
+    }
+    
+    Logger.log(`Updating profile: ${profileId}`);
+    
+    const MASTER_SHEET_ID = '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec';
+    const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
+    
+    // Update Client_Profiles row
+    updateClientProfileRow(sheet, profileId, formData);
+    
+    // Clear and re-populate related sheets
+    clearProfileRelatedData(sheet, profileId);
+    
+    // Re-populate with fresh data
+    if (formData.services) {
+      saveServicesData(sheet, profileId, formData.services);
+    }
+    
+    if (formData.technicians) {
+      saveTechniciansData(sheet, profileId, formData.technicians, formData.companyName);
+    }
+    
+    if (formData.serviceAreasData) {
+      try {
+        const serviceAreas = JSON.parse(formData.serviceAreasData);
+        saveServiceAreasData(sheet, profileId, serviceAreas);
+      } catch (error) {
+        Logger.log(`Warning: Could not process service areas: ${error.message}`);
+      }
+    }
+    
+    savePoliciesData(sheet, profileId, formData);
+    
+    // Generate GitHub Pages profile URL
+    const profileUrl = `https://zakpestsos.github.io/call-center-profiles/?profileId=${profileId}`;
+    
+    return {
+      success: true,
+      profileId: profileId,
+      profileUrl: profileUrl,
+      message: 'Client profile updated successfully!'
+    };
+    
+  } catch (error) {
+    Logger.log(`Error updating profile: ${error.toString()}`);
+    throw error;
+  }
+}
+
+// Update specific Client_Profiles row
+function updateClientProfileRow(sheet, profileId, formData) {
+  const clientSheet = sheet.getSheetByName('Client_Profiles');
+  const data = clientSheet.getDataRange().getValues();
+  
+  // Find the row with this Profile_ID
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === profileId) {
+      // Update the row with form data
+      const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${profileId}&edit=true`;
+      
+      const updatedRow = [
+        profileId,                                    // A - Profile_ID
+        formData.companyName || '',                   // B - Company_Name
+        formData.locations || formData.location || '', // C - Location
+        formData.timezone || (formData.timezoneCustom ? formData.timezoneCustom : ''), // D - Timezone
+        formData.officePhone || formData.phone || '', // E - Phone
+        formData.customerContactEmail || formData.email || '', // F - Email
+        formData.website || '',                       // G - Website
+        combineAddressFields(formData) || formData.physicalAddress || formData.address || '', // H - Address
+        formData.officeHours || formData.hours || '', // I - Hours
+        formData.bulletin || '',                      // J - Bulletin
+        formData.pestsNotCovered || '',               // K - Pests_Not_Covered
+        formData.googleDriveFolder || '',             // L - Client_Folder_URL
+        '',                                           // M - Wix_Profile_URL (no longer needed)
+        new Date().toISOString(),                     // N - Last_Updated
+        'ACTIVE',                                     // O - Sync_Status
+        editFormUrl,                                  // P - Edit_Form_URL
+        formData.fieldRoutesLink || '',               // Q - FieldRoutes_Link
+        formData.physicalStreet || '',                // R - Physical_Street
+        formData.physicalSuite || '',                 // S - Physical_Suite
+        formData.physicalCity || '',                  // T - Physical_City
+        formData.physicalState || '',                 // U - Physical_State
+        formData.physicalZip || '',                   // V - Physical_Zip
+        formData.mailingStreet || '',                 // W - Mailing_Street
+        formData.mailingSuite || '',                  // X - Mailing_Suite
+        formData.mailingCity || '',                   // Y - Mailing_City
+        formData.mailingState || '',                  // Z - Mailing_State
+        formData.mailingZip || '',                    // AA - Mailing_Zip
+        formData.sameAsPhysical || '',                // AB - Same_As_Physical
+        formData.timezoneCustom || '',                // AC - Timezone_Custom
+        Array.isArray(formData.holidays) ? formData.holidays.join(', ') : (formData.holidays || '') // AD - Holidays_Observed
+      ];
+      
+      clientSheet.getRange(i + 1, 1, 1, 30).setValues([updatedRow]);
+      Logger.log(`Updated Client_Profiles row ${i + 1} for profile ${profileId}`);
+      return;
+    }
+  }
+  
+  throw new Error(`Profile ${profileId} not found in Client_Profiles sheet`);
+}
+
+// Clear existing related data for a profile
+function clearProfileRelatedData(sheet, profileId) {
+  const sheetsToClean = ['Services', 'Technicians', 'Policies', 'Service_Areas'];
+  
+  sheetsToClean.forEach(sheetName => {
+    const targetSheet = sheet.getSheetByName(sheetName);
+    if (targetSheet) {
+      const data = targetSheet.getDataRange().getValues();
+      
+      // Remove rows with this Profile_ID (iterate backwards to avoid index issues)
+      for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === profileId) {
+          targetSheet.deleteRow(i + 1);
+        }
+      }
+      
+      Logger.log(`Cleared existing ${sheetName} data for profile ${profileId}`);
+    }
+  });
+}
+
+// Save Policies data to Policies sheet
+function savePoliciesData(sheet, profileId, formData) {
+  let policiesSheet = sheet.getSheetByName('Policies');
+  if (!policiesSheet) {
+    policiesSheet = sheet.insertSheet('Policies');
+    // Match your expanded schema with all new columns
+    policiesSheet.appendRow(['Profile_ID', 'Policy_Category', 'Policy_Type', 'Policy_Title', 'Policy_Description', 'Policy_Options', 'Default_Value', 'Reservices', 'Set_Service_Type_To', 'Set_Subscription_Type_To', 'Payment_Types', 'Past_Due_Period', 'Returning_Customers', 'Tools_To_Save', 'Max_Distance', 'Additional_Notes', 'Branch', 'Treat_Vehicles', 'Commercial_Properties', 'Multi_Family_Offered', 'Trailers_Offered', 'Signed_Contract', 'Appointment_Confirmations', 'Same_Day_Services', 'Tech_Skilling', 'After_Hours_Emergency']);
+  }
+
+  // Create a comprehensive policy entry with all form data
+  policiesSheet.appendRow([
+    profileId,                                    // Profile_ID
+    'General',                                   // Policy_Category
+    'Comprehensive',                             // Policy_Type
+    'All Policies',                             // Policy_Title
+    'Complete policy information',               // Policy_Description
+    '',                                         // Policy_Options
+    '',                                         // Default_Value
+    formData.reservices || '',                  // Reservices
+    formData.setServiceTypeTo || (formData.setServiceTypeToCustom ? formData.setServiceTypeToCustom : ''), // Set_Service_Type_To
+    formData.setSubscriptionTypeTo || '',       // Set_Subscription_Type_To
+    formData.paymentTypes || '',                // Payment_Types
+    formData.pastDuePeriod || '',              // Past_Due_Period
+    formData.returningCustomers || '',          // Returning_Customers
+    formData.toolsToSave || '',                // Tools_To_Save
+    formData.maxDistance || '',                // Max_Distance
+    formData.additionalNotes || '',            // Additional_Notes
+    formData.branch || '',                     // Branch
+    formData.treatVehicles || (formData.treatVehiclesCustom ? formData.treatVehiclesCustom : ''), // Treat_Vehicles
+    formData.commercialProperties || (formData.commercialPropertiesCustom ? formData.commercialPropertiesCustom : ''), // Commercial_Properties
+    formData.multiFamilyOffered || (formData.multiFamilyOfferedCustom ? formData.multiFamilyOfferedCustom : ''), // Multi_Family_Offered
+    formData.trailersOffered || (formData.trailersOfferedCustom ? formData.trailersOfferedCustom : ''), // Trailers_Offered
+    formData.signedContract || (formData.signedContractCustom ? formData.signedContractCustom : ''), // Signed_Contract
+    formData.appointmentConfirmations || (formData.appointmentConfirmationsCustom ? formData.appointmentConfirmationsCustom : ''), // Appointment_Confirmations
+    formData.sameDayServices || (formData.sameDayServicesCustom ? formData.sameDayServicesCustom : ''), // Same_Day_Services
+    formData.techSkilling || (formData.techSkillingCustom ? formData.techSkillingCustom : ''), // Tech_Skilling
+    formData.afterHoursEmergency || (formData.afterHoursEmergencyCustom ? formData.afterHoursEmergencyCustom : '') // After_Hours_Emergency
+  ]);
+}
+
+// Get Policies data for a profile
+function getPoliciesData(sheet, profileId) {
+  const policiesSheet = sheet.getSheetByName('Policies');
+  if (!policiesSheet) return {};
+
+  const data = policiesSheet.getDataRange().getValues();
+  const policiesGrouped = {};
+
+  // Expected columns: Profile_ID, Policy_Category, Policy_Type, Policy_Title, Policy_Description, Policy_Options, Default_Value
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === profileId) {
+      const category = data[i][1] || 'General'; // Policy_Category
+      
+      // Initialize category array if it doesn't exist
+      if (!policiesGrouped[category]) {
+        policiesGrouped[category] = [];
+      }
+      
+      policiesGrouped[category].push({
+        type: data[i][2],           // Policy_Type
+        title: data[i][3],          // Policy_Title
+        description: data[i][4],    // Policy_Description
+        options: data[i][5],        // Policy_Options
+        defaultValue: data[i][6]    // Default_Value
+      });
+    }
+  }
+
+  return policiesGrouped;
+}
+
+/**
+ * Legacy function to get client data from a sheet ID
+ */
+function getClientDataFromSheet(sheetId) {
+  try {
+    const sheet = SpreadsheetApp.openById(sheetId);
+    const clientSheet = sheet.getSheets()[0];
+    const data = clientSheet.getDataRange().getValues();
+    
+    // Simple data extraction for legacy support
+    const clientData = {
+      companyName: '',
+      location: '',
+      timezone: 'Central',
+      officeInfo: {
+        phone: '',
+        email: '',
+        website: ''
+      },
+      bulletin: '',
+      pestsNotCovered: ''
+    };
+    
+    // Parse basic client information
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      if (row[0] && row[1]) {
+        switch (row[0].toString().toLowerCase()) {
+          case 'company name':
+            clientData.companyName = row[1];
+            break;
+          case 'location':
+            clientData.location = row[1];
+            break;
+          case 'phone':
+            clientData.officeInfo.phone = row[1];
+            break;
+          case 'email':
+            clientData.officeInfo.email = row[1];
+            break;
+          case 'website':
+            clientData.officeInfo.website = row[1];
+            break;
+          case 'bulletin':
+            clientData.bulletin = row[1];
+            break;
+        }
+      }
+    }
+    
+    return clientData;
+    
+  } catch (error) {
+    Logger.log('Error getting client data from sheet: ' + error.toString());
+    throw new Error('Failed to read sheet data: ' + error.message);
+  }
 }
 
 // Test function for development

@@ -659,6 +659,371 @@
             top: 15px;
             right: 15px;
         }
+
+        /* Modern Address Section Styles */
+        .address-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #3a4a5c;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .address-section h4 {
+            margin: 0 0 15px 0;
+            color: #60a5fa;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* Office Hours Styles */
+        .office-hours-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #3a4a5c;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .office-hours-section h4 {
+            margin: 0 0 10px 0;
+            color: #60a5fa;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .hours-instructions {
+            margin: 0 0 15px 0;
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .hours-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .day-hours {
+            display: grid;
+            grid-template-columns: 80px 30px 120px 30px 120px;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 6px;
+        }
+
+        .day-label {
+            font-weight: 500;
+            color: #e2e8f0;
+            font-size: 0.9em;
+        }
+
+        .time-select {
+            padding: 6px 8px;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            background: #2d3748;
+            color: #e2e8f0;
+            font-size: 0.85em;
+        }
+
+        .time-select:disabled {
+            opacity: 0.5;
+            background: #1a202c;
+        }
+
+        .to-label {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.8em;
+        }
+
+        /* Service Areas Bulk Upload Styles */
+        .service-areas-bulk {
+            padding: 20px;
+        }
+
+        .bulk-input-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-method {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid #3a4a5c;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .input-method h4 {
+            margin: 0 0 15px 0;
+            color: #60a5fa;
+            font-size: 1.1em;
+        }
+
+        .file-upload-section {
+            position: relative;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 20px;
+            border: 2px dashed #4a5568;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .file-upload-label:hover {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .file-upload-label span {
+            display: block;
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .file-upload-help {
+            font-size: 0.85em;
+            color: #94a3b8;
+        }
+
+        #zipCodeFile {
+            display: none;
+        }
+
+        #zipCodePaste {
+            width: 100%;
+            min-height: 150px;
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            color: #e2e8f0;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            resize: vertical;
+        }
+
+        .parse-options {
+            margin-top: 10px;
+        }
+
+        .parse-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        .zip-preview-section {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid #3a4a5c;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .zip-preview-section h4 {
+            margin: 0 0 15px 0;
+            color: #60a5fa;
+        }
+
+        .zip-preview-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .zip-preview-controls .btn {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .zip-preview-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .zip-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 8px;
+            border-bottom: 1px solid #374151;
+        }
+
+        .zip-item:last-child {
+            border-bottom: none;
+        }
+
+        .zip-code {
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        .zip-city {
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .bulk-input-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Searchable State Select Styles */
+        .searchable-select-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .searchable-select-input {
+            flex: 1;
+            padding: 8px 30px 8px 10px;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            background: #2d3748;
+            color: #e2e8f0;
+            font-size: 0.9em;
+        }
+
+        .searchable-select-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .searchable-select-arrow {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 0.8em;
+            user-select: none;
+            padding: 2px;
+        }
+
+        .searchable-select-arrow:hover {
+            color: #60a5fa;
+        }
+
+        .searchable-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .searchable-select-option {
+            padding: 8px 10px;
+            cursor: pointer;
+            color: #e2e8f0;
+            border-bottom: 1px solid #374151;
+        }
+
+        .searchable-select-option:last-child {
+            border-bottom: none;
+        }
+
+        .searchable-select-option:hover {
+            background: #374151;
+            color: #60a5fa;
+        }
+
+        .searchable-select-option.selected {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .no-results {
+            padding: 8px 10px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* Progress Control Styles */
+        .sidebar-section h4 {
+            margin: 0 0 15px 0;
+            color: #60a5fa;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .sidebar-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 6px;
+            background: #374151;
+            color: #e2e8f0;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #4b5563;
+        }
+
+        .sidebar-btn:hover {
+            background: #4b5563;
+            border-color: #60a5fa;
+            color: #60a5fa;
+        }
+
+        .sidebar-btn:active {
+            transform: translateY(1px);
+        }
+
+        .progress-status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .progress-status.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .progress-status.warning {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .progress-status.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -667,15 +1032,28 @@
         <h3>📊 Quick Links</h3>
         
         <div class="sidebar-section">
-            <a href="#" id="sidebarSheetLink" class="sidebar-link disabled" target="_blank">
-                📊 View Google Sheet
+            <a href="https://docs.google.com/spreadsheets/d/1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec/edit" id="sidebarMasterSheetLink" class="sidebar-link" target="_blank">
+                📊 Master Client Profiles Sheet
             </a>
-            <a href="#" id="sidebarDriveLink" class="sidebar-link disabled" target="_blank">
+            <a href="#" id="sidebarDriveLink" class="sidebar-link" target="_blank" style="display: none;">
                 📁 Company Drive Folder
             </a>
-            <a href="#" id="sidebarProfileLink" class="sidebar-link disabled" target="_blank">
-                🔗 Wix Profile
-            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <h4>💾 Progress Controls</h4>
+            <button class="sidebar-btn" onclick="saveFormProgress()" title="Save current form data locally">
+                💾 Save Progress
+            </button>
+            <button class="sidebar-btn" onclick="loadFormProgress()" title="Load previously saved form data">
+                📂 Load Progress
+            </button>
+            <button class="sidebar-btn" onclick="clearFormProgress()" title="Clear saved progress and reset form">
+                🗑️ Clear Progress
+            </button>
+            <div class="progress-status" id="progressStatus">
+                <!-- Status will appear here -->
+            </div>
         </div>
 
         <div class="drive-input-section">
@@ -744,8 +1122,9 @@
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="wixLink">Wix Link</label>
-                                <input type="url" id="wixLink" name="wixLink" placeholder="https://...">
+                                <label for="website">Website</label>
+                                <input type="url" id="website" name="website" placeholder="pest-sos.com" onblur="formatURL(this)">
+                                <div class="help-text">Enter domain only (e.g., pest-sos.com) - https:// will be added automatically</div>
                             </div>
                             <div class="form-group">
                                 <label for="locations">Location(s)</label>
@@ -756,7 +1135,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="timezone">Timezone</label>
-                                <select id="timezone" name="timezone">
+                                <select id="timezone" name="timezone" onchange="toggleCustomInput(this, 'timezoneCustom')">
                                     <option value="">Select Timezone</option>
                                     <option value="EST">Eastern Standard Time (EST)</option>
                                     <option value="CST">Central Standard Time (CST)</option>
@@ -764,7 +1143,9 @@
                                     <option value="PST">Pacific Standard Time (PST)</option>
                                     <option value="AKST">Alaska Standard Time (AKST)</option>
                                     <option value="HST">Hawaii Standard Time (HST)</option>
+                                    <option value="Custom">Custom Timezone</option>
                                 </select>
+                                <input type="text" id="timezoneCustom" name="timezoneCustom" placeholder="Enter custom timezone..." style="display: none; margin-top: 8px;">
                             </div>
                             <div class="form-group">
                                 <!-- Empty for spacing -->
@@ -782,19 +1163,99 @@
                             </div>
                         </div>
                         
+                        <!-- Modern Address Section -->
+                        <div class="address-section">
+                            <h4>Physical Address</h4>
+                            <div class="form-row">
                         <div class="form-group">
-                            <label for="physicalAddress">Physical Address</label>
-                            <textarea id="physicalAddress" name="physicalAddress" rows="2" placeholder="123 Main Street&#10;City, State 12345"></textarea>
+                                    <label for="physicalStreet">Street Address</label>
+                                    <input type="text" id="physicalStreet" name="physicalStreet" placeholder="123 Main Street">
+                                </div>
+                                <div class="form-group">
+                                    <label for="physicalSuite">Suite/Unit</label>
+                                    <input type="text" id="physicalSuite" name="physicalSuite" placeholder="Suite 100">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="physicalCity">City</label>
+                                    <input type="text" id="physicalCity" name="physicalCity" placeholder="Dallas">
+                                </div>
+                                <div class="form-group">
+                                    <label for="physicalState">State</label>
+                                    <div class="searchable-select-container">
+                                        <input type="text" id="physicalState" name="physicalState" class="searchable-select-input" placeholder="Type to search states..." autocomplete="off" onclick="showStateDropdown('physicalState')" oninput="filterStates('physicalState')">
+                                        <div class="searchable-select-arrow" onclick="toggleStateDropdown('physicalState')">▼</div>
+                                        <div class="searchable-select-dropdown" id="physicalStateDropdown" style="display: none;">
+                                            <!-- States will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="physicalZip">ZIP Code</label>
+                                    <input type="text" id="physicalZip" name="physicalZip" placeholder="75201" pattern="[0-9]{5}(-[0-9]{4})?">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="address-section">
+                            <h4>Mailing Address</h4>
+                        <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="sameAsPhysical" name="sameAsPhysical" onchange="copyPhysicalAddress()">
+                                    Same as Physical Address
+                                </label>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="mailingStreet">Street Address</label>
+                                    <input type="text" id="mailingStreet" name="mailingStreet" placeholder="P.O. Box 123">
+                                </div>
+                                <div class="form-group">
+                                    <label for="mailingSuite">Suite/Unit</label>
+                                    <input type="text" id="mailingSuite" name="mailingSuite" placeholder="Suite 100">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="mailingCity">City</label>
+                                    <input type="text" id="mailingCity" name="mailingCity" placeholder="Dallas">
+                                </div>
+                                <div class="form-group">
+                                    <label for="mailingState">State</label>
+                                    <div class="searchable-select-container">
+                                        <input type="text" id="mailingState" name="mailingState" class="searchable-select-input" placeholder="Type to search states..." autocomplete="off" onclick="showStateDropdown('mailingState')" oninput="filterStates('mailingState')">
+                                        <div class="searchable-select-arrow" onclick="toggleStateDropdown('mailingState')">▼</div>
+                                        <div class="searchable-select-dropdown" id="mailingStateDropdown" style="display: none;">
+                                            <!-- States will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mailingZip">ZIP Code</label>
+                                    <input type="text" id="mailingZip" name="mailingZip" placeholder="75201" pattern="[0-9]{5}(-[0-9]{4})?">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Modern Office Hours Section -->
+                        <div class="office-hours-section">
+                            <h4>Office Hours</h4>
+                            <p class="hours-instructions">Check the days you're open and select start/end times:</p>
+                            <div class="hours-grid" id="hoursGrid">
+                                <!-- Hours will be generated by JavaScript -->
+                            </div>
+                            <input type="hidden" id="officeHours" name="officeHours" value="">
                         </div>
                         
                         <div class="form-group">
-                            <label for="mailingAddress">Mailing Address</label>
-                            <textarea id="mailingAddress" name="mailingAddress" rows="2" placeholder="P.O. Box 123&#10;City, State 12345"></textarea>
+                            <label for="bulletin">Bulletin/Notes</label>
+                            <textarea id="bulletin" name="bulletin" rows="3" placeholder="Any special notes or announcements for this client..."></textarea>
                         </div>
                         
                         <div class="form-group">
-                            <label for="officeHours">Office Hours</label>
-                            <textarea id="officeHours" name="officeHours" rows="3" placeholder="Monday-Friday: 8:00 AM - 5:00 PM&#10;Saturday: 8:00 AM - 12:00 PM&#10;Sunday: Closed"></textarea>
+                            <label for="pestsNotCovered">Pests Not Covered</label>
+                            <textarea id="pestsNotCovered" name="pestsNotCovered" rows="2" placeholder="List pests not covered (e.g., Carpenter Ants, Bed Bugs)"></textarea>
                         </div>
 
                         <div class="form-group">
@@ -857,12 +1318,12 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="website">Website</label>
-                                <input type="url" id="website" name="website" placeholder="https://...">
+                                <label for="fieldRoutesLink">FieldRoutes Link</label>
+                                <input type="url" id="fieldRoutesLink" name="fieldRoutesLink" placeholder="app.fieldroutes.com/company123" onblur="formatURL(this)">
+                                <div class="help-text">Enter domain/path only - https:// will be added automatically</div>
                             </div>
                             <div class="form-group">
-                                <label for="fieldRoutesLink">FieldRoutes Link</label>
-                                <input type="url" id="fieldRoutesLink" name="fieldRoutesLink" placeholder="https://...">
+                                <!-- Empty for spacing -->
                             </div>
                         </div>
                     </div>
@@ -903,10 +1364,45 @@
                         <span class="toggle-icon">▼</span>
                     </div>
                     <div class="section-content" id="areas-content">
-                        <div id="areas-container">
-                            <!-- Service areas will be added here -->
+                        <div class="service-areas-bulk">
+                            <div class="bulk-input-methods">
+                                <div class="input-method">
+                                    <h4>📁 Option 1: Upload CSV File</h4>
+                                    <div class="file-upload-section">
+                                        <input type="file" id="zipCodeFile" accept=".csv,.txt" onchange="handleFileUpload(this)">
+                                        <label for="zipCodeFile" class="file-upload-label">
+                                            <span>📎 Choose CSV File</span>
+                                            <div class="file-upload-help">Expected format: ZIP Code, City Name</div>
+                                        </label>
                         </div>
-                        <button type="button" class="btn btn-primary add-btn" onclick="addServiceArea()">+ Add Service Area</button>
+                                </div>
+                                
+                                <div class="input-method">
+                                    <h4>📋 Option 2: Copy & Paste from CSV</h4>
+                                    <textarea id="zipCodePaste" placeholder="Paste your ZIP codes here...&#10;&#10;Expected formats:&#10;75201, Dallas&#10;75202, Dallas&#10;90210, Beverly Hills&#10;&#10;Or just ZIP codes (city will be auto-resolved):&#10;75201&#10;75202&#10;90210" rows="8" oninput="parseZipCodeInput(this)"></textarea>
+                                    <div class="parse-options">
+                                        <label>
+                                            <input type="checkbox" id="autoResolveCity" checked> Auto-resolve city names for ZIP-only entries
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="zip-preview-section" id="zipPreviewSection" style="display: none;">
+                                <h4>📋 Preview - Service Areas (Total: <span id="zipCount">0</span>)</h4>
+                                <div class="zip-preview-controls">
+                                    <button type="button" class="btn btn-sm btn-success" onclick="approveZipCodes()">✅ Approve All</button>
+                                    <button type="button" class="btn btn-sm btn-warning" onclick="editZipCodes()">✏️ Edit</button>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="clearZipCodes()">🗑️ Clear</button>
+                                </div>
+                                <div class="zip-preview-list" id="zipPreviewList">
+                                    <!-- Parsed ZIP codes will appear here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden input to store final ZIP code data -->
+                            <input type="hidden" id="serviceAreasData" name="serviceAreasData" value="">
+                        </div>
                     </div>
                 </div>
 
@@ -1129,7 +1625,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-success">Create Client Profile & Sync to Wix</button>
+                <button type="submit" class="btn btn-success" id="submitButton">Save Client Profile</button>
             </form>
         </div>
     </div>
@@ -1157,29 +1653,113 @@
             const driveUrl = document.getElementById('sidebarGoogleDriveFolder').value;
             const driveLink = document.getElementById('sidebarDriveLink');
             
-            if (driveUrl) {
+            if (driveUrl && driveUrl.trim()) {
                 driveLink.href = driveUrl;
+                driveLink.style.display = 'block'; // Show the link
                 driveLink.classList.remove('disabled');
+                
+                // Generate Profile_ID and pre-create sheet structure
+                initializeProfileStructure(driveUrl);
             } else {
-                driveLink.href = '#';
+                driveLink.style.display = 'none'; // Hide the link
                 driveLink.classList.add('disabled');
+                driveLink.href = '#';
             }
             
             // Also update the form field for submission
             document.getElementById('googleDriveFolder').value = driveUrl;
         }
 
+        // Initialize Profile structure when Drive folder is set
+        function initializeProfileStructure(driveUrl) {
+            // Check if we're in edit mode - don't create new Profile_ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const isEditMode = urlParams.get('edit') === 'true';
+            
+            if (isEditMode) {
+                console.log('In edit mode - skipping Profile_ID generation');
+                return;
+            }
+            
+            // Check if we already have a Profile_ID for this session
+            let currentProfileId = sessionStorage.getItem('currentProfileId');
+            
+            if (!currentProfileId) {
+                // Generate new Profile_ID only for new profiles
+                currentProfileId = 'profile_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('currentProfileId', currentProfileId);
+                
+                // Show the generated Profile_ID to user
+                showProgressStatus(`🆔 Profile ID generated: ${currentProfileId}`, 'success');
+                
+                // Pre-create sheet structure
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        console.log('Profile structure initialized:', result);
+                        showProgressStatus('✅ Profile structure ready', 'success');
+                    })
+                    .withFailureHandler(function(error) {
+                        console.error('Error initializing profile:', error);
+                        showProgressStatus('❌ Error initializing profile', 'error');
+                    })
+                    .initializeProfileStructure(currentProfileId, driveUrl);
+            }
+        }
+
         // Toggle custom input fields for dropdowns
         function toggleCustomInput(selectElement, customInputId) {
-            const customInput = document.getElementById(customInputId);
+            // Handle both direct IDs and template literals
+            let actualCustomInputId = customInputId;
+            
+            // If the ID contains ${}, try to find the actual element by searching for similar IDs
+            if (customInputId.includes('${')) {
+                // Find the parent element and look for the custom input within it
+                const parentContainer = selectElement.closest('.form-group') || selectElement.closest('.service-item') || selectElement.closest('.technician-item');
+                if (parentContainer) {
+                    const customInput = parentContainer.querySelector('input[id*="custom"]');
+                    if (customInput) {
+                        actualCustomInputId = customInput.id;
+                    }
+                }
+            }
+            
+            const customInput = document.getElementById(actualCustomInputId);
+            if (customInput) {
             if (selectElement.value === 'Custom') {
                 customInput.style.display = 'block';
                 customInput.required = true;
+                    customInput.focus(); // Focus the input for immediate typing
             } else {
                 customInput.style.display = 'none';
                 customInput.required = false;
                 customInput.value = '';
             }
+            } else {
+                // Fallback: create a custom input dynamically if it doesn't exist
+                if (selectElement.value === 'Custom') {
+                    createDynamicCustomInput(selectElement, customInputId);
+                }
+            }
+        }
+        
+        // Create a custom input dynamically if it doesn't exist
+        function createDynamicCustomInput(selectElement, baseId) {
+            const existingInput = selectElement.parentElement.querySelector('.dynamic-custom-input');
+            if (existingInput) {
+                existingInput.style.display = 'block';
+                existingInput.focus();
+                return;
+            }
+            
+            const customInput = document.createElement('input');
+            customInput.type = 'text';
+            customInput.className = 'dynamic-custom-input';
+            customInput.placeholder = 'Enter custom value...';
+            customInput.style.cssText = 'width: 100%; margin-top: 8px; padding: 8px; border: 1px solid #4a5568; border-radius: 4px; background: #2d3748; color: #e2e8f0;';
+            customInput.name = selectElement.name.replace(']', 'Custom]');
+            
+            selectElement.parentElement.appendChild(customInput);
+            customInput.focus();
         }
 
         // Toggle service accordion
@@ -1328,29 +1908,33 @@
                             </div>
                             <div class="form-group">
                                 <label>Service Category:</label>
-                                <select name="services[${serviceCounter}][category]" onchange="updateServiceType(this, ${serviceCounter})">
+                                <select name="services[${serviceCounter}][category]" onchange="updateServiceType(this, ${serviceCounter}); toggleCustomInput(this, 'serviceCategory_${serviceCounter}_custom')">
                                     <option value="standard">Standard Services</option>
                                     <option value="specialty">Specialty Services</option>
                                     <option value="termite">Termite Services</option>
                                     <option value="inspection">Inspection Services</option>
+                                    <option value="Custom">Custom Category</option>
                                 </select>
+                                <input type="text" id="serviceCategory_${serviceCounter}_custom" name="services[${serviceCounter}][categoryCustom]" placeholder="Enter custom category..." style="display: none; margin-top: 8px;">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Service Type:</label>
-                                <select name="services[${serviceCounter}][type]" onchange="toggleServiceDetails(this, ${serviceCounter})">
+                                <select name="services[${serviceCounter}][type]" onchange="toggleServiceDetails(this, ${serviceCounter}); toggleCustomInput(this, 'serviceType_${serviceCounter}_custom')">
                                     <option value="recurring">Recurring Service</option>
                                     <option value="one-time">One Time Service</option>
                                     <option value="free-inspection">Free Inspection</option>
                                     <option value="paid-inspection">Paid Inspection</option>
                                     <option value="refer-office">Refer to Home Office</option>
+                                    <option value="Custom">Custom Service Type</option>
                                 </select>
+                                <input type="text" id="serviceType_${serviceCounter}_custom" name="services[${serviceCounter}][typeCustom]" placeholder="Enter custom service type..." style="display: none; margin-top: 8px;">
                             </div>
                             <div class="form-group">
                                 <label>Frequency:</label>
-                                <select name="services[${serviceCounter}][frequency]">
+                                <select name="services[${serviceCounter}][frequency]" onchange="toggleCustomInput(this, 'serviceFrequency_${serviceCounter}_custom')">
                                     <option value="one-time">One Time</option>
                                     <option value="bi-monthly">Bi-Monthly</option>
                                     <option value="quarterly">Quarterly</option>
@@ -1358,7 +1942,9 @@
                                     <option value="21-days">Every 21 Days</option>
                                     <option value="14-days">Every 14 Days</option>
                                     <option value="10-14-days">Every 10-14 Days</option>
+                                    <option value="Custom">Custom Frequency</option>
                                 </select>
+                                <input type="text" id="serviceFrequency_${serviceCounter}_custom" name="services[${serviceCounter}][frequencyCustom]" placeholder="Enter custom frequency..." style="display: none; margin-top: 8px;">
                             </div>
                         </div>
 
@@ -1377,92 +1963,6 @@
                             </div>
                         </div>
 
-                        <!-- Pricing Section -->
-                        <div class="service-pricing-section" style="background: #334155; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #475569;">
-                            <h4 style="margin-bottom: 16px; color: #f1f5f9; font-size: 1.2em; font-weight: 600;">💰 Pricing Information</h4>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Queue Ext:</label>
-                                    <input type="text" name="services[${serviceCounter}][queueExt]" placeholder="Queue extension">
-                                </div>
-                                <div class="form-group">
-                                    <label>Company Name:</label>
-                                    <input type="text" name="services[${serviceCounter}][companyName]" placeholder="Company name for this service">
-                                </div>
-                            </div>
-
-                            <!-- Insert pricing tiers container -->
-                            <div id="pricingTiers_${serviceCounter}" style="background: #475569; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #334155;">
-                                <button type="button" class="btn btn-sm btn-primary add-btn" onclick="addPricingTier(${serviceCounter})">+ Add Pricing Tier</button>
-                                <div class="pricing-tiers-list"></div>
-                            </div>
-                            <div class="help-text" style="color: #cbd5e1;">Define multiple square-footage tiers: min/max, first and recurring prices.</div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Product Type:</label>
-                                    <input type="text" name="services[${serviceCounter}][productType]" placeholder="e.g., Pest Control, Termite">
-                                </div>
-                                <div class="form-group">
-                                    <label>Sold-As Name:</label>
-                                    <input type="text" name="services[${serviceCounter}][soldAsName]" placeholder="Name as sold to customer">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Service Frequency:</label>
-                                    <select name="services[${serviceCounter}][serviceFrequency]">
-                                        <option value="Monthly">Monthly</option>
-                                        <option value="Bi-Monthly">Bi-Monthly</option>
-                                        <option value="Quarterly">Quarterly</option>
-                                        <option value="One Time">One Time</option>
-                                        <option value="21 Days">Every 21 Days</option>
-                                        <option value="14 Days">Every 14 Days</option>
-                                        <option value="10-14 Days">Every 10-14 Days</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Billing Frequency:</label>
-                                    <select name="services[${serviceCounter}][billingFrequency]">
-                                        <option value="Monthly">Monthly</option>
-                                        <option value="After Service Completion">After Service Completion</option>
-                                        <option value="Quarterly">Quarterly</option>
-                                        <option value="Annually">Annually</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>First Service Price:</label>
-                                    <input type="text" name="services[${serviceCounter}][firstPrice]" placeholder="$150">
-                                </div>
-                                <div class="form-group">
-                                    <label>Recurring Price:</label>
-                                    <input type="text" name="services[${serviceCounter}][recurringPrice]" placeholder="$120">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Sqft Min:</label>
-                                    <input type="number" name="services[${serviceCounter}][sqftMin]" placeholder="0" min="0">
-                                </div>
-                                <div class="form-group">
-                                    <label>Sqft Max:</label>
-                                    <input type="number" name="services[${serviceCounter}][sqftMax]" placeholder="2500" min="0">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group full-width">
-                                    <label>Service Type:</label>
-                                    <input type="text" name="services[${serviceCounter}][serviceTypeDesc]" placeholder="e.g., Monthly Subscription / Pest Control">
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Note to Agent Section (Always Visible) -->
                         <div class="form-row">
@@ -1499,10 +1999,12 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Call Ahead:</label>
-                                    <select name="services[${serviceCounter}][callAhead]">
+                                    <select name="services[${serviceCounter}][callAhead]" onchange="toggleCustomInput(this, 'callAhead_${serviceCounter}_custom')">
                                         <option value="Yes">Yes</option>
                                         <option value="No">No</option>
+                                        <option value="Custom">Custom</option>
                                     </select>
+                                    <input type="text" id="callAhead_${serviceCounter}_custom" name="services[${serviceCounter}][callAheadCustom]" placeholder="Enter custom call ahead policy..." style="display: none; margin-top: 8px;">
                                 </div>
                                 <div class="form-group">
                                     <label>Initial Duration:</label>
@@ -1516,10 +2018,12 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Leave During Service:</label>
-                                    <select name="services[${serviceCounter}][leaveDuringService]">
+                                    <select name="services[${serviceCounter}][leaveDuringService]" onchange="toggleCustomInput(this, 'leaveDuringService_${serviceCounter}_custom')">
                                         <option value="No">No</option>
                                         <option value="Yes">Yes</option>
+                                        <option value="Custom">Custom</option>
                                     </select>
+                                    <input type="text" id="leaveDuringService_${serviceCounter}_custom" name="services[${serviceCounter}][leaveDuringServiceCustom]" placeholder="Enter custom leave policy..." style="display: none; margin-top: 8px;">
                                 </div>
                             </div>
                             <div class="form-row">
@@ -1529,11 +2033,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Prep Sheet:</label>
-                                    <select name="services[${serviceCounter}][prepSheet]">
+                                    <select name="services[${serviceCounter}][prepSheet]" onchange="toggleCustomInput(this, 'prepSheet_${serviceCounter}_custom')">
                                         <option value="No">No</option>
                                         <option value="Yes">Yes</option>
                                         <option value="Refer to Home Office">Refer to Home Office</option>
+                                        <option value="Custom">Custom</option>
                                     </select>
+                                    <input type="text" id="prepSheet_${serviceCounter}_custom" name="services[${serviceCounter}][prepSheetCustom]" placeholder="Enter custom prep sheet instructions..." style="display: none; margin-top: 8px;">
                                 </div>
                             </div>
                         </div>
@@ -1554,6 +2060,94 @@
                                     <!-- Service variants will be added here -->
                                 </div>
                                 <button type="button" class="btn btn-primary btn-sm" onclick="addServiceVariant(${serviceCounter})">+ Add Variant</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Section - Moved to END as requested -->
+                    <div class="service-pricing-section" style="background: #334155; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #475569;">
+                        <h4 style="margin-bottom: 16px; color: #f1f5f9; font-size: 1.2em; font-weight: 600;">💰 Pricing Information</h4>
+                        <div class="help-text" style="color: #cbd5e1; margin-bottom: 15px;">Fill out pricing last - after all service details are complete.</div>
+                        
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label>Service Type:</label>
+                                <input type="text" name="services[${serviceCounter}][serviceTypeDesc]" placeholder="e.g., Monthly Subscription / Pest Control">
+                            </div>
+                        </div>
+                        
+                        <!-- Pricing tiers container -->
+                        <div id="pricingTiers_${serviceCounter}" style="background: #475569; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #334155;">
+                            <div class="pricing-tiers-list"></div>
+                        </div>
+                        <div class="help-text" style="color: #cbd5e1;">Define multiple square-footage tiers: min/max, first and recurring prices.</div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Product Type:</label>
+                                <input type="text" name="services[${serviceCounter}][productType]" placeholder="e.g., Pest Control, Termite">
+                            </div>
+                            <div class="form-group">
+                                <label>Sold-As Name:</label>
+                                <input type="text" name="services[${serviceCounter}][soldAsName]" placeholder="Name as sold to customer">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Service Frequency:</label>
+                                <select name="services[${serviceCounter}][serviceFrequency]" onchange="toggleCustomInput(this, 'serviceFreq_${serviceCounter}_custom')">
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Bi-Monthly">Bi-Monthly</option>
+                                    <option value="Quarterly">Quarterly</option>
+                                    <option value="One Time">One Time</option>
+                                    <option value="21 Days">Every 21 Days</option>
+                                    <option value="14 Days">Every 14 Days</option>
+                                    <option value="10-14 Days">Every 10-14 Days</option>
+                                    <option value="Custom">Custom Frequency</option>
+                                </select>
+                                <input type="text" id="serviceFreq_${serviceCounter}_custom" name="services[${serviceCounter}][serviceFrequencyCustom]" placeholder="Enter custom frequency..." style="display: none; margin-top: 8px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Billing Frequency:</label>
+                                <select name="services[${serviceCounter}][billingFrequency]" onchange="toggleCustomInput(this, 'billingFreq_${serviceCounter}_custom')">
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="After Service Completion">After Service Completion</option>
+                                    <option value="Quarterly">Quarterly</option>
+                                    <option value="Annually">Annually</option>
+                                    <option value="Custom">Custom Billing</option>
+                                </select>
+                                <input type="text" id="billingFreq_${serviceCounter}_custom" name="services[${serviceCounter}][billingFrequencyCustom]" placeholder="Enter custom billing frequency..." style="display: none; margin-top: 8px;">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Service Price:</label>
+                                <input type="text" name="services[${serviceCounter}][firstPrice]" placeholder="$150">
+                            </div>
+                            <div class="form-group">
+                                <label>Recurring Price:</label>
+                                <input type="text" name="services[${serviceCounter}][recurringPrice]" placeholder="$120">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Sqft Min:</label>
+                                <input type="number" name="services[${serviceCounter}][sqftMin]" placeholder="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Sqft Max:</label>
+                                <input type="number" name="services[${serviceCounter}][sqftMax]" placeholder="2500" min="0">
+                            </div>
+                        </div>
+                        
+                        <!-- Add Pricing Tier Button (moved below Sqft Min/Max as requested) -->
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <button type="button" class="btn btn-sm btn-primary add-btn" onclick="addPricingTier(${serviceCounter})" style="margin-top: 10px;">+ Add Pricing Tier</button>
+                                <div class="help-text">Add additional pricing tiers for different square footage ranges</div>
                             </div>
                         </div>
                     </div>
@@ -1590,7 +2184,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Variant Name:</label>
-                        <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][name]" placeholder="e.g., Standard, Premium, with Mosquito" required>
+                        <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][name]" placeholder="e.g., Standard, Premium, with Mosquito">
                     </div>
                     <div class="form-group">
                         <label>Type:</label>
@@ -1621,16 +2215,6 @@
                 <div class="service-pricing-section" style="background: #334155; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #475569;">
                     <h4 style="margin-bottom: 16px; color: #f1f5f9; font-size: 1.2em; font-weight: 600;">💰 Pricing Information</h4>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Queue Ext:</label>
-                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][queueExt]" placeholder="Queue extension">
-                        </div>
-                        <div class="form-group">
-                            <label>Company Name:</label>
-                            <input type="text" name="services[${serviceIndex}][variants][${variantIndex}][companyName]" placeholder="Company name for this variant">
-                        </div>
-                    </div>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -1826,12 +2410,14 @@
                     </div>
                     <div class="form-group">
                         <label>Tech or Inspector:</label>
-                        <select name="technicians[${technicianCounter}][role]" required>
+                        <select name="technicians[${technicianCounter}][role]" onchange="toggleCustomInput(this, 'techRole_${technicianCounter}_custom')">
                             <option value="">Select Role</option>
                             <option value="Tech">Tech</option>
                             <option value="Inspector">Inspector</option>
                             <option value="Both">Both</option>
+                            <option value="Custom">Custom Role</option>
                         </select>
+                        <input type="text" id="techRole_${technicianCounter}_custom" name="technicians[${technicianCounter}][roleCustom]" placeholder="Enter custom role..." style="display: none; margin-top: 8px;">
                     </div>
                 </div>
                 
@@ -1920,6 +2506,49 @@
         document.getElementById('clientForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            console.log('Form submission started...');
+            
+            // Remove HTML5 required validation from hidden fields
+            const allRequiredFields = document.querySelectorAll('[required]');
+            allRequiredFields.forEach(field => {
+                const fieldContainer = field.closest('.service-content, .advanced-content, .service-details');
+                if (fieldContainer && fieldContainer.style.display === 'none') {
+                    field.removeAttribute('required');
+                    field.setAttribute('data-was-required', 'true');
+                }
+            });
+            
+            // Basic validation check for visible required fields
+            const companyName = document.getElementById('companyName').value.trim();
+            const locations = document.getElementById('locations').value.trim();
+            const phone = document.getElementById('officePhone').value.trim();
+            const email = document.getElementById('customerContactEmail').value.trim();
+            
+            if (!companyName) {
+                alert('Company Name is required');
+                return;
+            }
+            if (!locations) {
+                alert('Location is required');
+                return;
+            }
+            if (!phone) {
+                alert('Phone number is required');
+                return;
+            }
+            if (!email) {
+                alert('Email is required');
+                return;
+            }
+            
+            console.log('Basic validation passed');
+            
+            // Show loading state
+            const submitButton = document.getElementById('submitButton');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Creating Profile...';
+            submitButton.disabled = true;
+            
             // Collect form data
             const formData = new FormData(this);
             const clientData = {};
@@ -1944,47 +2573,109 @@
                 }
             }
             
-            // Submit to Google Apps Script
-            google.script.run
-                .withSuccessHandler(onSuccess)
-                .withFailureHandler(onError)
-                .createClientProfileFromHTML(clientData);
+            // Check if we're in edit mode or creating new (use template variables like in checkEditMode)
+            const templateProfileId = '<?= profileId ?>';
+            const templateEditMode = '<?= editMode ?>';
+            
+            // Also try URL parsing as fallback
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlProfileId = urlParams.get('profileId');
+            const urlEditMode = urlParams.get('edit');
+            
+            // Use template variables first, fallback to URL
+            const finalProfileId = templateProfileId || urlProfileId;
+            const finalEditMode = templateEditMode || urlEditMode;
+            const isEditMode = finalEditMode === 'true';
+            
+            console.log('Submission Parameters:', {
+                templateProfileId: templateProfileId,
+                templateEditMode: templateEditMode,
+                urlProfileId: urlProfileId,
+                urlEditMode: urlEditMode,
+                finalProfileId: finalProfileId,
+                finalEditMode: finalEditMode,
+                isEditMode: isEditMode,
+                fullURL: window.location.href
+            });
+            
+            // Get the Profile_ID (from template/URL if editing, or session if creating)
+            let profileId = isEditMode && finalProfileId ? finalProfileId : sessionStorage.getItem('currentProfileId');
+            
+            if (!profileId) {
+                // Fallback: generate new Profile_ID
+                profileId = 'profile_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('currentProfileId', profileId);
+            }
+            
+            clientData.profileId = profileId;
+            console.log(`${isEditMode ? 'Updating' : 'Creating'} profile with ID:`, profileId);
+            console.log('Will call function:', isEditMode ? 'updateClientProfileFromHTML' : 'createClientProfileFromHTML');
+            
+            // Submit to Google Apps Script with proper conditional logic
+            if (isEditMode) {
+                // Update existing profile
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        console.log('Update success:', result);
+                        submitButton.textContent = originalText;
+                        submitButton.disabled = false;
+                        onSuccess(result);
+                    })
+                    .withFailureHandler(function(error) {
+                        console.error('Update error:', error);
+                        submitButton.textContent = originalText;
+                        submitButton.disabled = false;
+                        onError(error);
+                    })
+                    .updateClientProfileFromHTML(clientData);
+            } else {
+                // Create new profile
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        console.log('Create success:', result);
+                        submitButton.textContent = originalText;
+                        submitButton.disabled = false;
+                        
+                        // Clear session after successful creation
+                        sessionStorage.removeItem('currentProfileId');
+                        
+                        onSuccess(result);
+                    })
+                    .withFailureHandler(function(error) {
+                        console.error('Create error:', error);
+                        submitButton.textContent = originalText;
+                        submitButton.disabled = false;
+                        onError(error);
+                    })
+                    .createClientProfileFromHTML(clientData);
+            }
+                
+            console.log('Google Script call initiated...');
         });
 
         function onSuccess(result) {
-            // Determine success message based on Wix sync status
             let message = 'Client profile created successfully!\n\n';
             
-            if (result.wixSync && result.wixSync.success) {
-                message += '✅ Profile synced to Wix CMS\n';
-                message += '🔗 Live Profile URL: ' + result.profileUrl + '\n';
-            } else {
-                message += '📊 Profile saved to Google Sheets\n';
-                if (result.wixSync && result.wixSync.error) {
-                    message += '⚠️ Wix sync unavailable (no credentials)\n';
-                } else {
-                    message += '⚠️ Wix sync disabled\n';
-                }
+            if (result.profileId) {
+                message += `🆔 Profile ID: ${result.profileId}\n`;
             }
             
-            message += '📋 Google Sheet: ' + (result.sheetUrl || result.clientFolderUrl) + '\n';
+            if (result.profileUrl) {
+                message += `🌐 Profile URL: ${result.profileUrl}\n`;
+            }
+            
+            message += '\n📊 Profile added to Master Client Profiles sheet\n';
             message += '\n' + (result.message || 'Profile ready for use!');
             
             alert(message);
             
             // Update sidebar links
-            const sheetUrl = result.sheetUrl || result.clientFolderUrl;
-            if (sheetUrl) {
-                const sheetLink = document.getElementById('sidebarSheetLink');
-                sheetLink.href = sheetUrl;
-                sheetLink.classList.remove('disabled');
-            }
-            
-            // Only enable profile link if Wix sync worked
-            if (result.wixSync && result.wixSync.success && result.profileUrl) {
+            if (result.profileUrl) {
                 const profileLink = document.getElementById('sidebarProfileLink');
+                if (profileLink) {
                 profileLink.href = result.profileUrl;
                 profileLink.classList.remove('disabled');
+                }
             }
             
             // Drive folder link should already be updated from the input
@@ -2003,12 +2694,7 @@
             alert('Error creating profile: ' + error.message);
         }
 
-        // Initialize with one service, technician, and area
-        document.addEventListener('DOMContentLoaded', function() {
-            addService();
-            addTechnician(); 
-            addServiceArea();
-        });
+        // Note: Service, technician, and area initialization moved to main DOMContentLoaded handler
 
         // Add pricing tier function
         function addPricingTier(serviceIndex) {
@@ -2064,6 +2750,929 @@
                 recurringPriceLabel.textContent = `Tier ${index + 1} Recurring Price:`;
             });
         }
+
+        // Address copy function
+        function copyPhysicalAddress() {
+            const sameAsPhysical = document.getElementById('sameAsPhysical').checked;
+            if (sameAsPhysical) {
+                document.getElementById('mailingStreet').value = document.getElementById('physicalStreet').value;
+                document.getElementById('mailingSuite').value = document.getElementById('physicalSuite').value;
+                document.getElementById('mailingCity').value = document.getElementById('physicalCity').value;
+                
+                // Copy state value and display
+                const physicalState = document.getElementById('physicalState');
+                const mailingState = document.getElementById('mailingState');
+                mailingState.value = physicalState.value;
+                mailingState.placeholder = physicalState.placeholder;
+                mailingState.setAttribute('data-display', physicalState.getAttribute('data-display') || '');
+                
+                document.getElementById('mailingZip').value = document.getElementById('physicalZip').value;
+            } else {
+                document.getElementById('mailingStreet').value = '';
+                document.getElementById('mailingSuite').value = '';
+                document.getElementById('mailingCity').value = '';
+                
+                // Reset state field
+                const mailingState = document.getElementById('mailingState');
+                mailingState.value = '';
+                mailingState.placeholder = 'Type to search states...';
+                mailingState.removeAttribute('data-display');
+                
+                document.getElementById('mailingZip').value = '';
+            }
+        }
+
+        // Office Hours Functions - Initialize on page load
+        function initializeOfficeHours() {
+            const hoursGrid = document.getElementById('hoursGrid');
+            if (!hoursGrid) return;
+            
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const dayAbbrev = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            
+            const timeOptions = [
+                { value: '06:00', label: '6:00 AM' }, { value: '07:00', label: '7:00 AM' },
+                { value: '08:00', label: '8:00 AM' }, { value: '09:00', label: '9:00 AM' },
+                { value: '10:00', label: '10:00 AM' }, { value: '11:00', label: '11:00 AM' },
+                { value: '12:00', label: '12:00 PM' }, { value: '13:00', label: '1:00 PM' },
+                { value: '14:00', label: '2:00 PM' }, { value: '15:00', label: '3:00 PM' },
+                { value: '16:00', label: '4:00 PM' }, { value: '17:00', label: '5:00 PM' },
+                { value: '18:00', label: '6:00 PM' }, { value: '19:00', label: '7:00 PM' },
+                { value: '20:00', label: '8:00 PM' }
+            ];
+
+            days.forEach((day, index) => {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day-hours';
+                dayDiv.innerHTML = `
+                    <label class="day-label">${day}</label>
+                    <input type="checkbox" id="${dayAbbrev[index]}-open" onchange="toggleDayHours('${dayAbbrev[index]}')">
+                    <select id="${dayAbbrev[index]}-start" class="time-select" disabled>
+                        <option value="">Start</option>
+                        ${timeOptions.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
+                    </select>
+                    <span class="to-label">to</span>
+                    <select id="${dayAbbrev[index]}-end" class="time-select" disabled>
+                        <option value="">End</option>
+                        ${timeOptions.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
+                    </select>
+                `;
+                hoursGrid.appendChild(dayDiv);
+                
+                // Add change listeners
+                document.getElementById(dayAbbrev[index] + '-start').addEventListener('change', updateOfficeHoursField);
+                document.getElementById(dayAbbrev[index] + '-end').addEventListener('change', updateOfficeHoursField);
+            });
+        }
+
+        function toggleDayHours(day) {
+            const checkbox = document.getElementById(day + '-open');
+            const startSelect = document.getElementById(day + '-start');
+            const endSelect = document.getElementById(day + '-end');
+            
+            if (checkbox.checked) {
+                startSelect.disabled = false;
+                endSelect.disabled = false;
+            } else {
+                startSelect.disabled = true;
+                endSelect.disabled = true;
+                startSelect.value = '';
+                endSelect.value = '';
+            }
+            updateOfficeHoursField();
+        }
+
+        function updateOfficeHoursField() {
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            let hoursText = '';
+            
+            days.forEach((day, index) => {
+                const checkbox = document.getElementById(day + '-open');
+                if (checkbox && checkbox.checked) {
+                    const start = document.getElementById(day + '-start').value;
+                    const end = document.getElementById(day + '-end').value;
+                    if (start && end) {
+                        const startTime = formatTime(start);
+                        const endTime = formatTime(end);
+                        hoursText += `${dayNames[index]}: ${startTime} - ${endTime}\n`;
+                    }
+                }
+            });
+            
+            document.getElementById('officeHours').value = hoursText.trim();
+        }
+
+        function formatTime(time24) {
+            const [hours, minutes] = time24.split(':');
+            const hour12 = hours % 12 || 12;
+            const ampm = hours < 12 ? 'AM' : 'PM';
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        // URL formatting function
+        function formatURL(input) {
+            let value = input.value.trim();
+            if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
+                input.value = 'https://' + value;
+            }
+        }
+
+        // Pre-select default office hours (Monday-Friday 8am-5pm)
+        function setDefaultOfficeHours() {
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            
+            days.forEach(day => {
+                const checkbox = document.getElementById(day + '-open');
+                const startSelect = document.getElementById(day + '-start');
+                const endSelect = document.getElementById(day + '-end');
+                
+                if (checkbox && startSelect && endSelect) {
+                    checkbox.checked = true;
+                    startSelect.disabled = false;
+                    endSelect.disabled = false;
+                    startSelect.value = '08:00';
+                    endSelect.value = '17:00';
+                }
+            });
+            
+            updateOfficeHoursField();
+        }
+
+        // ZIP Code Management Functions
+        let zipCodeData = [];
+
+        function handleFileUpload(fileInput) {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                parseCSVContent(csv);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseZipCodeInput(textarea) {
+            const content = textarea.value.trim();
+            if (!content) {
+                hideZipPreview();
+                return;
+            }
+            parseCSVContent(content);
+        }
+
+        function parseCSVContent(csvContent) {
+            const lines = csvContent.split('\n').filter(line => line.trim());
+            const zipData = [];
+            
+            lines.forEach(line => {
+                const parts = line.split(',').map(p => p.trim().replace(/['"]/g, ''));
+                
+                if (parts.length >= 2) {
+                    // Format: ZIP, City
+                    const zip = parts[0].replace(/\D/g, ''); // Remove non-digits
+                    const city = parts[1];
+                    if (zip.length === 5) {
+                        zipData.push({ zip: zip, city: city });
+                    }
+                } else if (parts.length === 1) {
+                    // Just ZIP code
+                    const zip = parts[0].replace(/\D/g, '');
+                    if (zip.length === 5) {
+                        const autoResolve = document.getElementById('autoResolveCity').checked;
+                        zipData.push({ 
+                            zip: zip, 
+                            city: autoResolve ? `City for ${zip}` : 'Unknown City'
+                        });
+                    }
+                }
+            });
+
+            if (zipData.length > 0) {
+                zipCodeData = zipData;
+                showZipPreview();
+            } else {
+                hideZipPreview();
+            }
+        }
+
+        function showZipPreview() {
+            const previewSection = document.getElementById('zipPreviewSection');
+            const zipCountElement = document.getElementById('zipCount');
+            const zipListElement = document.getElementById('zipPreviewList');
+
+            zipCountElement.textContent = zipCodeData.length;
+            
+            let listHTML = '';
+            zipCodeData.forEach(item => {
+                listHTML += `
+                    <div class="zip-item">
+                        <span class="zip-code">${item.zip}</span>
+                        <span class="zip-city">${item.city}</span>
+                    </div>
+                `;
+            });
+            
+            zipListElement.innerHTML = listHTML;
+            previewSection.style.display = 'block';
+        }
+
+        function hideZipPreview() {
+            document.getElementById('zipPreviewSection').style.display = 'none';
+            zipCodeData = [];
+        }
+
+        function approveZipCodes() {
+            // Store the ZIP code data in the hidden field
+            document.getElementById('serviceAreasData').value = JSON.stringify(zipCodeData);
+            
+            // Show confirmation
+            alert(`✅ ${zipCodeData.length} service areas approved and ready for submission!`);
+            
+            // Optionally collapse the preview for cleaner view
+            document.getElementById('zipPreviewSection').style.display = 'none';
+        }
+
+        function editZipCodes() {
+            // Convert back to editable text format
+            let editableText = zipCodeData.map(item => `${item.zip}, ${item.city}`).join('\n');
+            document.getElementById('zipCodePaste').value = editableText;
+            document.getElementById('zipCodePaste').focus();
+        }
+
+        function clearZipCodes() {
+            zipCodeData = [];
+            document.getElementById('zipCodePaste').value = '';
+            document.getElementById('zipCodeFile').value = '';
+            document.getElementById('serviceAreasData').value = '';
+            hideZipPreview();
+        }
+
+        // Check if we're in edit mode and load existing data
+        function checkEditMode() {
+            console.log('=== CHECKING EDIT MODE ===');
+            
+            // Get parameters from server-side template variables (passed from doGet)
+            const profileId = '<?= profileId ?>';
+            const editMode = '<?= editMode ?>';
+            
+            // Also try URL parsing as fallback
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlProfileId = urlParams.get('profileId');
+            const urlEditMode = urlParams.get('edit');
+            
+            // Use template variables first, fallback to URL
+            const finalProfileId = profileId || urlProfileId;
+            const finalEditMode = editMode || urlEditMode;
+            
+            console.log('Parameters found:');
+            console.log('- Template profileId:', profileId);
+            console.log('- Template editMode:', editMode);
+            console.log('- URL profileId:', urlProfileId);
+            console.log('- URL editMode:', urlEditMode);
+            console.log('- Final profileId:', finalProfileId);
+            console.log('- Final editMode:', finalEditMode);
+            console.log('- finalEditMode === "true":', finalEditMode === 'true');
+            
+            if (finalProfileId && finalEditMode === 'true') {
+                console.log('=== EDIT MODE CONFIRMED ===');
+                // We're in edit mode
+                document.getElementById('submitButton').textContent = 'Update Client Profile';
+                document.title = 'Edit Client Profile - ' + document.title;
+                
+                console.log('Setting up data loading with 500ms delay...');
+                // Load existing data for this profileId (with delay to ensure form is ready)
+                setTimeout(() => {
+                    console.log('Delay complete, calling loadExistingProfileData...');
+                    loadExistingProfileData(finalProfileId);
+                }, 500);
+                return true;
+            } else {
+                console.log('=== NOT IN EDIT MODE ===');
+                console.log('Reason: finalProfileId =', finalProfileId, ', finalEditMode =', finalEditMode);
+            }
+            return false;
+        }
+        
+        function loadExistingProfileData(profileId) {
+            console.log('=== LOADING EXISTING PROFILE DATA ===');
+            console.log('Profile ID:', profileId);
+            console.log('Current URL:', window.location.href);
+            
+            // Set the Profile_ID in session storage to prevent creating new one
+            sessionStorage.setItem('currentProfileId', profileId);
+            
+            // Show loading state
+            showProgressStatus('📂 Loading profile data...', 'warning');
+            
+            // Load data from Google Apps Script
+            google.script.run
+                .withSuccessHandler(function(profileData) {
+                    console.log('=== PROFILE DATA RECEIVED ===');
+                    console.log('Full profile data:', profileData);
+                    
+                    if (profileData && !profileData.error) {
+                        console.log('Profile data is valid, populating form...');
+                        populateFormWithData(profileData);
+                        showProgressStatus('✅ Profile data loaded successfully', 'success');
+                    } else {
+                        console.error('=== PROFILE LOAD ERROR ===');
+                        console.error('Error details:', profileData);
+                        showProgressStatus('❌ Profile not found', 'error');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('=== GOOGLE SCRIPT FAILURE ===');
+                    console.error('Error details:', error);
+                    showProgressStatus('❌ Error loading profile data', 'error');
+                })
+                .getProfileDataById(profileId);
+                
+            console.log('Google Script call for profile data initiated...');
+        }
+
+        // Helper function to set field values with better error handling
+        const setFieldValue = (id, value) => {
+            const element = document.getElementById(id) || document.querySelector(`[name="${id}"]`);
+            if (element && value !== null && value !== undefined && value !== '') {
+                element.value = value;
+                console.log(`Set ${id} = ${value}`);
+                return true;
+            } else if (!element) {
+                console.warn(`Element not found: ${id}`);
+            }
+            return false;
+        };
+
+        function populateFormWithData(profileData) {
+            console.log('Populating form with:', profileData);
+            
+            try {
+                
+                // Main profile fields
+                setFieldValue('companyName', profileData.companyName);
+                setFieldValue('locations', profileData.location);
+                setFieldValue('timezone', profileData.timezone);
+                
+                // Office info
+                if (profileData.officeInfo) {
+                    setFieldValue('officePhone', profileData.officeInfo.phone);
+                    setFieldValue('customerContactEmail', profileData.officeInfo.email);
+                    setFieldValue('website', profileData.officeInfo.website);
+                    setFieldValue('officeHours', profileData.officeInfo.hours);
+                    
+                    // Parse address if available
+                    if (profileData.officeInfo.address) {
+                        console.log('Parsing address:', profileData.officeInfo.address);
+                        // Try to parse the combined address back into separate fields
+                        const addressParts = profileData.officeInfo.address.split(', ');
+                        if (addressParts.length >= 3) {
+                            setFieldValue('physicalStreet', addressParts[0]);
+                            setFieldValue('physicalSuite', addressParts[1]);
+                            setFieldValue('physicalCity', addressParts[2]);
+                            
+                            // Try to extract state and ZIP from last part
+                            if (addressParts.length >= 4) {
+                                const lastPart = addressParts[addressParts.length - 1];
+                                const stateZipMatch = lastPart.match(/([A-Z]{2})\s+(\d{5})/);
+                                if (stateZipMatch) {
+                                    setFieldValue('physicalState', stateZipMatch[1]);
+                                    setFieldValue('physicalZip', stateZipMatch[2]);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Other fields
+                setFieldValue('bulletin', profileData.bulletin);
+                setFieldValue('pestsNotCovered', profileData.pestsNotCovered);
+                
+                // Client folder URL
+                if (profileData.clientFolderUrl) {
+                    setFieldValue('sidebarGoogleDriveFolder', profileData.clientFolderUrl);
+                    updateDriveLink();
+                }
+                
+                // Debug what data is available
+                console.log('=== AVAILABLE DATA SECTIONS ===');
+                console.log('Services:', profileData.services ? `${profileData.services.length} items` : 'NONE');
+                console.log('Technicians:', profileData.technicians ? `${profileData.technicians.length} items` : 'NONE');
+                console.log('Service Areas:', profileData.serviceAreas ? `${profileData.serviceAreas.length} items` : 'NONE');
+                console.log('Policies:', profileData.policies ? `${Object.keys(profileData.policies).length} categories` : 'NONE');
+                
+                // Populate services data if available
+                if (profileData.services && profileData.services.length > 0) {
+                    console.log('Populating services:', profileData.services);
+                    setTimeout(() => {
+                        populateServicesData(profileData.services);
+                    }, 1000);
+                } else {
+                    console.log('No services data to populate');
+                }
+                
+                // Populate technicians data if available
+                if (profileData.technicians && profileData.technicians.length > 0) {
+                    console.log('Populating technicians:', profileData.technicians);
+                    setTimeout(() => {
+                        populateTechniciansData(profileData.technicians);
+                    }, 1200);
+                } else {
+                    console.log('No technicians data to populate');
+                }
+                
+                // Populate service areas data if available
+                if (profileData.serviceAreas && profileData.serviceAreas.length > 0) {
+                    console.log('Populating service areas:', profileData.serviceAreas);
+                    setTimeout(() => {
+                        populateServiceAreasData(profileData.serviceAreas);
+                    }, 1400);
+                } else {
+                    console.log('No service areas data to populate. Available:', profileData.serviceAreas);
+                }
+                
+                // Populate policies data if available
+                if (profileData.policies && Object.keys(profileData.policies).length > 0) {
+                    console.log('Populating policies:', profileData.policies);
+                    setTimeout(() => {
+                        populatePoliciesData(profileData.policies);
+                    }, 1600);
+                } else {
+                    console.log('No policies data to populate. Available:', profileData.policies);
+                }
+                
+                console.log('Form population completed successfully');
+                
+            } catch (error) {
+                console.error('Error populating form:', error);
+                showProgressStatus('❌ Error loading form data', 'error');
+            }
+        }
+
+        // Populate Services section with existing data
+        function populateServicesData(services) {
+            console.log('Populating services section with:', services);
+            
+            // Clear existing services first (except the default one)
+            const servicesContainer = document.getElementById('services-container');
+            if (servicesContainer) {
+                servicesContainer.innerHTML = '';
+            }
+            
+            // Reset service counter
+            serviceCounter = 0;
+            
+            // Add each service
+            services.forEach((service, index) => {
+                addService(); // This creates a new service form
+                
+                // Populate the service fields
+                setTimeout(() => {
+                    const serviceIndex = serviceCounter;
+                    console.log(`Populating service ${serviceIndex}:`, service);
+                    
+                    // Basic service information
+                    setFieldValue(`services[${serviceIndex}][name]`, service.name);
+                    setFieldValue(`services[${serviceIndex}][description]`, service.description);
+                    setFieldValue(`services[${serviceIndex}][type]`, service.type);
+                    setFieldValue(`services[${serviceIndex}][frequency]`, service.frequency);
+                    setFieldValue(`services[${serviceIndex}][pests]`, service.pests);
+                    
+                    // Service details
+                    setFieldValue(`services[${serviceIndex}][contract]`, service.contract);
+                    setFieldValue(`services[${serviceIndex}][guarantee]`, service.guarantee);
+                    setFieldValue(`services[${serviceIndex}][initialDuration]`, service.duration);
+                    setFieldValue(`services[${serviceIndex}][productType]`, service.productType);
+                    setFieldValue(`services[${serviceIndex}][billingFrequency]`, service.billingFrequency);
+                    setFieldValue(`services[${serviceIndex}][noteToAgent]`, service.agentNote);
+                    
+                    // Parse pricing data if available
+                    console.log(`Service ${serviceIndex} pricing data:`, service.pricingData);
+                    if (service.pricingData) {
+                        try {
+                            const pricingArray = JSON.parse(service.pricingData);
+                            console.log(`Parsed pricing array for service ${serviceIndex}:`, pricingArray);
+                            if (pricingArray && pricingArray.length > 0) {
+                                const pricing = pricingArray[0];
+                                console.log(`Using pricing object:`, pricing);
+                                setFieldValue(`services[${serviceIndex}][firstPrice]`, pricing.firstPrice);
+                                setFieldValue(`services[${serviceIndex}][recurringPrice]`, pricing.recurringPrice);
+                                setFieldValue(`services[${serviceIndex}][sqftMin]`, pricing.sqftMin);
+                                setFieldValue(`services[${serviceIndex}][sqftMax]`, pricing.sqftMax);
+                                setFieldValue(`services[${serviceIndex}][serviceTypeDesc]`, pricing.serviceType);
+                                setFieldValue(`services[${serviceIndex}][serviceFrequency]`, pricing.serviceFrequency || service.billingFrequency);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing pricing data for service', serviceIndex, ':', e);
+                            console.error('Raw pricing data was:', service.pricingData);
+                        }
+                    } else {
+                        console.log(`No pricing data available for service ${serviceIndex}`);
+                    }
+                    
+                    console.log(`Service ${serviceIndex} population completed`);
+                }, index * 200); // Stagger the population
+            });
+        }
+
+        // Populate Technicians section with existing data
+        function populateTechniciansData(technicians) {
+            console.log('Populating technicians section with:', technicians);
+            
+            // Clear existing technicians first
+            const techniciansContainer = document.getElementById('technicians-container');
+            if (techniciansContainer) {
+                techniciansContainer.innerHTML = '';
+            }
+            
+            // Reset technician counter
+            technicianCounter = 0;
+            
+            // Add each technician
+            technicians.forEach((tech, index) => {
+                addTechnician(); // This creates a new technician form
+                
+                setTimeout(() => {
+                    const techIndex = technicianCounter;
+                    console.log(`Populating technician ${techIndex}:`, tech);
+                    
+                    // Map all technician fields from sheet to form
+                    setFieldValue(`technicians[${techIndex}][name]`, tech.name || tech.techName);
+                    setFieldValue(`technicians[${techIndex}][role]`, tech.role);
+                    setFieldValue(`technicians[${techIndex}][phone]`, tech.phone);
+                    setFieldValue(`technicians[${techIndex}][schedule]`, tech.schedule);
+                    setFieldValue(`technicians[${techIndex}][maxStops]`, tech.maxStops);
+                    setFieldValue(`technicians[${techIndex}][doesNotService]`, tech.doesNotService);
+                    setFieldValue(`technicians[${techIndex}][additionalNotes]`, tech.additionalNotes);
+                    setFieldValue(`technicians[${techIndex}][zipCodeOrBranch]`, tech.zipCodes);
+                    
+                    console.log(`Technician ${techIndex} population completed`);
+                }, index * 200);
+            });
+        }
+
+        // Populate Service Areas section with existing data
+        function populateServiceAreasData(serviceAreas) {
+            console.log('Populating service areas section with:', serviceAreas);
+            
+            // Convert service areas back to CSV format for the bulk input
+            const csvData = serviceAreas.map(area => `${area.zip}, ${area.city}`).join('\n');
+            
+            setTimeout(() => {
+                const zipCodePaste = document.getElementById('zipCodePaste');
+                if (zipCodePaste) {
+                    zipCodePaste.value = csvData;
+                    // Trigger the parsing
+                    parseZipCodeInput(zipCodePaste);
+                    // Auto-approve the ZIP codes
+                    setTimeout(() => {
+                        if (zipCodeData.length > 0) {
+                            approveZipCodes();
+                        }
+                    }, 500);
+                }
+            }, 100);
+        }
+
+        // Populate Policies section with existing data
+        function populatePoliciesData(policies) {
+            console.log('Populating policies section with:', policies);
+            
+            // Handle both array and grouped object formats
+            if (Array.isArray(policies)) {
+                // Flat array format
+                policies.forEach(policy => {
+                    mapPolicyToFormField(policy.category, policy.description, policy.options);
+                });
+            } else if (typeof policies === 'object') {
+                // Grouped object format
+                Object.keys(policies).forEach(category => {
+                    const categoryPolicies = policies[category];
+                    if (Array.isArray(categoryPolicies)) {
+                        categoryPolicies.forEach(policy => {
+                            mapPolicyToFormField(category, policy.description, policy.options);
+                        });
+                    }
+                });
+            }
+        }
+
+        function mapPolicyToFormField(category, description, options) {
+            // Map policy categories to form fields
+            switch(category) {
+                case 'Cancellation':
+                    setFieldValue('cancellationPolicy', description);
+                    break;
+                case 'Payment':
+                    setFieldValue('paymentPlans', description);
+                    if (options) setFieldValue('paymentTypes', options);
+                    break;
+                case 'Emergency':
+                    setFieldValue('afterHoursEmergency', description);
+                    break;
+                case 'Contract':
+                    setFieldValue('signedContract', description);
+                    break;
+                default:
+                    console.log(`Unmapped policy category: ${category}`);
+            }
+        }
+
+        // US States data for searchable dropdown
+        const US_STATES = [
+            { code: 'AL', name: 'Alabama' },
+            { code: 'AK', name: 'Alaska' },
+            { code: 'AZ', name: 'Arizona' },
+            { code: 'AR', name: 'Arkansas' },
+            { code: 'CA', name: 'California' },
+            { code: 'CO', name: 'Colorado' },
+            { code: 'CT', name: 'Connecticut' },
+            { code: 'DE', name: 'Delaware' },
+            { code: 'FL', name: 'Florida' },
+            { code: 'GA', name: 'Georgia' },
+            { code: 'HI', name: 'Hawaii' },
+            { code: 'ID', name: 'Idaho' },
+            { code: 'IL', name: 'Illinois' },
+            { code: 'IN', name: 'Indiana' },
+            { code: 'IA', name: 'Iowa' },
+            { code: 'KS', name: 'Kansas' },
+            { code: 'KY', name: 'Kentucky' },
+            { code: 'LA', name: 'Louisiana' },
+            { code: 'ME', name: 'Maine' },
+            { code: 'MD', name: 'Maryland' },
+            { code: 'MA', name: 'Massachusetts' },
+            { code: 'MI', name: 'Michigan' },
+            { code: 'MN', name: 'Minnesota' },
+            { code: 'MS', name: 'Mississippi' },
+            { code: 'MO', name: 'Missouri' },
+            { code: 'MT', name: 'Montana' },
+            { code: 'NE', name: 'Nebraska' },
+            { code: 'NV', name: 'Nevada' },
+            { code: 'NH', name: 'New Hampshire' },
+            { code: 'NJ', name: 'New Jersey' },
+            { code: 'NM', name: 'New Mexico' },
+            { code: 'NY', name: 'New York' },
+            { code: 'NC', name: 'North Carolina' },
+            { code: 'ND', name: 'North Dakota' },
+            { code: 'OH', name: 'Ohio' },
+            { code: 'OK', name: 'Oklahoma' },
+            { code: 'OR', name: 'Oregon' },
+            { code: 'PA', name: 'Pennsylvania' },
+            { code: 'RI', name: 'Rhode Island' },
+            { code: 'SC', name: 'South Carolina' },
+            { code: 'SD', name: 'South Dakota' },
+            { code: 'TN', name: 'Tennessee' },
+            { code: 'TX', name: 'Texas' },
+            { code: 'UT', name: 'Utah' },
+            { code: 'VT', name: 'Vermont' },
+            { code: 'VA', name: 'Virginia' },
+            { code: 'WA', name: 'Washington' },
+            { code: 'WV', name: 'West Virginia' },
+            { code: 'WI', name: 'Wisconsin' },
+            { code: 'WY', name: 'Wyoming' }
+        ];
+
+        // Initialize state dropdowns
+        function initializeStateDropdowns() {
+            ['physicalState', 'mailingState'].forEach(fieldId => {
+                populateStateDropdown(fieldId);
+            });
+        }
+
+        function populateStateDropdown(fieldId) {
+            const dropdown = document.getElementById(fieldId + 'Dropdown');
+            if (!dropdown) return;
+
+            let html = '';
+            US_STATES.forEach(state => {
+                html += `<div class="searchable-select-option" onclick="selectState('${fieldId}', '${state.code}', '${state.name}')">${state.name} (${state.code})</div>`;
+            });
+            dropdown.innerHTML = html;
+        }
+
+        function showStateDropdown(fieldId) {
+            const dropdown = document.getElementById(fieldId + 'Dropdown');
+            if (dropdown) {
+                dropdown.style.display = 'block';
+                populateStateDropdown(fieldId); // Reset to show all states
+            }
+        }
+
+        function hideStateDropdown(fieldId) {
+            const dropdown = document.getElementById(fieldId + 'Dropdown');
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        }
+
+        function toggleStateDropdown(fieldId) {
+            const dropdown = document.getElementById(fieldId + 'Dropdown');
+            if (dropdown) {
+                if (dropdown.style.display === 'none') {
+                    showStateDropdown(fieldId);
+                } else {
+                    hideStateDropdown(fieldId);
+                }
+            }
+        }
+
+        function filterStates(fieldId) {
+            const input = document.getElementById(fieldId);
+            const dropdown = document.getElementById(fieldId + 'Dropdown');
+            const searchTerm = input.value.toLowerCase();
+
+            if (!dropdown) return;
+
+            let filteredStates = US_STATES.filter(state => 
+                state.name.toLowerCase().includes(searchTerm) || 
+                state.code.toLowerCase().includes(searchTerm)
+            );
+
+            let html = '';
+            if (filteredStates.length > 0) {
+                filteredStates.forEach(state => {
+                    html += `<div class="searchable-select-option" onclick="selectState('${fieldId}', '${state.code}', '${state.name}')">${state.name} (${state.code})</div>`;
+                });
+            } else {
+                html = '<div class="no-results">No states found</div>';
+            }
+
+            dropdown.innerHTML = html;
+            dropdown.style.display = 'block';
+        }
+
+        function selectState(fieldId, stateCode, stateName) {
+            const input = document.getElementById(fieldId);
+            if (input) {
+                input.value = stateCode; // Store the state code as the value
+                input.setAttribute('data-display', stateName); // Store display name
+                input.placeholder = `${stateName} (${stateCode})`; // Show selected state in placeholder
+            }
+            hideStateDropdown(fieldId);
+        }
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            ['physicalState', 'mailingState'].forEach(fieldId => {
+                const container = e.target.closest('.searchable-select-container');
+                const targetContainer = document.getElementById(fieldId).closest('.searchable-select-container');
+                
+                if (container !== targetContainer) {
+                    hideStateDropdown(fieldId);
+                }
+            });
+        });
+
+        // Manual Progress Save/Load Functions
+        function saveFormProgress() {
+            try {
+                const formData = new FormData(document.getElementById('clientForm'));
+                const progressData = {};
+                
+                // Convert FormData to object for storage
+                for (let [key, value] of formData.entries()) {
+                    if (key === 'holidays') {
+                        if (!progressData[key]) progressData[key] = [];
+                        progressData[key].push(value);
+                    } else {
+                        progressData[key] = value;
+                    }
+                }
+                
+                // Save to localStorage with timestamp
+                const saveData = {
+                    data: progressData,
+                    timestamp: new Date().toISOString(),
+                    companyName: progressData.companyName || 'Unnamed Client'
+                };
+                
+                localStorage.setItem('clientFormProgress', JSON.stringify(saveData));
+                
+                showProgressStatus('✅ Progress saved locally', 'success');
+                console.log('Form progress saved:', saveData);
+                
+            } catch (error) {
+                showProgressStatus('❌ Error saving progress', 'error');
+                console.error('Save progress error:', error);
+            }
+        }
+
+        function loadFormProgress() {
+            try {
+                const savedData = localStorage.getItem('clientFormProgress');
+                if (!savedData) {
+                    showProgressStatus('⚠️ No saved progress found', 'warning');
+                    return;
+                }
+                
+                const parseData = JSON.parse(savedData);
+                const savedDate = new Date(parseData.timestamp);
+                const companyName = parseData.companyName;
+                
+                // Confirm before loading
+                const confirmLoad = confirm(
+                    `Load saved progress?\\n\\n` +
+                    `Company: ${companyName}\\n` +
+                    `Saved: ${savedDate.toLocaleDateString()} at ${savedDate.toLocaleTimeString()}\\n\\n` +
+                    `This will overwrite current form data.`
+                );
+                
+                if (!confirmLoad) return;
+                
+                // Clear current form
+                document.getElementById('clientForm').reset();
+                
+                // Load saved data
+                Object.entries(parseData.data).forEach(([key, value]) => {
+                    const element = document.querySelector(`[name="${key}"]`);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = true;
+                        } else {
+                            element.value = value;
+                        }
+                    }
+                });
+                
+                showProgressStatus(`✅ Progress loaded: ${companyName}`, 'success');
+                console.log('Form progress loaded:', parseData);
+                
+            } catch (error) {
+                showProgressStatus('❌ Error loading progress', 'error');
+                console.error('Load progress error:', error);
+            }
+        }
+
+        function clearFormProgress() {
+            const confirmClear = confirm(
+                'Clear saved progress?\\n\\n' +
+                'This will delete locally saved form data and reset the current form.\\n\\n' +
+                'This action cannot be undone.'
+            );
+            
+            if (confirmClear) {
+                localStorage.removeItem('clientFormProgress');
+                document.getElementById('clientForm').reset();
+                showProgressStatus('🗑️ Progress cleared', 'warning');
+                console.log('Form progress cleared');
+            }
+        }
+
+        function showProgressStatus(message, type) {
+            const statusElement = document.getElementById('progressStatus');
+            statusElement.textContent = message;
+            statusElement.className = `progress-status ${type}`;
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                statusElement.textContent = '';
+                statusElement.className = 'progress-status';
+            }, 3000);
+        }
+
+        // Check for saved progress on page load
+        function checkSavedProgress() {
+            const savedData = localStorage.getItem('clientFormProgress');
+            if (savedData) {
+                try {
+                    const parseData = JSON.parse(savedData);
+                    const savedDate = new Date(parseData.timestamp);
+                    const companyName = parseData.companyName;
+                    
+                    showProgressStatus(`💾 Found saved: ${companyName} (${savedDate.toLocaleDateString()})`, 'warning');
+                } catch (error) {
+                    console.error('Error checking saved progress:', error);
+                }
+            }
+        }
+
+        // Update DOMContentLoaded to include office hours initialization and edit mode check
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== PAGE LOADED ===');
+            console.log('Current URL:', window.location.href);
+            console.log('URL Search Params:', window.location.search);
+            
+            // Check for edit mode first
+            const isEditMode = checkEditMode();
+            console.log('Edit mode detected:', isEditMode);
+            
+            addService();
+            addTechnician(); 
+            // Remove the old addServiceArea call since we're replacing it
+            initializeOfficeHours();
+            initializeStateDropdowns(); // Initialize state dropdowns
+            
+            // Check for saved progress (only if not in edit mode)
+            if (!isEditMode) {
+                setTimeout(checkSavedProgress, 500);
+                // Set default office hours after a brief delay to ensure elements exist
+                setTimeout(setDefaultOfficeHours, 100);
+            }
+            
+            console.log('=== PAGE INITIALIZATION COMPLETE ===');
+        });
     </script>
 </body>
 </html>

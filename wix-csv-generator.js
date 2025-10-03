@@ -51,7 +51,12 @@ function createMainProfileCSV() {
     'location', 'timezone', 'wixLink', 'officePhone', 'customerContactEmail',
     'physicalAddress', 'mailingAddress', 'officeHours', 'holidays',
     'website', 'fieldRoutesLink', 'bulletin', 'pestsNotCovered',
-    'status', 'createdDate', 'lastUpdated'
+    'status', 'createdDate', 'lastUpdated',
+    // New address fields
+    'physicalStreet', 'physicalSuite', 'physicalCity', 'physicalState', 'physicalZip',
+    'mailingStreet', 'mailingSuite', 'mailingCity', 'mailingState', 'mailingZip', 'sameAsPhysical',
+    // New custom fields
+    'timezoneCustom', 'holidaysObserved'
   ];
   
   // Green Country example data
@@ -109,7 +114,10 @@ function createServicesCSV() {
     'profileId', 'serviceName', 'serviceCategory', 'serviceType', 'frequency',
     'description', 'pestsIncluded', 'contract', 'guarantee', 'callAhead',
     'initialDuration', 'recurringDuration', 'leaveDuringService', 'followUp',
-    'prepSheet', 'noteToAgent', 'pricing', 'status'
+    'prepSheet', 'noteToAgent', 'pricing', 'status',
+    // New service fields
+    'serviceFrequencyCustom', 'billingFrequencyCustom', 'categoryCustom', 'typeCustom',
+    'callAheadCustom', 'leaveDuringServiceCustom', 'prepSheetCustom'
   ];
   
   // Green Country services data
@@ -180,7 +188,9 @@ function createTechniciansCSV() {
   
   const headers = [
     'profileId', 'techName', 'companyName', 'role', 'phone', 'schedule',
-    'maxStops', 'doesNotService', 'additionalNotes', 'zipCodes', 'branch'
+    'maxStops', 'doesNotService', 'additionalNotes', 'zipCodes', 'branch',
+    // New technician fields
+    'roleCustom'
   ];
   
   // Green Country technician data (example)
@@ -227,7 +237,12 @@ function createPoliciesCSV() {
   
   const headers = [
     'profileId', 'policyCategory', 'policyType', 'policyTitle', 'policyDescription',
-    'policyValue', 'displayOrder'
+    'policyValue', 'displayOrder',
+    // New policy fields
+    'reservices', 'setServiceTypeTo', 'setSubscriptionTypeTo', 'paymentTypes', 'pastDuePeriod',
+    'returningCustomers', 'toolsToSave', 'maxDistance', 'additionalNotes', 'branch',
+    'treatVehicles', 'commercialProperties', 'multiFamilyOffered', 'trailersOffered',
+    'signedContract', 'appointmentConfirmations', 'sameDayServices', 'techSkilling', 'afterHoursEmergency'
   ];
   
   // Green Country policies (inferred from profile)
