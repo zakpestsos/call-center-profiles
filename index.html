@@ -3300,7 +3300,7 @@ console.log('📋 All policies for debugging:', allPolicies);
 
 // Find specific policies by title (matching our new policy structure)
 // First try in Scheduling category, then search all policies as fallback
-let schedulingTimes = schedulingPolicies.find(p => p.title && (p.title.includes('Inspection:') || p.title.includes('Initial/Interior:') || p.title.includes('Regular:') || p.description === 'Available scheduling times'));
+let schedulingTimes = schedulingPolicies.find(p => p.title === 'Scheduling Times' || p.description === 'Available scheduling times');
 let maxDistance = schedulingPolicies.find(p => p.title && p.title.includes('Max Distance'));
 let sameDay = schedulingPolicies.find(p => p.title && p.title.includes('Same Day Services'));
 let confirmations = schedulingPolicies.find(p => p.title && p.title.includes('Appointment confirmations'));
@@ -3328,18 +3328,24 @@ console.log('🔍 Found specific policies:', { schedulingTimes, maxDistance, sam
 
 // Update the quick reference display with proper formatting
 const schedulingTimesElement = document.getElementById('defaultSchedulingTimes');
+console.log('🔍 Scheduling times policy found:', schedulingTimes);
+
 if (schedulingTimes && (schedulingTimes.value || schedulingTimes.default)) {
   const schedulingText = schedulingTimes.value || schedulingTimes.default;
+  console.log('📋 Raw scheduling text:', schedulingText);
   
   // Format the scheduling times with proper line breaks and bold labels
+  // Handle both \n\n and \n line breaks
   const formattedText = schedulingText
-    .replace(/Inspection:/g, '<br><strong>Inspection:</strong>')
+    .replace(/\n\n/g, '\n') // Convert double line breaks to single
+    .replace(/Inspection:/g, '<strong>Inspection:</strong>')
     .replace(/Initial\/Interior:/g, '<br><strong>Initial/Interior:</strong>')
-    .replace(/Regular:/g, '<br><strong>Regular:</strong>')
-    .replace(/^\s*<br>/, ''); // Remove leading line break
+    .replace(/Regular:/g, '<br><strong>Regular:</strong>');
   
+  console.log('📋 Formatted scheduling text:', formattedText);
   schedulingTimesElement.innerHTML = formattedText;
 } else {
+  console.log('❌ No scheduling times policy found');
   schedulingTimesElement.textContent = 'Not specified';
 }
 
