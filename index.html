@@ -3287,16 +3287,44 @@ console.log('📋 Available policies:', clientData.policies);
 const policies = clientData.policies || {};
 const schedulingPolicies = policies['Scheduling'] || [];
 
+// Also check other possible categories for backward compatibility
+const allPolicies = [];
+Object.keys(policies).forEach(category => {
+  if (Array.isArray(policies[category])) {
+    allPolicies.push(...policies[category]);
+  }
+});
+
 console.log('📋 Scheduling policies found:', schedulingPolicies);
+console.log('📋 All policies for debugging:', allPolicies);
 
 // Find specific policies by title (matching our new policy structure)
-const schedulingTimes = schedulingPolicies.find(p => p.title && (p.title.includes('Inspection:') || p.title.includes('Initial/Interior:') || p.title.includes('Regular:')));
-const maxDistance = schedulingPolicies.find(p => p.title && p.title.includes('Max Distance'));
-const sameDay = schedulingPolicies.find(p => p.title && p.title.includes('Same Day Services'));
-const confirmations = schedulingPolicies.find(p => p.title && p.title.includes('Appointment confirmations'));
-const reservices = schedulingPolicies.find(p => p.title && p.title.includes('Reservices'));
+// First try in Scheduling category, then search all policies as fallback
+let schedulingTimes = schedulingPolicies.find(p => p.title && (p.title.includes('Inspection:') || p.title.includes('Initial/Interior:') || p.title.includes('Regular:') || p.description === 'Available scheduling times'));
+let maxDistance = schedulingPolicies.find(p => p.title && p.title.includes('Max Distance'));
+let sameDay = schedulingPolicies.find(p => p.title && p.title.includes('Same Day Services'));
+let confirmations = schedulingPolicies.find(p => p.title && p.title.includes('Appointment confirmations'));
+let reservices = schedulingPolicies.find(p => p.title && p.title.includes('Reservices'));
 
-console.log('🔍 Found policies:', { schedulingTimes, maxDistance, sameDay, confirmations, reservices });
+// Fallback: search in all policies if not found in Scheduling category
+if (!schedulingTimes) {
+  schedulingTimes = allPolicies.find(p => p.title && (p.title.includes('Inspection:') || p.title.includes('Initial/Interior:') || p.title.includes('Regular:') || p.description === 'Available scheduling times'));
+}
+if (!maxDistance) {
+  maxDistance = allPolicies.find(p => p.title && p.title.includes('Max Distance'));
+}
+if (!sameDay) {
+  sameDay = allPolicies.find(p => p.title && p.title.includes('Same Day Services'));
+}
+if (!confirmations) {
+  confirmations = allPolicies.find(p => p.title && p.title.includes('Appointment confirmations'));
+}
+if (!reservices) {
+  reservices = allPolicies.find(p => p.title && p.title.includes('Reservices'));
+}
+
+console.log('🔍 All scheduling policies:', schedulingPolicies);
+console.log('🔍 Found specific policies:', { schedulingTimes, maxDistance, sameDay, confirmations, reservices });
 
 // Update the quick reference display with proper formatting
 const schedulingTimesElement = document.getElementById('defaultSchedulingTimes');
