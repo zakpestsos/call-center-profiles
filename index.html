@@ -3265,44 +3265,43 @@ return techCard;
 
 // Populate scheduling policies in quick reference
 function populateSchedulingPolicies() {
-// Get scheduling policies from clientData
+console.log('🔄 Populating scheduling policies...');
+console.log('📋 Available policies:', clientData.policies);
+
+// Get scheduling policies from clientData using new organized structure
 const policies = clientData.policies || {};
-const schedulingOps = policies['Scheduling and Operations'] || [];
-const servicePolicies = policies['Service Policies'] || [];
+const schedulingPolicies = policies['Scheduling'] || [];
 
-// Find specific policies
-const schedulingTimes = schedulingOps.find(p => p.type === 'scheduling_times');
-const maxDistance = schedulingOps.find(p => p.type === 'distance');
-const sameDay = schedulingOps.find(p => p.type === 'sameday');
-const confirmations = schedulingOps.find(p => p.type === 'confirmations');
+console.log('📋 Scheduling policies found:', schedulingPolicies);
 
-// Find service policies
-const reservices = servicePolicies.find(p => p.type === 'reservices');
-const serviceType = servicePolicies.find(p => p.type === 'servicetype');
-const subscription = servicePolicies.find(p => p.type === 'subscription');
+// Find specific policies by title (matching our new policy structure)
+const maxDistance = schedulingPolicies.find(p => p.title && p.title.includes('Max Distance'));
+const sameDay = schedulingPolicies.find(p => p.title && p.title.includes('Same Day Services'));
+const confirmations = schedulingPolicies.find(p => p.title && p.title.includes('Appointment confirmations'));
+const reservices = schedulingPolicies.find(p => p.title && p.title.includes('Reservices'));
+
+console.log('🔍 Found policies:', { maxDistance, sameDay, confirmations, reservices });
 
 // Update the quick reference display
-document.getElementById('defaultSchedulingTimes').textContent = 
-schedulingTimes ? (schedulingTimes.schedulingLayout ? 
-Object.entries(schedulingTimes.schedulingLayout).map(([type, time]) => `${type}: ${time}`).join(' | ') 
-: schedulingTimes.default) : 'Not specified';
+document.getElementById('defaultSchedulingTimes').textContent = 'Not specified';
 
 document.getElementById('maxDistance').textContent = 
-maxDistance ? maxDistance.default : 'Not specified';
+maxDistance ? (maxDistance.value || maxDistance.default || 'Not specified') : 'Not specified';
 
 document.getElementById('sameDayPolicy').textContent = 
-sameDay ? sameDay.default : 'Not specified';
+sameDay ? (sameDay.value || sameDay.default || 'Not specified') : 'Not specified';
 
 document.getElementById('confirmationPolicy').textContent = 
-confirmations ? confirmations.default : 'Not specified';
+confirmations ? (confirmations.value || confirmations.default || 'Not specified') : 'Not specified';
 
-// Update service policies
-document.getElementById('reservicesPolicy').textContent = 
-reservices ? reservices.default : 'Not specified';
+// Update service policies if elements exist
+const reservicesPolicyElement = document.getElementById('reservicesPolicy');
+if (reservicesPolicyElement) {
+reservicesPolicyElement.textContent = 
+reservices ? (reservices.value || reservices.default || 'Not specified') : 'Not specified';
+}
 
-// Set the specific Reservices settings (these are typically standard)
-document.getElementById('reservicesServiceType').textContent = 'Reservice';
-document.getElementById('reservicesSubscription').textContent = 'Stand-Alone Service (Billing: $0.00)';
+console.log('✅ Scheduling policies populated');
 }
 
 // Toggle reservice policies visibility
