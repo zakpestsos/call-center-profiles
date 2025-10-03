@@ -3681,6 +3681,9 @@ function checkZip() {
 const zip = document.getElementById('zipInput').value.trim();
 const resultDiv = document.getElementById('zipResult');
 
+console.log('🔍 Checking ZIP:', zip);
+console.log('📋 Available service areas:', clientData.serviceAreas);
+
 if (!/^\d{5}$/.test(zip)) {
 resultDiv.textContent = 'Please enter a valid 5-digit ZIP';
 resultDiv.style.color = '#ef4444';
@@ -3689,9 +3692,18 @@ return;
 
 // Check against loaded service areas if available
 if (clientData.serviceAreas && clientData.serviceAreas.length > 0) {
-const foundArea = clientData.serviceAreas.find(area => area.zip === zip);
+console.log('🔍 Searching for ZIP in service areas...');
+clientData.serviceAreas.forEach((area, index) => {
+  console.log(`Area ${index}:`, area);
+  console.log(`ZIP comparison: "${area.zip}" === "${zip}" ?`, area.zip === zip);
+  console.log(`ZIP comparison (string): "${area.zip?.toString()}" === "${zip}" ?`, area.zip?.toString() === zip);
+});
+
+const foundArea = clientData.serviceAreas.find(area => area.zip === zip || area.zip?.toString() === zip);
+console.log('🔍 Found area:', foundArea);
+
 if (foundArea) {
-resultDiv.textContent = `✓ ${foundArea.branch} - ${foundArea.city}, ${foundArea.state}`;
+resultDiv.textContent = `✓ ${foundArea.branch || foundArea.city} - ${foundArea.city}, ${foundArea.state}`;
 resultDiv.style.color = foundArea.inService ? '#10b981' : '#ef4444';
 } else {
 resultDiv.textContent = '✗ Not in service area';

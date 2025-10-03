@@ -3100,20 +3100,39 @@ function getServiceAreasData(sheet, profileId) {
   const data = areaSheet.getDataRange().getValues();
   const serviceAreas = [];
 
+  console.log('🔍 Service Areas sheet data for profile:', profileId);
+  console.log('📋 Service Areas headers:', data[0]);
+
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    if (row[0] === profileId && row[6] === 'TRUE') { // Only include areas with In_Service = TRUE
-      serviceAreas.push({
-        zip: row[1],           // Zip_Code
-        city: row[2],          // City
-        state: row[3],         // State
-        branch: row[4],        // Branch
-        territory: row[5],     // Territory
-        inService: true        // In_Service (convert TRUE to boolean)
-      });
+    console.log(`📊 Row ${i}:`, row);
+    
+    if (row[0] === profileId) {
+      console.log('✅ Found service area row for profile:', profileId);
+      
+      // Check different possible positions for In_Service flag
+      const inService = row[6] === 'TRUE' || row[6] === true || row[6] === 'true' || 
+                       row[7] === 'TRUE' || row[7] === true || row[7] === 'true';
+      
+      console.log('🔍 In_Service check:', { column6: row[6], column7: row[7], inService });
+      
+      if (inService) {
+        const serviceArea = {
+          zip: row[1]?.toString(),     // Zip_Code
+          city: row[2] || row[4],      // City (try both columns)
+          state: row[3],               // State
+          branch: row[4] || row[2],    // Branch (try both columns)
+          territory: row[5],           // Territory
+          inService: true
+        };
+        
+        console.log('✅ Adding service area:', serviceArea);
+        serviceAreas.push(serviceArea);
+      }
     }
   }
 
+  console.log('📋 Final service areas for profile:', serviceAreas);
   return serviceAreas;
 }
 
