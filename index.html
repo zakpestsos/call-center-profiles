@@ -434,6 +434,16 @@ font-weight: 500;
             line-height: 1.4;
         }
 
+        #defaultSchedulingTimes {
+            text-align: left !important;
+            line-height: 1.6;
+        }
+
+        #defaultSchedulingTimes strong {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
 .calculator-title {
 font-family: 'Rajdhani', sans-serif;
 font-weight: 600;
@@ -3288,9 +3298,22 @@ const reservices = schedulingPolicies.find(p => p.title && p.title.includes('Res
 
 console.log('🔍 Found policies:', { schedulingTimes, maxDistance, sameDay, confirmations, reservices });
 
-// Update the quick reference display
-document.getElementById('defaultSchedulingTimes').textContent = 
-schedulingTimes ? (schedulingTimes.value || schedulingTimes.default || 'Not specified') : 'Not specified';
+// Update the quick reference display with proper formatting
+const schedulingTimesElement = document.getElementById('defaultSchedulingTimes');
+if (schedulingTimes && (schedulingTimes.value || schedulingTimes.default)) {
+  const schedulingText = schedulingTimes.value || schedulingTimes.default;
+  
+  // Format the scheduling times with proper line breaks and bold labels
+  const formattedText = schedulingText
+    .replace(/Inspection:/g, '<br><strong>Inspection:</strong>')
+    .replace(/Initial\/Interior:/g, '<br><strong>Initial/Interior:</strong>')
+    .replace(/Regular:/g, '<br><strong>Regular:</strong>')
+    .replace(/^\s*<br>/, ''); // Remove leading line break
+  
+  schedulingTimesElement.innerHTML = formattedText;
+} else {
+  schedulingTimesElement.textContent = 'Not specified';
+}
 
 document.getElementById('maxDistance').textContent = 
 maxDistance ? (maxDistance.value || maxDistance.default || 'Not specified') : 'Not specified';
