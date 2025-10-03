@@ -26,7 +26,7 @@ function doGet(e) {
       const result = getProfileDataAPI(profileId);
       
       if (callback) {
-        return ContentService
+      return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(result)});`)
           .setMimeType(ContentService.MimeType.JAVASCRIPT);
       }
@@ -47,7 +47,7 @@ function doGet(e) {
       
       // Handle JSONP callback
       if (callback) {
-      return ContentService
+        return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(profileData)});`)
           .setMimeType(ContentService.MimeType.JAVASCRIPT);
       }
@@ -62,17 +62,17 @@ function doGet(e) {
 
     if (sheetId) {
       // Handle legacy sheetId requests
-      const data = getClientDataFromSheet(sheetId);
-      
-      if (callback) {
-        return ContentService
-          .createTextOutput(`${callback}(${JSON.stringify(data)});`)
-          .setMimeType(ContentService.MimeType.JAVASCRIPT);
-      }
-      
+    const data = getClientDataFromSheet(sheetId);
+
+    if (callback) {
       return ContentService
-        .createTextOutput(JSON.stringify(data))
-        .setMimeType(ContentService.MimeType.JSON);
+        .createTextOutput(`${callback}(${JSON.stringify(data)});`)
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify(data))
+      .setMimeType(ContentService.MimeType.JSON);
     }
 
     // Default: serve the intake form when no parameters are provided
@@ -3635,14 +3635,17 @@ function formatPoliciesForDisplay(policies) {
     const categoryPolicies = policies[category];
     if (Array.isArray(categoryPolicies)) {
       categoryPolicies.forEach(policy => {
-        if (policy.default && policy.default.trim() !== '') {
+        // Use policy.default as the value (this is where the actual data is stored)
+        const policyValue = policy.default || policy.value || '';
+        if (policyValue && policyValue.trim() !== '') {
           formatted.push({
             category: category,
             title: policy.title,
-            value: policy.default,
+            value: policyValue,  // Frontend expects 'value' property
             description: policy.description,
             type: policy.type,
-            options: policy.options
+            options: policy.options,
+            default: policyValue  // Also include as 'default' for compatibility
           });
         }
       });

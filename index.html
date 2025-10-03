@@ -2243,20 +2243,26 @@ async function loadProfileData() {
         console.log('🔗 URL:', apiUrl);
         console.log('🔍 Looking for Profile ID:', profileId);
 
-        const response = await fetch(`${apiUrl}?profileId=${encodeURIComponent(profileId)}`);
+        const response = await fetch(`${apiUrl}?action=getProfile&profileId=${encodeURIComponent(profileId)}`);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
-        console.log('✅ Data received from Apps Script:', data);
+        const result = await response.json();
+        console.log('✅ API response received:', result);
 
-        if (data.error) {
-            throw new Error(data.error);
+        if (result.error) {
+            throw new Error(result.error);
         }
 
-        clientData = data;
+        if (result.success && result.data) {
+            clientData = result.data;
+            console.log('✅ Profile data loaded:', clientData);
+            console.log('📋 Policy data:', clientData.policies);
+        } else {
+            throw new Error('Invalid API response format');
+        }
         populateClientData();
         updateCurrentTime();
         setInterval(updateCurrentTime, 60000);
@@ -3400,7 +3406,7 @@ ${Object.entries(policy.schedulingLayout).map(([serviceType, hours]) =>
 <div class="policy-details">
 <div class="policy-detail">
 <div class="policy-detail-label">${getAgentLabel(policy.type)}</div>
-<div class="policy-detail-value">${policy.default || 'Not specified'}</div>
+<div class="policy-detail-value">${policy.value || policy.default || 'Not specified'}</div>
 </div>
 </div>
 `}
@@ -3459,7 +3465,7 @@ const labels = {
 'environmental': 'Product Safety Standards',
 'satisfaction': 'Issue Reporting Window'
 };
-return labels[policyType] || 'Policy Information';
+return labels[policyType] || '';
 }
 
 // Populate service areas grid
