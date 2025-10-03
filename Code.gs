@@ -3442,6 +3442,19 @@ function convertFormDataToPolicyEntries(profileId, formData) {
   }
   
   // Scheduling Policies (agent-familiar format)
+  if (formData.schedulingPolicyTimes) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: formData.schedulingPolicyTimes, // Use the full scheduling times as the title
+      description: 'Available scheduling times',
+      options: [],
+      value: formData.schedulingPolicyTimes,
+      sortOrder: sortOrder++
+    });
+  }
+  
   if (formData.appointmentConfirmations || formData.appointmentConfirmationsCustom) {
     policyEntries.push({
       profileId: profileId,
@@ -3451,6 +3464,19 @@ function convertFormDataToPolicyEntries(profileId, formData) {
       description: 'Appointment confirmation policy',
       options: ['Yes', 'No'],
       value: formData.appointmentConfirmations || formData.appointmentConfirmationsCustom,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (formData.maxDistance) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: 'Max Distance',
+      description: 'Maximum service distance',
+      options: [],
+      value: formData.maxDistance,
       sortOrder: sortOrder++
     });
   }

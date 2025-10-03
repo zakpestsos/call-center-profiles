@@ -3280,15 +3280,17 @@ const schedulingPolicies = policies['Scheduling'] || [];
 console.log('📋 Scheduling policies found:', schedulingPolicies);
 
 // Find specific policies by title (matching our new policy structure)
+const schedulingTimes = schedulingPolicies.find(p => p.title && (p.title.includes('Inspection:') || p.title.includes('Initial/Interior:') || p.title.includes('Regular:')));
 const maxDistance = schedulingPolicies.find(p => p.title && p.title.includes('Max Distance'));
 const sameDay = schedulingPolicies.find(p => p.title && p.title.includes('Same Day Services'));
 const confirmations = schedulingPolicies.find(p => p.title && p.title.includes('Appointment confirmations'));
 const reservices = schedulingPolicies.find(p => p.title && p.title.includes('Reservices'));
 
-console.log('🔍 Found policies:', { maxDistance, sameDay, confirmations, reservices });
+console.log('🔍 Found policies:', { schedulingTimes, maxDistance, sameDay, confirmations, reservices });
 
 // Update the quick reference display
-document.getElementById('defaultSchedulingTimes').textContent = 'Not specified';
+document.getElementById('defaultSchedulingTimes').textContent = 
+schedulingTimes ? (schedulingTimes.value || schedulingTimes.default || 'Not specified') : 'Not specified';
 
 document.getElementById('maxDistance').textContent = 
 maxDistance ? (maxDistance.value || maxDistance.default || 'Not specified') : 'Not specified';
