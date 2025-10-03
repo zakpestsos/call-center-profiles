@@ -387,11 +387,23 @@ font-weight: 500;
 
         .pricing-info-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
+            flex-direction: column;
+            padding: 0.75rem;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 6px;
+        }
+
+        .pricing-info-item > div:first-child {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .pricing-info-description {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            font-style: italic;
         }
 
         .pricing-info-label {
@@ -3117,24 +3129,32 @@ ${service.agentNote ? `
 <!-- Service Information for Pricing -->
 <div class="pricing-info-grid">
 <div class="pricing-info-item">
+<div>
 <div class="pricing-info-label">Product Type:</div>
 <div class="pricing-info-value">${service.productType || 'N/A'}</div>
 </div>
+<div class="pricing-info-description">Generic baseline service category</div>
+</div>
 <div class="pricing-info-item">
+<div>
 <div class="pricing-info-label">Sold-As Name:</div>
 <div class="pricing-info-value">${service.name || 'N/A'}</div>
 </div>
+<div class="pricing-info-description">What agents call this service</div>
+</div>
 <div class="pricing-info-item">
+<div>
 <div class="pricing-info-label">Service Frequency:</div>
 <div class="pricing-info-value">${service.serviceFrequencyCustom || service.frequency || 'N/A'}</div>
 </div>
+<div class="pricing-info-description">How often technician visits</div>
+</div>
 <div class="pricing-info-item">
+<div>
 <div class="pricing-info-label">Billing Frequency:</div>
 <div class="pricing-info-value">${service.billingFrequencyCustom || service.billingFrequency || 'N/A'}</div>
 </div>
-<div class="pricing-info-item">
-<div class="pricing-info-label">Service Type:</div>
-<div class="pricing-info-value">${service.typeCustom || service.serviceType || 'N/A'}</div>
+<div class="pricing-info-description">When customer pays</div>
 </div>
 </div>
 
