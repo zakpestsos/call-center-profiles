@@ -29,42 +29,30 @@ async function loadProfileData() {
     // Show loading state
     showLoading(true);
     
-    // Fetch CSV data from Google Sheets
-    console.log('📊 Fetching data from Google Sheets...');
-    const response = await fetch(GOOGLE_SHEETS_CSV_URL);
+    // Use the Apps Script API endpoint to get complete profile data including policies
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec';
+    const fullApiUrl = `${apiUrl}?action=getProfile&profileId=${encodeURIComponent(profileId)}`;
+    
+    console.log('📊 Fetching complete profile data from Apps Script API...');
+    console.log('🔗 API URL:', fullApiUrl);
+    
+    const response = await fetch(fullApiUrl);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const csvText = await response.text();
-    console.log('✅ CSV data received');
+    const result = await response.json();
+    console.log('✅ API response received:', result);
     
-    // Parse CSV data
-    const rows = csvText.split('\n').filter(row => row.trim());
-    if (rows.length < 2) {
-      throw new Error('No profile data found in sheet');
-    }
-    
-    const headers = parseCSVRow(rows[0]);
-    console.log('📋 Headers:', headers);
-    
-    // Find matching profile
-    let profileFound = false;
-    for (let i = 1; i < rows.length; i++) {
-      const data = parseCSVRow(rows[i]);
+    if (result.success && result.data) {
+      console.log('✅ Profile data loaded successfully');
+      console.log('📋 Policy data:', result.data.policies);
       
-      // Check if this row matches our profile ID (first column)
-      if (data[0] && data[0].toString().trim() === profileId.toString().trim()) {
-        console.log('✅ Profile found!');
-        populateProfile(headers, data);
-        profileFound = true;
-        break;
-      }
-    }
-    
-    if (!profileFound) {
-      showError(`Profile ID "${profileId}" not found`);
+      // Populate the page with the complete profile data
+      populateProfileFromAPI(result.data);
+    } else {
+      throw new Error(result.error || 'Profile not found');
     }
     
   } catch (error) {
@@ -101,7 +89,38 @@ function parseCSVRow(row) {
 }
 
 /**
- * Populate profile information on the page
+ * Populate profile data from API response
+ */
+function populateProfileFromAPI(profileData) {
+  console.log('👤 Populating profile data from API...');
+  console.log('👤 Profile data:', profileData);
+  
+  // Update basic profile information
+  updateElement('companyName', profileData.companyName || '');
+  updateElement('location', profileData.location || '');
+  updateElement('phone', profileData.officeInfo?.phone || '');
+  updateElement('email', profileData.officeInfo?.email || '');
+  updateElement('website', profileData.officeInfo?.website || '');
+  updateElement('address', profileData.officeInfo?.physicalAddress || '');
+  updateElement('hours', profileData.officeInfo?.officeHours || '');
+  updateElement('bulletin', profileData.bulletin || '');
+  updateElement('pestsNotCovered', profileData.pestsNotCovered || '');
+  updateElement('fieldRoutesLink', profileData.officeInfo?.fieldRoutesLink || '');
+  
+  // Update page title
+  document.title = `${profileData.companyName || 'Profile'} - Call Center Profile`;
+  
+  // Display organized policy information
+  displayPolicyInformationFromAPI(profileData.policies || []);
+  
+  // Show success
+  showSuccess('Profile loaded successfully!');
+  
+  console.log('✅ Profile populated from API');
+}
+
+/**
+ * Populate profile information on the page (legacy CSV method)
  */
 function populateProfile(headers, data) {
   console.log('📝 Populating profile data...');
@@ -155,7 +174,75 @@ function populateProfile(headers, data) {
 }
 
 /**
- * Display organized policy information
+ * Display organized policy information from API data
+ */
+function displayPolicyInformationFromAPI(policies) {
+  console.log('📋 Displaying policy information from API...');
+  console.log('📋 Policies data:', policies);
+  
+  const policyContainer = document.getElementById('policyInformation');
+  if (!policyContainer) {
+    console.warn('⚠️ Policy container not found');
+    return;
+  }
+  
+  if (!policies || policies.length === 0) {
+    policyContainer.innerHTML = '<div class="policy-section"><h4>No Policy Information</h4><p>No policy data available for this profile.</p></div>';
+    return;
+  }
+  
+  // Group policies by category
+  const groupedPolicies = {};
+  policies.forEach(policy => {
+    const category = policy.category || 'General';
+    if (!groupedPolicies[category]) {
+      groupedPolicies[category] = [];
+    }
+    groupedPolicies[category].push(policy);
+  });
+  
+  let policyHTML = '<div class="policy-sections">';
+  
+  // Display each category
+  Object.entries(groupedPolicies).forEach(([category, categoryPolicies]) => {
+    policyHTML += `<div class="policy-section">`;
+    policyHTML += `<h4>${category}</h4>`;
+    policyHTML += `<div class="policy-items">`;
+    
+    categoryPolicies.forEach(policy => {
+      if (policy.value && policy.value.trim() !== '') {
+        policyHTML += `
+          <div class="policy-item">
+            <strong>${policy.title}:</strong> ${policy.value}
+            ${policy.description ? `<div class="policy-description">${policy.description}</div>` : ''}
+          </div>
+        `;
+      }
+    });
+    
+    policyHTML += `</div></div>`;
+  });
+  
+  policyHTML += '</div>';
+  
+  // Add styling
+  policyHTML += `
+    <style>
+      .policy-sections { margin-top: 20px; }
+      .policy-section { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #f8f9fa; }
+      .policy-section h4 { margin: 0 0 15px 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+      .policy-item { margin-bottom: 12px; padding: 8px; background: white; border-radius: 4px; border-left: 3px solid #007bff; }
+      .policy-item strong { color: #007bff; }
+      .policy-description { font-size: 0.9em; color: #666; margin-top: 4px; font-style: italic; }
+    </style>
+  `;
+  
+  policyContainer.innerHTML = policyHTML;
+  console.log('✅ Policy information displayed from API');
+}
+
+/**
+ * Display organized policy information (legacy CSV method)
  */
 function displayPolicyInformation(profile) {
   // Create organized policy display
