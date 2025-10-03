@@ -16,10 +16,32 @@ function doGet(e) {
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
     
-    // Check if requesting data by profileId
+    // Check for API action requests
+    const action = e.parameter.action;
     const profileId = e.parameter.profileId;
     const callback = e.parameter.callback;
     
+    if (action === 'getProfile' && profileId) {
+      // Use the enhanced API function that formats policies correctly
+      const result = getProfileDataAPI(profileId);
+      
+      if (callback) {
+        return ContentService
+          .createTextOutput(`${callback}(${JSON.stringify(result)});`)
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      
+      return ContentService
+        .createTextOutput(JSON.stringify(result))
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeaders({
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        });
+    }
+    
+    // Check if requesting data by profileId (legacy support)
     if (profileId) {
       const profileData = getProfileDataById(profileId);
       
@@ -3388,6 +3410,201 @@ function getPoliciesData(sheet, profileId) {
   }
 
   return policiesGrouped;
+}
+
+/**
+ * Web API endpoint for real-time data retrieval
+ * This handles requests from the production web app
+ */
+function getProfileDataAPI(profileId) {
+  try {
+    if (!profileId) {
+      throw new Error('Profile ID is required');
+    }
+    
+    const profileData = getProfileFromMasterSheet(profileId);
+    
+    // Convert to format expected by production web app
+    const webAppData = {
+      companyName: profileData.Company_Name,
+      location: profileData.Location,
+      timezone: profileData.Timezone,
+      officeInfo: {
+        phone: profileData.Phone,
+        email: profileData.Email,
+        website: profileData.Website,
+        physicalAddress: profileData.Address,
+        officeHours: profileData.Hours,
+        fieldRoutesLink: profileData.FieldRoutes_Link || profileData.Website
+      },
+      bulletin: profileData.Bulletin,
+      pestsNotCovered: profileData.Pests_Not_Covered,
+      services: profileData.services || [],
+      technicians: profileData.technicians || [],
+      policies: formatPoliciesForDisplay(profileData.policies || {}),
+      serviceAreas: profileData.serviceAreas || []
+    };
+    
+    return {
+      success: true,
+      data: webAppData
+    };
+    
+  } catch (error) {
+    Logger.log('Error in getProfileDataAPI: ' + error.toString());
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Formats policy data for display in the web app
+ * Returns a flat array that the frontend organizePolicies function can handle
+ */
+function formatPoliciesForDisplay(policies) {
+  const formatted = [];
+  
+  // Format Service Coverage policies
+  if (policies.serviceCoverage) {
+    const coverage = policies.serviceCoverage;
+    if (coverage.treatVehicles) {
+      formatted.push({
+        category: 'Service Coverage',
+        title: 'Vehicle Treatment',
+        value: coverage.treatVehicles,
+        description: 'Do we treat vehicles?'
+      });
+    }
+    if (coverage.commercialProperties) {
+      formatted.push({
+        category: 'Service Coverage',
+        title: 'Commercial Properties',
+        value: coverage.commercialProperties,
+        description: 'Commercial property service policy'
+      });
+    }
+    if (coverage.multiFamilyOffered) {
+      formatted.push({
+        category: 'Service Coverage',
+        title: 'Multi-Family Properties',
+        value: coverage.multiFamilyOffered,
+        description: 'Multi-family property service policy'
+      });
+    }
+    if (coverage.trailersOffered) {
+      formatted.push({
+        category: 'Service Coverage',
+        title: 'Trailers/Mobile Homes',
+        value: coverage.trailersOffered,
+        description: 'Trailer and mobile home service policy'
+      });
+    }
+  }
+  
+  // Format Scheduling policies
+  if (policies.scheduling) {
+    const sched = policies.scheduling;
+    if (sched.signedContract) {
+      formatted.push({
+        category: 'Scheduling & Operations',
+        title: 'Contract Required',
+        value: sched.signedContract,
+        description: 'Signed contract requirement policy'
+      });
+    }
+    if (sched.appointmentConfirmations) {
+      formatted.push({
+        category: 'Scheduling & Operations',
+        title: 'Appointment Confirmations',
+        value: sched.appointmentConfirmations,
+        description: 'Appointment confirmation policy'
+      });
+    }
+    if (sched.sameDayServices) {
+      formatted.push({
+        category: 'Scheduling & Operations',
+        title: 'Same Day Services',
+        value: sched.sameDayServices,
+        description: 'Same day service availability'
+      });
+    }
+    if (sched.afterHoursEmergency) {
+      formatted.push({
+        category: 'Scheduling & Operations',
+        title: 'After Hours Emergency',
+        value: sched.afterHoursEmergency,
+        description: 'Emergency service availability'
+      });
+    }
+  }
+  
+  // Format Service Operations policies
+  if (policies.serviceOperations) {
+    const ops = policies.serviceOperations;
+    if (ops.reservices) {
+      formatted.push({
+        category: 'Service Operations',
+        title: 'Reservices',
+        value: ops.reservices,
+        description: 'Reservice policy and requirements'
+      });
+    }
+    if (ops.setServiceTypeTo) {
+      formatted.push({
+        category: 'Service Operations',
+        title: 'Service Type Setting',
+        value: ops.setServiceTypeTo,
+        description: 'Default service type configuration'
+      });
+    }
+    if (ops.toolsToSave) {
+      formatted.push({
+        category: 'Service Operations',
+        title: 'Tools to Save',
+        value: ops.toolsToSave,
+        description: 'Required tools and equipment'
+      });
+    }
+  }
+  
+  // Format Payment policies
+  if (policies.payment) {
+    const pay = policies.payment;
+    if (pay.paymentTypes) {
+      formatted.push({
+        category: 'Payment & Financial',
+        title: 'Payment Types',
+        value: pay.paymentTypes,
+        description: 'Accepted payment methods'
+      });
+    }
+    if (pay.pastDuePeriod) {
+      formatted.push({
+        category: 'Payment & Financial',
+        title: 'Past Due Period',
+        value: pay.pastDuePeriod,
+        description: 'Past due account handling policy'
+      });
+    }
+  }
+  
+  // Format Legacy policies
+  if (policies.legacy) {
+    Object.keys(policies.legacy).forEach(category => {
+      policies.legacy[category].forEach(policy => {
+        formatted.push({
+          category: category,
+          title: policy.title,
+          value: policy.default || policy.description,
+          description: policy.description
+        });
+      });
+    });
+  }
+  
+  return formatted;
 }
 
 /**
