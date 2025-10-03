@@ -16,33 +16,16 @@ function doGet(e) {
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
     
-    // Check for API action requests
-    const action = e.parameter.action;
+    // Check if requesting data by profileId
     const profileId = e.parameter.profileId;
     const callback = e.parameter.callback;
     
-    if (action === 'getProfile' && profileId) {
-      // Use the enhanced API function that formats policies correctly
-      const result = getProfileDataAPI(profileId);
-      
-      if (callback) {
-      return ContentService
-          .createTextOutput(`${callback}(${JSON.stringify(result)});`)
-          .setMimeType(ContentService.MimeType.JAVASCRIPT);
-      }
-      
-      return ContentService
-        .createTextOutput(JSON.stringify(result))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    
-    // Check if requesting data by profileId (legacy support)
     if (profileId) {
       const profileData = getProfileDataById(profileId);
       
       // Handle JSONP callback
       if (callback) {
-        return ContentService
+      return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(profileData)});`)
           .setMimeType(ContentService.MimeType.JAVASCRIPT);
       }
@@ -3562,7 +3545,8 @@ function getPoliciesData(sheet, profileId) {
         title: data[i][3],          // Policy_Title
         description: data[i][4],    // Policy_Description
         options: data[i][5],        // Policy_Options
-        defaultValue: data[i][6]    // Default_Value
+        default: data[i][6],        // Default_Value (using 'default' key for display compatibility)
+        value: data[i][6]           // Also set as 'value' for compatibility
       });
     }
   }
