@@ -2957,10 +2957,13 @@ function getServicesData(sheet, profileId) {
   const data = servicesSheet.getDataRange().getValues();
   const services = [];
 
-  // Expected columns based on your sheet:
+  // Expected columns based on your expanded sheet:
   // Profile_ID(0), Service_Name(1), Service_Type(2), Frequency(3), Description(4), 
   // Pests_Covered(5), Contract(6), Guarantee(7), Duration(8), Product_Type(9), 
-  // Billing_Frequency(10), Agent_Note(11), Queue_Ext(12), Pricing_Data(13)
+  // Billing_Frequency(10), Agent_Note(11), Queue_Ext(12), Pricing_Data(13),
+  // Call_Ahead(14), Leave_During_Service(15), Follow_Up(16), Prep_Sheet(17), Recurring_Duration(18),
+  // Service_Frequency_Custom(19), Billing_Frequency_Custom(20), Category_Custom(21), Type_Custom(22),
+  // Call_Ahead_Custom(23), Leave_During_Service_Custom(24), Prep_Sheet_Custom(25)
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
@@ -2973,12 +2976,25 @@ function getServicesData(sheet, profileId) {
         pests: row[5],             // Pests_Covered
         contract: row[6],          // Contract
         guarantee: row[7],         // Guarantee
-        duration: row[8],          // Duration
+        duration: row[8],          // Duration (Initial Duration)
         productType: row[9],       // Product_Type
         billingFrequency: row[10], // Billing_Frequency
         agentNote: row[11],        // Agent_Note
         queueExt: row[12],         // Queue_Ext
-        pricingTiers: JSON.parse(row[13] || '[]') // Pricing_Data
+        pricingTiers: JSON.parse(row[13] || '[]'), // Pricing_Data
+        // New service fields
+        callAhead: row[14],        // Call_Ahead
+        leaveDuringService: row[15], // Leave_During_Service
+        followUp: row[16],         // Follow_Up
+        prepSheet: row[17],        // Prep_Sheet
+        recurringDuration: row[18], // Recurring_Duration
+        serviceFrequencyCustom: row[19], // Service_Frequency_Custom
+        billingFrequencyCustom: row[20], // Billing_Frequency_Custom
+        categoryCustom: row[21],   // Category_Custom
+        typeCustom: row[22],       // Type_Custom
+        callAheadCustom: row[23],  // Call_Ahead_Custom
+        leaveDuringServiceCustom: row[24], // Leave_During_Service_Custom
+        prepSheetCustom: row[25]   // Prep_Sheet_Custom
       });
     }
   }
