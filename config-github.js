@@ -2,7 +2,7 @@
 const CONFIG = {
   GOOGLE_SHEETS: {
     MASTER_SHEET_ID: '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec', // Your Master Client Profiles Sheet
-    WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbzlC8SvtajdXYzHqkvsqcW-u8Dwgv23YQNAznkADYLMAG8mzQv_EfH847mCH6D5oiu_OQ/exec' // Debug deployment with comprehensive logging
+    WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec' // Reverting to working deployment while fixing CORS
   },
   GITHUB: {
     REPO_URL: 'https://zakpestsos.github.io/call-center-profiles/',
