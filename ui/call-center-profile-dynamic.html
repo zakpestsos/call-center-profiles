@@ -1756,6 +1756,16 @@
                 }
             });
             
+            // Handle input changes for real-time search clearing
+            document.getElementById('pestSearch').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (searchTerm) {
+                    searchPests();
+                } else {
+                    clearSearch();
+                }
+            });
+            
             // Handle enter key for pricing calculators (delegated event handling)
             document.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' && e.target.classList.contains('sqft-input')) {

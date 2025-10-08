@@ -1316,6 +1316,16 @@
                     searchPests();
                 }
             });
+            
+            // Handle input changes for real-time search clearing
+            document.getElementById('pestSearch').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (searchTerm) {
+                    searchPests();
+                } else {
+                    clearSearch();
+                }
+            });
         });
 
         // Update populateBulletin function

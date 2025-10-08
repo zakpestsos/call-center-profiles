@@ -1225,6 +1225,16 @@ class GitHubProfileViewer {
             }
         });
 
+        // Real-time search on input changes
+        document.getElementById('pestSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            if (searchTerm) {
+                this.searchPests();
+            } else {
+                this.clearSearch();
+            }
+        });
+
         // Modal close on outside click
         window.onclick = (event) => {
             const modal = document.getElementById('officeModal');
@@ -3045,6 +3055,16 @@ document.addEventListener('keypress', function(e) {
         document.getElementById('pestSearch').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.searchPests();
+            }
+        });
+
+        // Real-time search on input changes
+        document.getElementById('pestSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            if (searchTerm) {
+                this.searchPests();
+            } else {
+                this.clearSearch();
             }
         });
 
