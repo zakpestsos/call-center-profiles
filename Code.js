@@ -2759,7 +2759,7 @@ function createClientProfileInMasterSheet(data) {
     }
 
     // Generate Edit Form URL
-    const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${data.profileId}&edit=true`;
+    const editFormUrl = `https://script.google.com/macros/s/AKfycbxtNf2wxZ8Nzno6IyJczpqvkM3RpuyZcnZCJ-xn8edtcC-jx_rGuzMn1DAqsbLAzDb2-Q/exec?form=intake&profileId=${data.profileId}&edit=true`;
     
     // Prepare data for insertion (matching expanded Master Client Profiles sheet structure)
     const profileRow = [
@@ -3200,7 +3200,7 @@ function initializeProfileStructure(profileId, driveUrl) {
     const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
     
     // Generate Edit Form URL
-    const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${profileId}&edit=true`;
+    const editFormUrl = `https://script.google.com/macros/s/AKfycbxtNf2wxZ8Nzno6IyJczpqvkM3RpuyZcnZCJ-xn8edtcC-jx_rGuzMn1DAqsbLAzDb2-Q/exec?form=intake&profileId=${profileId}&edit=true`;
     
     // 1. Pre-create Client_Profiles row
     let clientSheet = sheet.getSheetByName('Client_Profiles');
@@ -3311,7 +3311,7 @@ function updateClientProfileRow(sheet, profileId, formData) {
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === profileId) {
       // Update the row with form data
-      const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${profileId}&edit=true`;
+      const editFormUrl = `https://script.google.com/macros/s/AKfycbxtNf2wxZ8Nzno6IyJczpqvkM3RpuyZcnZCJ-xn8edtcC-jx_rGuzMn1DAqsbLAzDb2-Q/exec?form=intake&profileId=${profileId}&edit=true`;
       
       const updatedRow = [
         profileId,                                    // A - Profile_ID

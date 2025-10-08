@@ -30,7 +30,7 @@ async function loadProfileData() {
     showLoading(true);
     
     // Use the Apps Script API endpoint to get complete profile data including policies
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec';
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbxtNf2wxZ8Nzno6IyJczpqvkM3RpuyZcnZCJ-xn8edtcC-jx_rGuzMn1DAqsbLAzDb2-Q/exec';
     const fullApiUrl = `${apiUrl}?action=getProfile&profileId=${encodeURIComponent(profileId)}`;
     
     console.log('📊 Fetching complete profile data from Apps Script API...');
