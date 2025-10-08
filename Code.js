@@ -21,19 +21,30 @@ function doGet(e) {
     const callback = e.parameter.callback;
     
     if (profileId) {
+      console.log('🚀 doGet: Calling getProfileDataAPI with profileId:', profileId);
       const apiResponse = getProfileDataAPI(profileId);
+      console.log('🚀 doGet: API Response success:', apiResponse.success);
+      console.log('🚀 doGet: API Response keys:', Object.keys(apiResponse.success ? apiResponse.data : {}));
       const profileData = apiResponse.success ? apiResponse.data : {error: apiResponse.error};
+      console.log('🚀 doGet: Final profileData keys:', Object.keys(profileData));
+      console.log('🚀 doGet: fieldRoutesButton in final data:', !!profileData.fieldRoutesButton);
       
       // Handle JSONP callback
       if (callback) {
       return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(profileData)});`)
-          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+          .setMimeType(ContentService.MimeType.JAVASCRIPT)
+          .setHeader('Access-Control-Allow-Origin', '*')
+          .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+          .setHeader('Access-Control-Allow-Headers', 'Content-Type');
       }
       
       return ContentService
         .createTextOutput(JSON.stringify(profileData))
-        .setMimeType(ContentService.MimeType.JSON);
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeader('Access-Control-Allow-Origin', '*')
+        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
     }
 
     // Legacy support for sheetId-based requests
@@ -3796,3 +3807,40 @@ function testGetData() {
     console.error('Test failed:', error);
   }
 }
+
+ 
+ / /   T e s t   t h e   F i e l d R o u t e s   f u n c t i o n a l i t y   d i r e c t l y 
+ f u n c t i o n   t e s t F i e l d R o u t e s B u t t o n ( )   { 
+     t r y   { 
+         c o n s o l e . l o g ( ' = = =   T E S T I N G   F I E L D R O U T E S   B U T T O N   = = = ' ) ; 
+         c o n s t   p r o f i l e I d   =   ' p r o f i l e _ 1 7 5 9 7 6 9 3 1 8 _ i u x 6 6 j g m ' ; 
+         c o n s o l e . l o g ( ' T e s t i n g   w i t h   P r o f i l e   I D : ' ,   p r o f i l e I d ) ; 
+         
+         / /   T e s t   g e t P r o f i l e D a t a B y I d   d i r e c t l y 
+         c o n s o l e . l o g ( ' - - -   T e s t i n g   g e t P r o f i l e D a t a B y I d   - - - ' ) ; 
+         c o n s t   r a w P r o f i l e D a t a   =   g e t P r o f i l e D a t a B y I d ( p r o f i l e I d ) ; 
+         c o n s o l e . l o g ( ' R a w   p r o f i l e   d a t a   k e y s : ' ,   O b j e c t . k e y s ( r a w P r o f i l e D a t a ) ) ; 
+         c o n s o l e . l o g ( ' F i e l d R o u t e s _ B u t t o n _ T e x t : ' ,   r a w P r o f i l e D a t a . F i e l d R o u t e s _ B u t t o n _ T e x t ) ; 
+         c o n s o l e . l o g ( ' F i e l d R o u t e s _ L i n k : ' ,   r a w P r o f i l e D a t a . F i e l d R o u t e s _ L i n k ) ; 
+         
+         / /   T e s t   g e t P r o f i l e D a t a A P I 
+         c o n s o l e . l o g ( ' - - -   T e s t i n g   g e t P r o f i l e D a t a A P I   - - - ' ) ; 
+         c o n s t   a p i R e s p o n s e   =   g e t P r o f i l e D a t a A P I ( p r o f i l e I d ) ; 
+         c o n s o l e . l o g ( ' A P I   R e s p o n s e   s u c c e s s : ' ,   a p i R e s p o n s e . s u c c e s s ) ; 
+         i f   ( a p i R e s p o n s e . s u c c e s s )   { 
+             c o n s o l e . l o g ( ' A P I   d a t a   k e y s : ' ,   O b j e c t . k e y s ( a p i R e s p o n s e . d a t a ) ) ; 
+             c o n s o l e . l o g ( ' f i e l d R o u t e s B u t t o n : ' ,   a p i R e s p o n s e . d a t a . f i e l d R o u t e s B u t t o n ) ; 
+         }   e l s e   { 
+             c o n s o l e . l o g ( ' A P I   E r r o r : ' ,   a p i R e s p o n s e . e r r o r ) ; 
+         } 
+         
+         c o n s o l e . l o g ( ' = = =   T E S T   C O M P L E T E   = = = ' ) ; 
+         r e t u r n   ' T e s t   c o m p l e t e d   -   c h e c k   l o g s ' ; 
+         
+     }   c a t c h   ( e r r o r )   { 
+         c o n s o l e . e r r o r ( ' T e s t   f a i l e d : ' ,   e r r o r ) ; 
+         r e t u r n   ' T e s t   f a i l e d :   '   +   e r r o r . t o S t r i n g ( ) ; 
+     } 
+ } 
+ 
+ 
