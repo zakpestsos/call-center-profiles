@@ -235,20 +235,7 @@ function createMasterPoliciesTab(spreadsheet) {
   
   const headers = [
     'Profile_ID', 'Policy_Category', 'Policy_Type', 'Policy_Title', 
-    'Policy_Description', 'Policy_Options', 'Default_Value', 'Sort_Order',
-    // Service Coverage Fields
-    'Treat_Vehicles', 'Commercial_Properties', 'Multi_Family_Offered', 'Trailers_Offered',
-    // Scheduling & Operations Fields  
-    'Signed_Contract', 'Returning_Customers', 'Appointment_Confirmations', 'Call_Ahead',
-    'Max_Distance', 'Scheduling_Policy_Times', 'Same_Day_Services', 'Tech_Skilling', 'After_Hours_Emergency',
-    // Service Policies Fields
-    'Reservices', 'Set_Service_Type_To', 'Set_Subscription_Type_To',
-    // Payment & Financial Fields
-    'Payment_Plans', 'Payment_Types', 'Past_Due_Period',
-    // Additional Policy Fields
-    'Tools_To_Save', 'Additional_Notes', 'Branch',
-    // Legacy Policy Fields (for backward compatibility)
-    'Cancellation_Policy', 'Guarantee_Policy', 'Payment_Terms', 'Emergency_Services', 'Insurance_Info'
+    'Policy_Description', 'Policy_Options', 'Default_Value', 'Sort_Order'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -626,82 +613,309 @@ function addPoliciesToMasterSheet(profileId, policies) {
     return;
   }
   
-  // Handle both old structure (categories with arrays) and new structure (direct fields)
-  const lastRow = policiesTab.getLastRow();
+  Logger.log('Converting intake form policies to organized policy entries for profile:', profileId);
   
-  // Create comprehensive policy row with all fields
-  const policyRow = [
-    profileId, // Profile_ID
-    'Comprehensive', // Policy_Category
-    'All Policies', // Policy_Type
-    'Complete Policy Configuration', // Policy_Title
-    'All policy settings for this profile', // Policy_Description
-    '', // Policy_Options
-    '', // Default_Value
-    1, // Sort_Order
-    // Service Coverage Fields
-    policies.treatVehicles || policies.treatVehiclesCustom || '',
-    policies.commercialProperties || policies.commercialPropertiesCustom || '',
-    policies.multiFamilyOffered || policies.multiFamilyOfferedCustom || '',
-    policies.trailersOffered || policies.trailersOfferedCustom || '',
-    // Scheduling & Operations Fields
-    policies.signedContract || policies.signedContractCustom || '',
-    policies.returningCustomers || '',
-    policies.appointmentConfirmations || policies.appointmentConfirmationsCustom || '',
-    policies.callAhead || '',
-    policies.maxDistance || '',
-    policies.schedulingPolicyTimes || '',
-    policies.sameDayServices || policies.sameDayServicesCustom || '',
-    policies.techSkilling || policies.techSkillingCustom || '',
-    policies.afterHoursEmergency || policies.afterHoursEmergencyCustom || '',
-    // Service Policies Fields
-    policies.reservices || '',
-    policies.setServiceTypeTo || policies.setServiceTypeToCustom || '',
-    policies.setSubscriptionTypeTo || '',
-    // Payment & Financial Fields
-    policies.paymentPlans || policies.paymentPlansCustom || '',
-    policies.paymentTypes || '',
-    policies.pastDuePeriod || '',
-    // Additional Policy Fields
-    policies.toolsToSave || '',
-    policies.additionalNotes || '',
-    policies.branch || '',
-    // Legacy Policy Fields (for backward compatibility)
-    policies.cancellationPolicy || policies.cancellation || '',
-    policies.guaranteePolicy || policies.guarantee || '',
-    policies.paymentTerms || policies.payment || '',
-    policies.emergencyServices || policies.emergency || '',
-    policies.insuranceInfo || policies.insurance || ''
-  ];
+  // Convert intake form data into organized policy entries
+  const policyEntries = convertIntakeDataToPolicyEntries(profileId, policies);
   
-  policiesTab.getRange(lastRow + 1, 1, 1, policyRow.length).setValues([policyRow]);
+  // Add each policy entry as a separate row
+  policyEntries.forEach(policyEntry => {
+    const lastRow = policiesTab.getLastRow();
+    const policyRow = [
+      policyEntry.profileId,
+      policyEntry.category,
+      policyEntry.type,
+      policyEntry.title,
+      policyEntry.description,
+      JSON.stringify(policyEntry.options || []),
+      policyEntry.value,
+      policyEntry.sortOrder || 1
+    ];
+    
+    policiesTab.getRange(lastRow + 1, 1, 1, policyRow.length).setValues([policyRow]);
+  });
   
-  // Also handle old-style category-based policies for backward compatibility
+  Logger.log(`Added ${policyEntries.length} organized policy entries for profile ${profileId}`);
+}
+
+/**
+ * Converts intake form policy data into organized policy entries
+ */
+function convertIntakeDataToPolicyEntries(profileId, policies) {
+  const policyEntries = [];
+  let sortOrder = 1;
+  
+  // Service Coverage Policies
+  if (policies.treatVehicles) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Coverage',
+      type: 'Policy',
+      title: 'Vehicle Treatment',
+      description: 'Do we treat vehicles?',
+      options: ['Yes', 'No'],
+      value: policies.treatVehicles,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.commercialProperties) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Coverage',
+      type: 'Policy',
+      title: 'Commercial Properties',
+      description: 'Commercial property service policy',
+      options: ['Yes', 'No', 'Yes, Requires Client follow-up'],
+      value: policies.commercialProperties,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.multiFamilyOffered) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Coverage',
+      type: 'Policy',
+      title: 'Multi-Family Properties',
+      description: 'Multi-family property service policy',
+      options: ['Yes', 'No', 'Yes, individual units only'],
+      value: policies.multiFamilyOffered,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.trailersOffered) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Coverage',
+      type: 'Policy',
+      title: 'Trailers/Mobile Homes',
+      description: 'Trailer and mobile home service policy',
+      options: ['Yes', 'No'],
+      value: policies.trailersOffered,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  // Scheduling & Operations Policies
+  if (policies.signedContract) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: 'Contract Required',
+      description: 'Signed contract requirement policy',
+      options: ['Yes', 'No', 'Yes, 12 months for recurring services'],
+      value: policies.signedContract,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.appointmentConfirmations) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: 'Appointment Confirmations',
+      description: 'Appointment confirmation policy',
+      options: ['Yes', 'No'],
+      value: policies.appointmentConfirmations,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.sameDayServices) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: 'Same Day Services',
+      description: 'Same day service availability',
+      options: ['Yes', 'No', 'Yes, refer to home office'],
+      value: policies.sameDayServices,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.techSkilling) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: 'Tech Skilling',
+      description: 'Technician skill requirements',
+      options: ['Yes', 'No'],
+      value: policies.techSkilling,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.afterHoursEmergency) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: 'After Hours Emergency',
+      description: 'Emergency service availability',
+      options: ['Yes', 'No', 'Yes, refer to home office'],
+      value: policies.afterHoursEmergency,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.maxDistance) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: 'Max Distance',
+      description: 'Maximum service distance',
+      options: [],
+      value: policies.maxDistance,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.returningCustomers) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Scheduling',
+      type: 'Policy',
+      title: 'Returning Customers',
+      description: 'Returning customer policy',
+      options: [],
+      value: policies.returningCustomers,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  // Service Operations Policies
+  if (policies.reservices) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Operations',
+      type: 'Policy',
+      title: 'Reservices',
+      description: 'Reservice policy and requirements',
+      options: [],
+      value: policies.reservices,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.setServiceTypeTo) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Operations',
+      type: 'Policy',
+      title: 'Service Type Setting',
+      description: 'Default service type configuration',
+      options: ['Custom', 'Standard', 'Premium'],
+      value: policies.setServiceTypeTo,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.setSubscriptionTypeTo) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Operations',
+      type: 'Policy',
+      title: 'Subscription Type Setting',
+      description: 'Default subscription type configuration',
+      options: [],
+      value: policies.setSubscriptionTypeTo,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.toolsToSave) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Operations',
+      type: 'Policy',
+      title: 'Tools to Save',
+      description: 'Required tools and equipment',
+      options: [],
+      value: policies.toolsToSave,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.additionalNotes) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Operations',
+      type: 'Policy',
+      title: 'Additional Notes',
+      description: 'Additional operational notes',
+      options: [],
+      value: policies.additionalNotes,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.branch) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Service Operations',
+      type: 'Policy',
+      title: 'Branch',
+      description: 'Service branch information',
+      options: [],
+      value: policies.branch,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  // Payment & Financial Policies
+  if (policies.paymentTypes) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Payment',
+      type: 'Policy',
+      title: 'Payment Types',
+      description: 'Accepted payment methods',
+      options: ['Cash', 'Check', 'Card', 'ACH'],
+      value: policies.paymentTypes,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  if (policies.pastDuePeriod) {
+    policyEntries.push({
+      profileId: profileId,
+      category: 'Payment',
+      type: 'Policy',
+      title: 'Past Due Period',
+      description: 'Past due account handling policy',
+      options: ['30 days', '60 days', '90 days'],
+      value: policies.pastDuePeriod,
+      sortOrder: sortOrder++
+    });
+  }
+  
+  // Handle legacy category-based policies for backward compatibility
   Object.keys(policies).forEach(category => {
     const categoryPolicies = policies[category];
     if (Array.isArray(categoryPolicies)) {
       categoryPolicies.forEach((policy, index) => {
-        const lastRow = policiesTab.getLastRow();
-        const categoryPolicyRow = [
-          profileId,
-          category,
-          policy.type || '',
-          policy.title || '',
-          policy.description || '',
-          JSON.stringify(policy.options || []),
-          policy.default || '',
-          index + 10 // Sort order offset for category policies
-        ];
-        
-        // Fill remaining columns with empty values to match new structure
-        while (categoryPolicyRow.length < policyRow.length) {
-          categoryPolicyRow.push('');
-        }
-        
-        policiesTab.getRange(lastRow + 1, 1, 1, categoryPolicyRow.length).setValues([categoryPolicyRow]);
+        policyEntries.push({
+          profileId: profileId,
+          category: category,
+          type: policy.type || 'Policy',
+          title: policy.title || '',
+          description: policy.description || '',
+          options: policy.options || [],
+          value: policy.default || '',
+          sortOrder: sortOrder++
+        });
       });
     }
   });
+  
+  return policyEntries;
 }
 
 function addServiceAreasToMasterSheet(profileId, serviceAreas) {
@@ -790,81 +1004,29 @@ function getProfilePolicies(profileId) {
   const masterSheet = getMasterProfileSheet();
   const policiesTab = masterSheet.getSheetByName('Policies');
   const data = policiesTab.getDataRange().getValues();
-  const headers = data[0];
   
   console.log('🔍 Looking for policies for profile:', profileId);
-  console.log('📋 Policy headers:', headers);
   
-  const policies = {
-    serviceCoverage: {},
-    scheduling: {},
-    serviceOperations: {},
-    payment: {},
-    legacy: {}
-  };
-  
+  const policies = {};
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === profileId) {
-      console.log('✅ Found policy row for profile:', profileId);
-      console.log('📊 Policy row data:', data[i]);
-      
-      // Legacy category-based policies
       const category = data[i][1];
-      if (category && category !== 'Comprehensive' && category !== 'General') {
-        if (!policies.legacy[category]) {
-          policies.legacy[category] = [];
-        }
-        
-        policies.legacy[category].push({
-          type: data[i][2],
-          title: data[i][3],
-          description: data[i][4],
-          options: JSON.parse(data[i][5] || '[]'),
-          default: data[i][6]
-        });
+      if (!policies[category]) {
+        policies[category] = [];
       }
       
-      // Read all the new structured policy fields directly from columns
-      // Service Coverage Policies
-      policies.serviceCoverage = {
-        treatVehicles: data[i][headers.indexOf('Treat_Vehicles')] || '',
-        commercialProperties: data[i][headers.indexOf('Commercial_Properties')] || '',
-        multiFamilyOffered: data[i][headers.indexOf('Multi_Family_Offered')] || '',
-        trailersOffered: data[i][headers.indexOf('Trailers_Offered')] || ''
-      };
-      
-      // Scheduling & Operations Policies
-      policies.scheduling = {
-        signedContract: data[i][headers.indexOf('Signed_Contract')] || '',
-        returningCustomers: data[i][headers.indexOf('Returning_Customers')] || '',
-        appointmentConfirmations: data[i][headers.indexOf('Appointment_Confirmations')] || '',
-        sameDayServices: data[i][headers.indexOf('Same_Day_Services')] || '',
-        techSkilling: data[i][headers.indexOf('Tech_Skilling')] || '',
-        afterHoursEmergency: data[i][headers.indexOf('After_Hours_Emergency')] || '',
-        maxDistance: data[i][headers.indexOf('Max_Distance')] || ''
-      };
-      
-      // Service Operations Policies
-      policies.serviceOperations = {
-        reservices: data[i][headers.indexOf('Reservices')] || '',
-        setServiceTypeTo: data[i][headers.indexOf('Set_Service_Type_To')] || '',
-        setSubscriptionTypeTo: data[i][headers.indexOf('Set_Subscription_Type_To')] || '',
-        toolsToSave: data[i][headers.indexOf('Tools_To_Save')] || '',
-        additionalNotes: data[i][headers.indexOf('Additional_Notes')] || '',
-        branch: data[i][headers.indexOf('Branch')] || ''
-      };
-      
-      // Payment & Financial Policies
-      policies.payment = {
-        paymentTypes: data[i][headers.indexOf('Payment_Types')] || '',
-        pastDuePeriod: data[i][headers.indexOf('Past_Due_Period')] || ''
-      };
-      
-      console.log('📋 Parsed policies:', policies);
-      break; // Found the profile, no need to continue
+      policies[category].push({
+        type: data[i][2],
+        title: data[i][3],
+        description: data[i][4],
+        options: JSON.parse(data[i][5] || '[]'),
+        default: data[i][6],
+        sortOrder: data[i][7] || 1
+      });
     }
   }
   
+  console.log('📋 Found organized policies:', policies);
   return policies;
 }
 

@@ -606,17 +606,33 @@ class GitHubProfileViewer {
     }
 
     updateLinks() {
-        const links = [
-            { id: 'websiteLink', stickyId: 'stickyWebsiteLink', url: this.clientData.officeInfo.website },
-            { id: 'fieldRoutesLink', stickyId: 'stickyFieldRoutesLink', url: this.clientData.officeInfo.fieldRoutesLink }
-        ];
+        // Update website link
+        if (this.clientData.officeInfo.website) {
+            document.getElementById('websiteLink').href = this.clientData.officeInfo.website;
+            document.getElementById('stickyWebsiteLink').href = this.clientData.officeInfo.website;
+        }
 
-        links.forEach(link => {
-            if (link.url) {
-                document.getElementById(link.id).href = link.url;
-                document.getElementById(link.stickyId).href = link.url;
-            }
-        });
+        // Handle FieldRoutes button configuration
+        const fieldRoutesBtn = document.getElementById('fieldRoutesLink');
+        const stickyFieldRoutesBtn = document.getElementById('stickyFieldRoutesLink');
+
+        if (this.clientData.fieldRoutesButton && this.clientData.fieldRoutesButton.show) {
+            // Update button text
+            fieldRoutesBtn.textContent = this.clientData.fieldRoutesButton.text;
+            stickyFieldRoutesBtn.textContent = this.clientData.fieldRoutesButton.text === 'FieldRoutes' ? 'Routes' : this.clientData.fieldRoutesButton.text;
+            
+            // Update button URL
+            fieldRoutesBtn.href = this.clientData.fieldRoutesButton.url;
+            stickyFieldRoutesBtn.href = this.clientData.fieldRoutesButton.url;
+            
+            // Show buttons
+            fieldRoutesBtn.style.display = 'inline-block';
+            stickyFieldRoutesBtn.style.display = 'inline-block';
+        } else {
+            // Hide buttons if not configured
+            fieldRoutesBtn.style.display = 'none';
+            stickyFieldRoutesBtn.style.display = 'none';
+        }
     }
 
     populateInfoCards() {
@@ -2439,17 +2455,33 @@ document.addEventListener('keypress', function(e) {
     }
 
     updateLinks() {
-        const links = [
-            { id: 'websiteLink', stickyId: 'stickyWebsiteLink', url: this.clientData.officeInfo.website },
-            { id: 'fieldRoutesLink', stickyId: 'stickyFieldRoutesLink', url: this.clientData.officeInfo.fieldRoutesLink }
-        ];
+        // Update website link
+        if (this.clientData.officeInfo.website) {
+            document.getElementById('websiteLink').href = this.clientData.officeInfo.website;
+            document.getElementById('stickyWebsiteLink').href = this.clientData.officeInfo.website;
+        }
 
-        links.forEach(link => {
-            if (link.url) {
-                document.getElementById(link.id).href = link.url;
-                document.getElementById(link.stickyId).href = link.url;
-            }
-        });
+        // Handle FieldRoutes button configuration
+        const fieldRoutesBtn = document.getElementById('fieldRoutesLink');
+        const stickyFieldRoutesBtn = document.getElementById('stickyFieldRoutesLink');
+
+        if (this.clientData.fieldRoutesButton && this.clientData.fieldRoutesButton.show) {
+            // Update button text
+            fieldRoutesBtn.textContent = this.clientData.fieldRoutesButton.text;
+            stickyFieldRoutesBtn.textContent = this.clientData.fieldRoutesButton.text === 'FieldRoutes' ? 'Routes' : this.clientData.fieldRoutesButton.text;
+            
+            // Update button URL
+            fieldRoutesBtn.href = this.clientData.fieldRoutesButton.url;
+            stickyFieldRoutesBtn.href = this.clientData.fieldRoutesButton.url;
+            
+            // Show buttons
+            fieldRoutesBtn.style.display = 'inline-block';
+            stickyFieldRoutesBtn.style.display = 'inline-block';
+        } else {
+            // Hide buttons if not configured
+            fieldRoutesBtn.style.display = 'none';
+            stickyFieldRoutesBtn.style.display = 'none';
+        }
     }
 
     populateInfoCards() {

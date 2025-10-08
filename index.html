@@ -2817,9 +2817,27 @@ if (clientData.officeInfo.website) {
 document.getElementById('websiteLink').href = clientData.officeInfo.website;
 document.getElementById('stickyWebsiteLink').href = clientData.officeInfo.website;
 }
-if (clientData.officeInfo.fieldRoutesLink) {
-document.getElementById('fieldRoutesLink').href = clientData.officeInfo.fieldRoutesLink;
-document.getElementById('stickyFieldRoutesLink').href = clientData.officeInfo.fieldRoutesLink;
+
+// Handle FieldRoutes button configuration
+const fieldRoutesBtn = document.getElementById('fieldRoutesLink');
+const stickyFieldRoutesBtn = document.getElementById('stickyFieldRoutesLink');
+
+if (clientData.fieldRoutesButton && clientData.fieldRoutesButton.show) {
+    // Update button text
+    fieldRoutesBtn.textContent = clientData.fieldRoutesButton.text;
+    stickyFieldRoutesBtn.textContent = clientData.fieldRoutesButton.text === 'FieldRoutes' ? 'Routes' : clientData.fieldRoutesButton.text;
+    
+    // Update button URL
+    fieldRoutesBtn.href = clientData.fieldRoutesButton.url;
+    stickyFieldRoutesBtn.href = clientData.fieldRoutesButton.url;
+    
+    // Show buttons
+    fieldRoutesBtn.style.display = 'inline-block';
+    stickyFieldRoutesBtn.style.display = 'inline-block';
+} else {
+    // Hide buttons if not configured
+    fieldRoutesBtn.style.display = 'none';
+    stickyFieldRoutesBtn.style.display = 'none';
 }
 
 // Populate services

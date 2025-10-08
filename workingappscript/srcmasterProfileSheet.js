@@ -147,7 +147,8 @@ function createMasterProfilesTab(spreadsheet) {
   const headers = [
     'Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 
     'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 
-    'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL'
+    'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL',
+    'FieldRoutes_Button_Text', 'FieldRoutes_Link'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);

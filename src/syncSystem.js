@@ -416,7 +416,13 @@ function getProfileDataAPI(profileId) {
         website: profileData.Website,
         physicalAddress: profileData.Address,
         officeHours: profileData.Hours,
-        fieldRoutesLink: profileData.Website // You may want to add this as a separate field
+        fieldRoutesLink: profileData.FieldRoutes_Link || profileData.Website
+      },
+      // FieldRoutes button configuration
+      fieldRoutesButton: {
+        text: profileData.FieldRoutes_Button_Text || 'FieldRoutes',
+        url: profileData.FieldRoutes_Link || profileData.Website,
+        show: !!(profileData.FieldRoutes_Button_Text || profileData.FieldRoutes_Link)
       },
       bulletin: profileData.Bulletin,
       pestsNotCovered: profileData.Pests_Not_Covered,
