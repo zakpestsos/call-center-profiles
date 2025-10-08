@@ -2249,6 +2249,7 @@ grid-template-columns: 1fr;
                 <div class="tool-title">Pest Search</div>
 <input type="text" class="tool-input" id="pestSearch" placeholder="Enter pest name" maxlength="50">
                 <button class="tool-btn" onclick="searchPests()">Search</button>
+                <button class="tool-btn" onclick="clearSearch()" style="background: linear-gradient(135deg, #64748b, #94a3b8);">Clear</button>
 <div class="tool-result" id="pestSearchResult">Enter pest name to search</div>
 
 <!-- Search Results Popup -->
@@ -4259,6 +4260,8 @@ document.getElementById('pestSearch').addEventListener('input', function(e) {
 const value = e.target.value.trim();
 if (value.length > 2) {
 searchPests();
+} else if (value.length === 0) {
+clearSearch();
 } else {
 hideSearchPopup();
 }
