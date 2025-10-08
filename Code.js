@@ -350,7 +350,7 @@ function updateProfileFromForm(formData) {
  */
 function showEditForm(profileId) {
   try {
-    const profileData = getProfileFromMasterSheet(profileId);
+    const profileData = getProfileDataById(profileId);
     
     const template = HtmlService.createTemplateFromFile('ui/edit-form');
     template.profileData = profileData;
@@ -374,7 +374,7 @@ function getProfileDataAPI(profileId) {
       throw new Error('Profile ID is required');
     }
     
-    const profileData = getProfileFromMasterSheet(profileId);
+    const profileData = getProfileDataById(profileId);
     
     // Convert to format expected by production web app
     const webAppData = {
@@ -3642,29 +3642,29 @@ function getProfileDataAPI(profileId) {
       throw new Error('Profile ID is required');
     }
     
-    const profileData = getProfileFromMasterSheet(profileId);
+    const profileData = getProfileDataById(profileId);
     
     // Convert to format expected by production web app
     const webAppData = {
-      companyName: profileData.Company_Name,
-      location: profileData.Location,
-      timezone: profileData.Timezone,
+      companyName: profileData.companyName,
+      location: profileData.location,
+      timezone: profileData.timezone,
       officeInfo: {
-        phone: profileData.Phone,
-        email: profileData.Email,
-        website: profileData.Website,
-        physicalAddress: profileData.Address,
-        officeHours: profileData.Hours,
-        fieldRoutesLink: profileData.FieldRoutes_Link || profileData.Website
+        phone: profileData.officeInfo?.phone,
+        email: profileData.officeInfo?.email,
+        website: profileData.officeInfo?.website,
+        physicalAddress: profileData.officeInfo?.address,
+        officeHours: profileData.officeInfo?.hours,
+        fieldRoutesLink: profileData.FieldRoutes_Link || profileData.officeInfo?.website
       },
       // FieldRoutes button configuration
       fieldRoutesButton: {
         text: profileData.FieldRoutes_Button_Text || 'FieldRoutes',
-        url: profileData.FieldRoutes_Link || profileData.Website,
+        url: profileData.FieldRoutes_Link || profileData.officeInfo?.website,
         show: !!(profileData.FieldRoutes_Button_Text || profileData.FieldRoutes_Link)
       },
-      bulletin: profileData.Bulletin,
-      pestsNotCovered: profileData.Pests_Not_Covered,
+      bulletin: profileData.bulletin,
+      pestsNotCovered: profileData.pestsNotCovered,
       services: profileData.services || [],
       technicians: profileData.technicians || [],
       policies: formatPoliciesForDisplay(profileData.policies || {}),

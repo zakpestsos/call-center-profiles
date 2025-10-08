@@ -2824,8 +2824,12 @@ const stickyFieldRoutesBtn = document.getElementById('stickyFieldRoutesLink');
 
 console.log('🔍 FieldRoutes Debug - Full clientData:', clientData);
 console.log('🔍 FieldRoutes Debug - fieldRoutesButton:', clientData.fieldRoutesButton);
+console.log('🔍 FieldRoutes Debug - Raw FieldRoutes_Button_Text:', clientData.FieldRoutes_Button_Text);
+console.log('🔍 FieldRoutes Debug - Raw FieldRoutes_Link:', clientData.FieldRoutes_Link);
+console.log('🔍 FieldRoutes Debug - Button elements found:', !!fieldRoutesBtn, !!stickyFieldRoutesBtn);
 
 if (clientData.fieldRoutesButton && clientData.fieldRoutesButton.show) {
+    console.log('✅ FieldRoutes Button should be shown');
     // Update button text
     fieldRoutesBtn.textContent = clientData.fieldRoutesButton.text;
     stickyFieldRoutesBtn.textContent = clientData.fieldRoutesButton.text === 'FieldRoutes' ? 'Routes' : clientData.fieldRoutesButton.text;
@@ -2838,6 +2842,12 @@ if (clientData.fieldRoutesButton && clientData.fieldRoutesButton.show) {
     fieldRoutesBtn.style.display = 'inline-block';
     stickyFieldRoutesBtn.style.display = 'inline-block';
 } else {
+    console.log('❌ FieldRoutes Button being hidden - Reasons:');
+    console.log('   - fieldRoutesButton exists:', !!clientData.fieldRoutesButton);
+    console.log('   - fieldRoutesButton.show:', clientData.fieldRoutesButton?.show);
+    console.log('   - FieldRoutes_Button_Text:', clientData.FieldRoutes_Button_Text);
+    console.log('   - FieldRoutes_Link:', clientData.FieldRoutes_Link);
+    
     // Hide buttons if not configured
     fieldRoutesBtn.style.display = 'none';
     stickyFieldRoutesBtn.style.display = 'none';
