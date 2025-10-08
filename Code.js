@@ -2867,7 +2867,10 @@ function getProfileDataById(profileId) {
           wixProfileUrl: row[12],     // Wix_Profile_URL
           lastUpdated: row[13],       // Last_Updated
           syncStatus: row[14],        // Sync_Status
-          editFormUrl: row[15]        // Edit_Form_URL
+          editFormUrl: row[15],       // Edit_Form_URL
+          // FieldRoutes configuration fields
+          FieldRoutes_Button_Text: row[16], // FieldRoutes_Button_Text (Column Q)
+          FieldRoutes_Link: row[17]         // FieldRoutes_Link (Column R)
         };
 
         // Get related data
@@ -3184,7 +3187,7 @@ function initializeProfileStructure(profileId, driveUrl) {
     let clientSheet = sheet.getSheetByName('Client_Profiles');
     if (!clientSheet) {
       clientSheet = sheet.insertSheet('Client_Profiles');
-      clientSheet.appendRow(['Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL', 'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 'Physical_City', 'Physical_State', 'Physical_Zip', 'Mailing_Street', 'Mailing_Suite', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical', 'Timezone_Custom', 'Holidays_Observed']);
+      clientSheet.appendRow(['Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL', 'FieldRoutes_Button_Text', 'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 'Physical_City', 'Physical_State', 'Physical_Zip', 'Mailing_Street', 'Mailing_Suite', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical', 'Timezone_Custom', 'Holidays_Observed']);
     }
     
     clientSheet.appendRow([
@@ -3639,6 +3642,12 @@ function getProfileDataAPI(profileId) {
         physicalAddress: profileData.Address,
         officeHours: profileData.Hours,
         fieldRoutesLink: profileData.FieldRoutes_Link || profileData.Website
+      },
+      // FieldRoutes button configuration
+      fieldRoutesButton: {
+        text: profileData.FieldRoutes_Button_Text || 'FieldRoutes',
+        url: profileData.FieldRoutes_Link || profileData.Website,
+        show: !!(profileData.FieldRoutes_Button_Text || profileData.FieldRoutes_Link)
       },
       bulletin: profileData.Bulletin,
       pestsNotCovered: profileData.Pests_Not_Covered,
