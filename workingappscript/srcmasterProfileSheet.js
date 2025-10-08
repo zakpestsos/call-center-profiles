@@ -148,7 +148,10 @@ function createMasterProfilesTab(spreadsheet) {
     'Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 
     'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 
     'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL',
-    'FieldRoutes_Button_Text', 'FieldRoutes_Link'
+    'FieldRoutes_Button_Text', 'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 
+    'Physical_City', 'Physical_State', 'Physical_Zip', 'Mailing_Street', 'Mailing_Suite', 
+    'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical', 'Timezone_Custom', 
+    'Holidays_Observed'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);

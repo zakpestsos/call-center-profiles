@@ -2869,8 +2869,22 @@ function getProfileDataById(profileId) {
           syncStatus: row[14],        // Sync_Status
           editFormUrl: row[15],       // Edit_Form_URL
           // FieldRoutes configuration fields
-          FieldRoutes_Button_Text: row[16], // FieldRoutes_Button_Text (Column Q)
-          FieldRoutes_Link: row[17]         // FieldRoutes_Link (Column R)
+          FieldRoutes_Button_Text: row[16], // FieldRoutes_Button_Text
+          FieldRoutes_Link: row[17],        // FieldRoutes_Link
+          // Additional address and custom fields
+          Physical_Street: row[18],         // Physical_Street
+          Physical_Suite: row[19],          // Physical_Suite
+          Physical_City: row[20],           // Physical_City
+          Physical_State: row[21],          // Physical_State
+          Physical_Zip: row[22],            // Physical_Zip
+          Mailing_Street: row[23],          // Mailing_Street
+          Mailing_Suite: row[24],           // Mailing_Suite
+          Mailing_City: row[25],            // Mailing_City
+          Mailing_State: row[26],           // Mailing_State
+          Mailing_Zip: row[27],             // Mailing_Zip
+          Same_As_Physical: row[28],        // Same_As_Physical
+          Timezone_Custom: row[29],         // Timezone_Custom
+          Holidays_Observed: row[30]        // Holidays_Observed
         };
 
         // Get related data
