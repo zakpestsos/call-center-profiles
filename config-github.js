@@ -2,7 +2,7 @@
 const CONFIG = {
   GOOGLE_SHEETS: {
     MASTER_SHEET_ID: '1WId_kg8Fu0dbnpWSSQQVv-GJJibaeSu7p23PEaeePec', // Your Master Client Profiles Sheet
-    WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbxtNf2wxZ8Nzno6IyJczpqvkM3RpuyZcnZCJ-xn8edtcC-jx_rGuzMn1DAqsbLAzDb2-Q/exec' // Latest deployment with FieldRoutes button fix
+    WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbzlC8SvtajdXYzHqkvsqcW-u8Dwgv23YQNAznkADYLMAG8mzQv_EfH847mCH6D5oiu_OQ/exec' // Debug deployment with comprehensive logging
   },
   GITHUB: {
     REPO_URL: 'https://zakpestsos.github.io/call-center-profiles/',
