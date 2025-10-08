@@ -380,48 +380,7 @@ function showEditForm(profileId) {
 /**
  * API endpoint for production web app
  */
-function getProfileDataAPI(profileId) {
-  try {
-    if (!profileId) {
-      throw new Error('Profile ID is required');
-    }
-    
-    const profileData = getProfileDataById(profileId);
-    
-    // Convert to format expected by production web app
-    const webAppData = {
-      companyName: profileData.Company_Name,
-      location: profileData.Location,
-      timezone: profileData.Timezone,
-      officeInfo: {
-        phone: profileData.Phone,
-        email: profileData.Email,
-        website: profileData.Website,
-        physicalAddress: profileData.Address,
-        officeHours: profileData.Hours,
-        fieldRoutesLink: profileData.Website
-      },
-      bulletin: profileData.Bulletin,
-      pestsNotCovered: profileData.Pests_Not_Covered,
-      services: profileData.services || [],
-      technicians: profileData.technicians || [],
-      policies: profileData.policies || {},
-      serviceAreas: profileData.serviceAreas || []
-    };
-    
-    return {
-      success: true,
-      data: webAppData
-    };
-    
-  } catch (error) {
-    Logger.log('Error in getProfileDataAPI: ' + error.toString());
-    return {
-      success: false,
-      error: error.message
-    };
-  }
-}
+// REMOVED DUPLICATE FUNCTION - Using the correct version below at line 3655
 
 /**
  * Generates web app profile URL
@@ -3683,6 +3642,9 @@ function getProfileDataAPI(profileId) {
         url: profileData.FieldRoutes_Link || profileData.officeInfo?.website,
         show: !!(profileData.FieldRoutes_Button_Text || profileData.FieldRoutes_Link)
       },
+      // Raw FieldRoutes data for client-side workaround
+      FieldRoutes_Button_Text: profileData.FieldRoutes_Button_Text,
+      FieldRoutes_Link: profileData.FieldRoutes_Link,
       bulletin: profileData.bulletin,
       pestsNotCovered: profileData.pestsNotCovered,
       services: profileData.services || [],

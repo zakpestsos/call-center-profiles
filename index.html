@@ -2828,23 +2828,50 @@ console.log('🔍 FieldRoutes Debug - Raw FieldRoutes_Button_Text:', clientData.
 console.log('🔍 FieldRoutes Debug - Raw FieldRoutes_Link:', clientData.FieldRoutes_Link);
 console.log('🔍 FieldRoutes Debug - Button elements found:', !!fieldRoutesBtn, !!stickyFieldRoutesBtn);
 
+// CLIENT-SIDE WORKAROUND: Create FieldRoutes button logic from raw data
+// This works even if Apps Script doesn't provide the fieldRoutesButton object
+let fieldRoutesText = null;
+let fieldRoutesUrl = null;
+let shouldShowButton = false;
+
+// Check for fieldRoutesButton object first (preferred method)
 if (clientData.fieldRoutesButton && clientData.fieldRoutesButton.show) {
+    console.log('✅ Using Apps Script fieldRoutesButton object');
+    fieldRoutesText = clientData.fieldRoutesButton.text;
+    fieldRoutesUrl = clientData.fieldRoutesButton.url;
+    shouldShowButton = true;
+} 
+// Fallback: Check for raw FieldRoutes data (workaround)
+else if (clientData.FieldRoutes_Button_Text || clientData.FieldRoutes_Link) {
+    console.log('🔧 Using client-side workaround for FieldRoutes data');
+    fieldRoutesText = clientData.FieldRoutes_Button_Text || 'FieldRoutes';
+    fieldRoutesUrl = clientData.FieldRoutes_Link || clientData.officeInfo?.website;
+    shouldShowButton = !!(clientData.FieldRoutes_Button_Text || clientData.FieldRoutes_Link);
+}
+
+// Apply the button configuration
+if (shouldShowButton && fieldRoutesText && fieldRoutesUrl) {
     console.log('✅ FieldRoutes Button should be shown');
+    console.log('   - Text:', fieldRoutesText);
+    console.log('   - URL:', fieldRoutesUrl);
+    
     // Update button text
-    fieldRoutesBtn.textContent = clientData.fieldRoutesButton.text;
-    stickyFieldRoutesBtn.textContent = clientData.fieldRoutesButton.text === 'FieldRoutes' ? 'Routes' : clientData.fieldRoutesButton.text;
+    fieldRoutesBtn.textContent = fieldRoutesText;
+    stickyFieldRoutesBtn.textContent = fieldRoutesText === 'FieldRoutes' ? 'Routes' : fieldRoutesText;
     
     // Update button URL
-    fieldRoutesBtn.href = clientData.fieldRoutesButton.url;
-    stickyFieldRoutesBtn.href = clientData.fieldRoutesButton.url;
+    fieldRoutesBtn.href = fieldRoutesUrl;
+    stickyFieldRoutesBtn.href = fieldRoutesUrl;
     
     // Show buttons
     fieldRoutesBtn.style.display = 'inline-block';
     stickyFieldRoutesBtn.style.display = 'inline-block';
 } else {
     console.log('❌ FieldRoutes Button being hidden - Reasons:');
+    console.log('   - shouldShowButton:', shouldShowButton);
+    console.log('   - fieldRoutesText:', fieldRoutesText);
+    console.log('   - fieldRoutesUrl:', fieldRoutesUrl);
     console.log('   - fieldRoutesButton exists:', !!clientData.fieldRoutesButton);
-    console.log('   - fieldRoutesButton.show:', clientData.fieldRoutesButton?.show);
     console.log('   - FieldRoutes_Button_Text:', clientData.FieldRoutes_Button_Text);
     console.log('   - FieldRoutes_Link:', clientData.FieldRoutes_Link);
     
