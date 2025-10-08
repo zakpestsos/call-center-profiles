@@ -2328,8 +2328,8 @@ async function loadProfileData() {
 
         clientData = data;
         populateClientData();
-        updateCurrentTime();
-        setInterval(updateCurrentTime, 60000);
+        updateCurrentTime(clientData.timezone);
+        setInterval(() => updateCurrentTime(clientData.timezone), 60000);
 
     } catch (error) {
         console.error('Error loading profile:', error);
@@ -3771,6 +3771,7 @@ const timeZoneMap = {
 };
 
 const timeZone = timeZoneMap[timezone] || 'America/Chicago';
+console.log('🕒 Updating time - Input timezone:', timezone, '→ Using:', timeZone);
 
 function updateTime() {
 const now = new Date();
