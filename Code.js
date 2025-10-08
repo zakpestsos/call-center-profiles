@@ -21,7 +21,8 @@ function doGet(e) {
     const callback = e.parameter.callback;
     
     if (profileId) {
-      const profileData = getProfileDataById(profileId);
+      const apiResponse = getProfileDataAPI(profileId);
+      const profileData = apiResponse.success ? apiResponse.data : {error: apiResponse.error};
       
       // Handle JSONP callback
       if (callback) {
@@ -2848,6 +2849,10 @@ function getProfileDataById(profileId) {
       
       if (rowProfileId === searchProfileId) {
         console.log('Profile found at row', i);
+        console.log('Row data length:', row.length);
+        console.log('Row[16] (FieldRoutes_Button_Text):', row[16]);
+        console.log('Row[17] (FieldRoutes_Link):', row[17]);
+        console.log('Full row data:', row);
         
         const profileData = {
           profileId: row[0],
@@ -3643,6 +3648,10 @@ function getProfileDataAPI(profileId) {
     }
     
     const profileData = getProfileDataById(profileId);
+    
+    console.log('🔍 AppScript Debug - profileData.FieldRoutes_Button_Text:', profileData.FieldRoutes_Button_Text);
+    console.log('🔍 AppScript Debug - profileData.FieldRoutes_Link:', profileData.FieldRoutes_Link);
+    console.log('🔍 AppScript Debug - Full profileData keys:', Object.keys(profileData));
     
     // Convert to format expected by production web app
     const webAppData = {
