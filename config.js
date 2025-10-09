@@ -3,7 +3,7 @@ const CONFIG = {
     // Google Sheets Configuration
     GOOGLE_SHEETS: {
         // Updated with your actual Google Apps Script Web App URL
-        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbypvatvHChdoLknbbExzB4tDcQiFn2QsMBzbjymgg0VsM4xO7Ld7UYDJY6DkbefLef7BA/exec', // Deployment v117 - FieldRoutes button working with CRM LINK column mapping
+        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbxFeIhrvOKgf5gK68eNlYAFdY8uXkhlJDL-3NfbkO2DerbmatL1nD2WNyacLdK84_2ziw/exec', // Deployment v118 - Fixed policies format + FieldRoutes button working
         
         // Alternative: Direct Google Sheets API (requires API key)
         API_KEY: 'YOUR_GOOGLE_SHEETS_API_KEY',

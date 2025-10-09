@@ -3687,32 +3687,31 @@ function getProfileDataAPI(profileId) {
  */
 function formatPoliciesForDisplay(policies) {
   console.log('🔄 Formatting organized policies for display:', policies);
-  const formatted = [];
   
-  // Convert organized policy structure to flat array
-  Object.keys(policies).forEach(category => {
-    const categoryPolicies = policies[category];
-    if (Array.isArray(categoryPolicies)) {
-      categoryPolicies.forEach(policy => {
-        // Use policy.default as the value (this is where the actual data is stored)
-        const policyValue = policy.default || policy.value || '';
-        if (policyValue && policyValue.trim() !== '') {
-          formatted.push({
-            category: category,
-            title: policy.title,
-            value: policyValue,  // Frontend expects 'value' property
-            description: policy.description,
-            type: policy.type,
-            options: policy.options,
-            default: policyValue  // Also include as 'default' for compatibility
-          });
-        }
-      });
-    }
-  });
+  // Frontend expects policies organized by category (object with category keys)
+  // The policies parameter should already be in this format: { "Sales": [...], "Scheduling": [...] }
+  // Just return it as-is
+  if (policies && typeof policies === 'object' && !Array.isArray(policies)) {
+    console.log('✅ Policies already organized by category, returning as-is');
+    return policies;
+  }
   
-  console.log('✅ Formatted policies for display:', formatted);
-  return formatted;
+  // If it's an array, organize by category
+  const organized = {};
+  if (Array.isArray(policies)) {
+    policies.forEach(policy => {
+      const category = policy.category || 'Other';
+      if (!organized[category]) {
+        organized[category] = [];
+      }
+      organized[category].push(policy);
+    });
+    console.log('✅ Organized policies from array into', Object.keys(organized).length, 'categories');
+    return organized;
+  }
+  
+  console.log('⚠️ Policies format unexpected, returning empty object');
+  return {};
 }
 
 /**
