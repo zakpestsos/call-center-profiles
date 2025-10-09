@@ -3,7 +3,7 @@ const CONFIG = {
     // Google Sheets Configuration
     GOOGLE_SHEETS: {
         // Updated with your actual Google Apps Script Web App URL
-        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbyF_rCxojGRXReDPGYjiIPuQx4PRrrz6kTIGwpt-mB7bkzw0DG4cXKv2KcO-In10M8sGw/exec',
+        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbw05aan_4aE9JIMuwAoxO1j0yG7tPiRc9Mqv6x9Z5rMD5utC-YOIMo9QukSuU8Bm4FqbQ/exec',
         
         // Alternative: Direct Google Sheets API (requires API key)
         API_KEY: 'YOUR_GOOGLE_SHEETS_API_KEY',
