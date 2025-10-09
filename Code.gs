@@ -7,11 +7,7 @@
 function doOptions(e) {
   return ContentService
     .createTextOutput('')
-    .setMimeType(ContentService.MimeType.TEXT)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type')
-    .setHeader('Access-Control-Max-Age', '86400');
+    .setMimeType(ContentService.MimeType.TEXT);
 }
 
 function doGet(e) {
@@ -46,18 +42,12 @@ function doGet(e) {
       if (callback) {
         return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(profileData)});`)
-          .setMimeType(ContentService.MimeType.JAVASCRIPT)
-          .setHeader('Access-Control-Allow-Origin', '*')
-          .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-          .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
       }
       
       return ContentService
         .createTextOutput(JSON.stringify(profileData))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeader('Access-Control-Allow-Origin', '*')
-        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
     // Legacy support for sheetId-based requests
@@ -70,18 +60,12 @@ function doGet(e) {
       if (callback) {
         return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(data)});`)
-          .setMimeType(ContentService.MimeType.JAVASCRIPT)
-          .setHeader('Access-Control-Allow-Origin', '*')
-          .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-          .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
       }
-
+      
       return ContentService
         .createTextOutput(JSON.stringify(data))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeader('Access-Control-Allow-Origin', '*')
-        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
     // Default: serve the intake form when no parameters are provided
@@ -100,18 +84,12 @@ function doGet(e) {
     if (callback) {
       return ContentService
         .createTextOutput(`${callback}(${JSON.stringify(errorResponse)});`)
-        .setMimeType(ContentService.MimeType.JAVASCRIPT)
-        .setHeader('Access-Control-Allow-Origin', '*')
-        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
     }
     
     return ContentService
       .createTextOutput(JSON.stringify(errorResponse))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*')
-      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
