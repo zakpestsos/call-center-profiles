@@ -1,6 +1,19 @@
 // Google Apps Script Web App for GitHub Pages Integration
 // This script should be deployed as a Web App from Google Apps Script
 
+/**
+ * Handles CORS preflight OPTIONS requests
+ */
+function doOptions(e) {
+  return ContentService
+    .createTextOutput('')
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeader('Access-Control-Allow-Origin', '*')
+    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    .setHeader('Access-Control-Allow-Headers', 'Content-Type')
+    .setHeader('Access-Control-Max-Age', '86400');
+}
+
 function doGet(e) {
   try {
     // Check if requesting the intake form
@@ -2801,13 +2814,20 @@ function getProfileDataById(profileId) {
     }
 
     const data = masterSheet.getDataRange().getValues();
+    const headers = data[0]; // Get header row
     console.log('Sheet data rows:', data.length);
     console.log('Looking for profileId:', profileId);
+    console.log('📋 Headers:', headers);
     
-    // Debug: Log first few rows
-    for (let i = 0; i < Math.min(3, data.length); i++) {
-      console.log(`Row ${i}:`, data[i][0]);
-    }
+    // Create a map of header names to column indices (trimmed to handle extra spaces)
+    const colMap = {};
+    headers.forEach((header, index) => {
+      const cleanHeader = (header || '').toString().trim();
+      colMap[cleanHeader] = index;
+    });
+    console.log('📊 Column mapping:', colMap);
+    console.log('🔍 FieldRoutes_Button_Text in map?', 'FieldRoutes_Button_Text' in colMap);
+    console.log('🔍 FieldRoutes_Link in map?', 'FieldRoutes_Link' in colMap);
 
     // Find the profile row - check both exact match and trimmed match
     for (let i = 1; i < data.length; i++) {
@@ -2815,51 +2835,50 @@ function getProfileDataById(profileId) {
       const rowProfileId = row[0] ? row[0].toString().trim() : '';
       const searchProfileId = profileId.toString().trim();
       
-      console.log(`Comparing: "${rowProfileId}" vs "${searchProfileId}"`);
-      
       if (rowProfileId === searchProfileId) {
-        console.log('Profile found at row', i);
-        console.log('Row data length:', row.length);
-        console.log('Row[16] (FieldRoutes_Button_Text):', row[16]);
-        console.log('Row[17] (FieldRoutes_Link):', row[17]);
-        console.log('Full row data:', row);
+        console.log('✅ Profile found at row', i);
+        console.log('📏 Row data length:', row.length);
+        console.log('🔘 FieldRoutes_Button_Text column index:', colMap['FieldRoutes_Button_Text']);
+        console.log('🔘 Row[' + colMap['FieldRoutes_Button_Text'] + ']:', row[colMap['FieldRoutes_Button_Text']]);
+        console.log('🔗 FieldRoutes_Link column index:', colMap['FieldRoutes_Link']);
+        console.log('🔗 Row[' + colMap['FieldRoutes_Link'] + ']:', row[colMap['FieldRoutes_Link']]);
         
         const profileData = {
-          profileId: row[0],
-          companyName: row[1],        // Company_Name
-          location: row[2],           // Location  
-          timezone: row[3],           // Timezone
+          profileId: row[colMap['Profile_ID']],
+          companyName: row[colMap['Company_Name']],
+          location: row[colMap['Location']],
+          timezone: row[colMap['Timezone']],
           officeInfo: {
-            phone: row[4],            // Phone
-            email: row[5],            // Email
-            website: row[6],          // Website
-            address: row[7],          // Address
-            hours: row[8]             // Hours
+            phone: row[colMap['Phone']],
+            email: row[colMap['Email']],
+            website: row[colMap['Website']],
+            address: row[colMap['Address']],
+            hours: row[colMap['Hours']]
           },
-          bulletin: row[9],           // Bulletin
-          pestsNotCovered: row[10],   // Pests_Not_Covered
-          clientFolderUrl: row[11],   // Client_Folder_URL
-          wixProfileUrl: row[12],     // Wix_Profile_URL
-          lastUpdated: row[13],       // Last_Updated
-          syncStatus: row[14],        // Sync_Status
-          editFormUrl: row[15],       // Edit_Form_URL
-          // FieldRoutes configuration fields
-          FieldRoutes_Button_Text: row[16], // FieldRoutes_Button_Text
-          FieldRoutes_Link: row[17],        // FieldRoutes_Link
+          bulletin: row[colMap['Bulletin']],
+          pestsNotCovered: row[colMap['Pests_Not_Covered']],
+          clientFolderUrl: row[colMap['Client_Folder_URL']],
+          wixProfileUrl: row[colMap['Wix_Profile_URL']],
+          lastUpdated: row[colMap['Last_Updated']],
+          syncStatus: row[colMap['Sync_Status']],
+          editFormUrl: row[colMap['Edit_Form_URL']],
+          // FieldRoutes configuration fields - read by header name
+          FieldRoutes_Button_Text: row[colMap['FieldRoutes_Button_Text']],
+          FieldRoutes_Link: row[colMap['FieldRoutes_Link']],
           // Additional address and custom fields
-          Physical_Street: row[18],         // Physical_Street
-          Physical_Suite: row[19],          // Physical_Suite
-          Physical_City: row[20],           // Physical_City
-          Physical_State: row[21],          // Physical_State
-          Physical_Zip: row[22],            // Physical_Zip
-          Mailing_Street: row[23],          // Mailing_Street
-          Mailing_Suite: row[24],           // Mailing_Suite
-          Mailing_City: row[25],            // Mailing_City
-          Mailing_State: row[26],           // Mailing_State
-          Mailing_Zip: row[27],             // Mailing_Zip
-          Same_As_Physical: row[28],        // Same_As_Physical
-          Timezone_Custom: row[29],         // Timezone_Custom
-          Holidays_Observed: row[30]        // Holidays_Observed
+          Physical_Street: row[colMap['Physical_Street']],
+          Physical_Suite: row[colMap['Physical_Suite']],
+          Physical_City: row[colMap['Physical_City']],
+          Physical_State: row[colMap['Physical_State']],
+          Physical_Zip: row[colMap['Physical_Zip']],
+          Mailing_Street: row[colMap['Mailing_Street']],
+          Mailing_Suite: row[colMap['Mailing_Suite']],
+          Mailing_City: row[colMap['Mailing_City']],
+          Mailing_State: row[colMap['Mailing_State']],
+          Mailing_Zip: row[colMap['Mailing_Zip']],
+          Same_As_Physical: row[colMap['Same_As_Physical']],
+          Timezone_Custom: row[colMap['Timezone_Custom']],
+          Holidays_Observed: row[colMap['Holidays_Observed']]
         };
 
         // Get related data
