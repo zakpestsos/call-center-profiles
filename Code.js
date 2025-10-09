@@ -44,7 +44,7 @@ function doGet(e) {
       
       // Handle JSONP callback
       if (callback) {
-      return ContentService
+        return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(profileData)});`)
           .setMimeType(ContentService.MimeType.JAVASCRIPT)
           .setHeader('Access-Control-Allow-Origin', '*')
@@ -65,17 +65,23 @@ function doGet(e) {
 
     if (sheetId) {
       // Handle legacy sheetId requests
-    const data = getClientDataFromSheet(sheetId);
+      const data = getClientDataFromSheet(sheetId);
 
-    if (callback) {
+      if (callback) {
+        return ContentService
+          .createTextOutput(`${callback}(${JSON.stringify(data)});`)
+          .setMimeType(ContentService.MimeType.JAVASCRIPT)
+          .setHeader('Access-Control-Allow-Origin', '*')
+          .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+          .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      }
+
       return ContentService
-        .createTextOutput(`${callback}(${JSON.stringify(data)});`)
-        .setMimeType(ContentService.MimeType.JAVASCRIPT);
-    }
-
-    return ContentService
-      .createTextOutput(JSON.stringify(data))
-      .setMimeType(ContentService.MimeType.JSON);
+        .createTextOutput(JSON.stringify(data))
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeader('Access-Control-Allow-Origin', '*')
+        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
     }
 
     // Default: serve the intake form when no parameters are provided
@@ -94,12 +100,18 @@ function doGet(e) {
     if (callback) {
       return ContentService
         .createTextOutput(`${callback}(${JSON.stringify(errorResponse)});`)
-        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+        .setMimeType(ContentService.MimeType.JAVASCRIPT)
+        .setHeader('Access-Control-Allow-Origin', '*')
+        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
     }
     
     return ContentService
       .createTextOutput(JSON.stringify(errorResponse))
-      .setMimeType(ContentService.MimeType.JSON);
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader('Access-Control-Allow-Origin', '*')
+      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
   }
 }
 
@@ -2828,6 +2840,7 @@ function getProfileDataById(profileId) {
     console.log('📊 Column mapping:', colMap);
     console.log('🔍 FieldRoutes_Button_Text in map?', 'FieldRoutes_Button_Text' in colMap);
     console.log('🔍 FieldRoutes_Link in map?', 'FieldRoutes_Link' in colMap);
+    console.log('🔍 CRM LINK in map?', 'CRM LINK' in colMap);
 
     // Find the profile row - check both exact match and trimmed match
     for (let i = 1; i < data.length; i++) {
@@ -2842,6 +2855,10 @@ function getProfileDataById(profileId) {
         console.log('🔘 Row[' + colMap['FieldRoutes_Button_Text'] + ']:', row[colMap['FieldRoutes_Button_Text']]);
         console.log('🔗 FieldRoutes_Link column index:', colMap['FieldRoutes_Link']);
         console.log('🔗 Row[' + colMap['FieldRoutes_Link'] + ']:', row[colMap['FieldRoutes_Link']]);
+        console.log('🔍 Column 16 (Q) value:', row[16]);
+        console.log('🔍 Column 17 (R) value:', row[17]);
+        console.log('🔍 CRM LINK column index:', colMap['CRM LINK']);
+        console.log('🔍 Row[' + colMap['CRM LINK'] + ']:', row[colMap['CRM LINK']]);
         
         const profileData = {
           profileId: row[colMap['Profile_ID']],
@@ -2862,9 +2879,9 @@ function getProfileDataById(profileId) {
           lastUpdated: row[colMap['Last_Updated']],
           syncStatus: row[colMap['Sync_Status']],
           editFormUrl: row[colMap['Edit_Form_URL']],
-          // FieldRoutes configuration fields - read by header name
-          FieldRoutes_Button_Text: row[colMap['FieldRoutes_Button_Text']],
-          FieldRoutes_Link: row[colMap['FieldRoutes_Link']],
+          // FieldRoutes configuration fields - read by header name with fallback to column indices
+          FieldRoutes_Button_Text: row[colMap['FieldRoutes_Button_Text']] || row[colMap['CRM LINK']] || row[16],
+          FieldRoutes_Link: row[colMap['FieldRoutes_Link']] || row[colMap['FieldRoutes_Link']] || row[17],
           // Additional address and custom fields
           Physical_Street: row[colMap['Physical_Street']],
           Physical_Suite: row[colMap['Physical_Suite']],
@@ -3788,40 +3805,3 @@ function testGetData() {
     console.error('Test failed:', error);
   }
 }
-
- 
- / /   T e s t   t h e   F i e l d R o u t e s   f u n c t i o n a l i t y   d i r e c t l y 
- f u n c t i o n   t e s t F i e l d R o u t e s B u t t o n ( )   { 
-     t r y   { 
-         c o n s o l e . l o g ( ' = = =   T E S T I N G   F I E L D R O U T E S   B U T T O N   = = = ' ) ; 
-         c o n s t   p r o f i l e I d   =   ' p r o f i l e _ 1 7 5 9 7 6 9 3 1 8 _ i u x 6 6 j g m ' ; 
-         c o n s o l e . l o g ( ' T e s t i n g   w i t h   P r o f i l e   I D : ' ,   p r o f i l e I d ) ; 
-         
-         / /   T e s t   g e t P r o f i l e D a t a B y I d   d i r e c t l y 
-         c o n s o l e . l o g ( ' - - -   T e s t i n g   g e t P r o f i l e D a t a B y I d   - - - ' ) ; 
-         c o n s t   r a w P r o f i l e D a t a   =   g e t P r o f i l e D a t a B y I d ( p r o f i l e I d ) ; 
-         c o n s o l e . l o g ( ' R a w   p r o f i l e   d a t a   k e y s : ' ,   O b j e c t . k e y s ( r a w P r o f i l e D a t a ) ) ; 
-         c o n s o l e . l o g ( ' F i e l d R o u t e s _ B u t t o n _ T e x t : ' ,   r a w P r o f i l e D a t a . F i e l d R o u t e s _ B u t t o n _ T e x t ) ; 
-         c o n s o l e . l o g ( ' F i e l d R o u t e s _ L i n k : ' ,   r a w P r o f i l e D a t a . F i e l d R o u t e s _ L i n k ) ; 
-         
-         / /   T e s t   g e t P r o f i l e D a t a A P I 
-         c o n s o l e . l o g ( ' - - -   T e s t i n g   g e t P r o f i l e D a t a A P I   - - - ' ) ; 
-         c o n s t   a p i R e s p o n s e   =   g e t P r o f i l e D a t a A P I ( p r o f i l e I d ) ; 
-         c o n s o l e . l o g ( ' A P I   R e s p o n s e   s u c c e s s : ' ,   a p i R e s p o n s e . s u c c e s s ) ; 
-         i f   ( a p i R e s p o n s e . s u c c e s s )   { 
-             c o n s o l e . l o g ( ' A P I   d a t a   k e y s : ' ,   O b j e c t . k e y s ( a p i R e s p o n s e . d a t a ) ) ; 
-             c o n s o l e . l o g ( ' f i e l d R o u t e s B u t t o n : ' ,   a p i R e s p o n s e . d a t a . f i e l d R o u t e s B u t t o n ) ; 
-         }   e l s e   { 
-             c o n s o l e . l o g ( ' A P I   E r r o r : ' ,   a p i R e s p o n s e . e r r o r ) ; 
-         } 
-         
-         c o n s o l e . l o g ( ' = = =   T E S T   C O M P L E T E   = = = ' ) ; 
-         r e t u r n   ' T e s t   c o m p l e t e d   -   c h e c k   l o g s ' ; 
-         
-     }   c a t c h   ( e r r o r )   { 
-         c o n s o l e . e r r o r ( ' T e s t   f a i l e d : ' ,   e r r o r ) ; 
-         r e t u r n   ' T e s t   f a i l e d :   '   +   e r r o r . t o S t r i n g ( ) ; 
-     } 
- } 
- 
- 
