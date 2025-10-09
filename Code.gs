@@ -1,6 +1,19 @@
 // Google Apps Script Web App for GitHub Pages Integration
 // This script should be deployed as a Web App from Google Apps Script
 
+/**
+ * Handles CORS preflight OPTIONS requests
+ */
+function doOptions(e) {
+  return ContentService
+    .createTextOutput('')
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeader('Access-Control-Allow-Origin', '*')
+    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    .setHeader('Access-Control-Allow-Headers', 'Content-Type')
+    .setHeader('Access-Control-Max-Age', '86400');
+}
+
 function doGet(e) {
   try {
     // Check if requesting the intake form
@@ -21,18 +34,30 @@ function doGet(e) {
     const callback = e.parameter.callback;
     
     if (profileId) {
-      const profileData = getProfileDataById(profileId);
+      console.log('🚀 doGet: Calling getProfileDataAPI with profileId:', profileId);
+      const apiResponse = getProfileDataAPI(profileId);
+      console.log('🚀 doGet: API Response success:', apiResponse.success);
+      console.log('🚀 doGet: API Response keys:', Object.keys(apiResponse.success ? apiResponse.data : {}));
+      const profileData = apiResponse.success ? apiResponse.data : {error: apiResponse.error};
+      console.log('🚀 doGet: Final profileData keys:', Object.keys(profileData));
+      console.log('🚀 doGet: fieldRoutesButton in final data:', !!profileData.fieldRoutesButton);
       
       // Handle JSONP callback
       if (callback) {
-      return ContentService
+        return ContentService
           .createTextOutput(`${callback}(${JSON.stringify(profileData)});`)
-          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+          .setMimeType(ContentService.MimeType.JAVASCRIPT)
+          .setHeader('Access-Control-Allow-Origin', '*')
+          .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+          .setHeader('Access-Control-Allow-Headers', 'Content-Type');
       }
       
       return ContentService
         .createTextOutput(JSON.stringify(profileData))
-        .setMimeType(ContentService.MimeType.JSON);
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeader('Access-Control-Allow-Origin', '*')
+        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
     }
 
     // Legacy support for sheetId-based requests
@@ -40,17 +65,23 @@ function doGet(e) {
 
     if (sheetId) {
       // Handle legacy sheetId requests
-    const data = getClientDataFromSheet(sheetId);
+      const data = getClientDataFromSheet(sheetId);
 
-    if (callback) {
+      if (callback) {
+        return ContentService
+          .createTextOutput(`${callback}(${JSON.stringify(data)});`)
+          .setMimeType(ContentService.MimeType.JAVASCRIPT)
+          .setHeader('Access-Control-Allow-Origin', '*')
+          .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+          .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      }
+
       return ContentService
-        .createTextOutput(`${callback}(${JSON.stringify(data)});`)
-        .setMimeType(ContentService.MimeType.JAVASCRIPT);
-    }
-
-    return ContentService
-      .createTextOutput(JSON.stringify(data))
-      .setMimeType(ContentService.MimeType.JSON);
+        .createTextOutput(JSON.stringify(data))
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeader('Access-Control-Allow-Origin', '*')
+        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
     }
 
     // Default: serve the intake form when no parameters are provided
@@ -69,12 +100,18 @@ function doGet(e) {
     if (callback) {
       return ContentService
         .createTextOutput(`${callback}(${JSON.stringify(errorResponse)});`)
-        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+        .setMimeType(ContentService.MimeType.JAVASCRIPT)
+        .setHeader('Access-Control-Allow-Origin', '*')
+        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
     }
     
     return ContentService
       .createTextOutput(JSON.stringify(errorResponse))
-      .setMimeType(ContentService.MimeType.JSON);
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader('Access-Control-Allow-Origin', '*')
+      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
   }
 }
 
@@ -350,7 +387,7 @@ function updateProfileFromForm(formData) {
  */
 function showEditForm(profileId) {
   try {
-    const profileData = getProfileFromMasterSheet(profileId);
+    const profileData = getProfileDataById(profileId);
     
     const template = HtmlService.createTemplateFromFile('ui/edit-form');
     template.profileData = profileData;
@@ -368,48 +405,7 @@ function showEditForm(profileId) {
 /**
  * API endpoint for production web app
  */
-function getProfileDataAPI(profileId) {
-  try {
-    if (!profileId) {
-      throw new Error('Profile ID is required');
-    }
-    
-    const profileData = getProfileFromMasterSheet(profileId);
-    
-    // Convert to format expected by production web app
-    const webAppData = {
-      companyName: profileData.Company_Name,
-      location: profileData.Location,
-      timezone: profileData.Timezone,
-      officeInfo: {
-        phone: profileData.Phone,
-        email: profileData.Email,
-        website: profileData.Website,
-        physicalAddress: profileData.Address,
-        officeHours: profileData.Hours,
-        fieldRoutesLink: profileData.Website
-      },
-      bulletin: profileData.Bulletin,
-      pestsNotCovered: profileData.Pests_Not_Covered,
-      services: profileData.services || [],
-      technicians: profileData.technicians || [],
-      policies: profileData.policies || {},
-      serviceAreas: profileData.serviceAreas || []
-    };
-    
-    return {
-      success: true,
-      data: webAppData
-    };
-    
-  } catch (error) {
-    Logger.log('Error in getProfileDataAPI: ' + error.toString());
-    return {
-      success: false,
-      error: error.message
-    };
-  }
-}
+// REMOVED DUPLICATE FUNCTION - Using the correct version below at line 3655
 
 /**
  * Generates web app profile URL
@@ -2758,7 +2754,7 @@ function createClientProfileInMasterSheet(data) {
     }
 
     // Generate Edit Form URL
-    const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${data.profileId}&edit=true`;
+    const editFormUrl = `https://script.google.com/macros/s/AKfycbxtNf2wxZ8Nzno6IyJczpqvkM3RpuyZcnZCJ-xn8edtcC-jx_rGuzMn1DAqsbLAzDb2-Q/exec?form=intake&profileId=${data.profileId}&edit=true`;
     
     // Prepare data for insertion (matching expanded Master Client Profiles sheet structure)
     const profileRow = [
@@ -2830,13 +2826,21 @@ function getProfileDataById(profileId) {
     }
 
     const data = masterSheet.getDataRange().getValues();
+    const headers = data[0]; // Get header row
     console.log('Sheet data rows:', data.length);
     console.log('Looking for profileId:', profileId);
+    console.log('📋 Headers:', headers);
     
-    // Debug: Log first few rows
-    for (let i = 0; i < Math.min(3, data.length); i++) {
-      console.log(`Row ${i}:`, data[i][0]);
-    }
+    // Create a map of header names to column indices (trimmed to handle extra spaces)
+    const colMap = {};
+    headers.forEach((header, index) => {
+      const cleanHeader = (header || '').toString().trim();
+      colMap[cleanHeader] = index;
+    });
+    console.log('📊 Column mapping:', colMap);
+    console.log('🔍 FieldRoutes_Button_Text in map?', 'FieldRoutes_Button_Text' in colMap);
+    console.log('🔍 FieldRoutes_Link in map?', 'FieldRoutes_Link' in colMap);
+    console.log('🔍 CRM LINK in map?', 'CRM LINK' in colMap);
 
     // Find the profile row - check both exact match and trimmed match
     for (let i = 1; i < data.length; i++) {
@@ -2844,30 +2848,54 @@ function getProfileDataById(profileId) {
       const rowProfileId = row[0] ? row[0].toString().trim() : '';
       const searchProfileId = profileId.toString().trim();
       
-      console.log(`Comparing: "${rowProfileId}" vs "${searchProfileId}"`);
-      
       if (rowProfileId === searchProfileId) {
-        console.log('Profile found at row', i);
+        console.log('✅ Profile found at row', i);
+        console.log('📏 Row data length:', row.length);
+        console.log('🔘 FieldRoutes_Button_Text column index:', colMap['FieldRoutes_Button_Text']);
+        console.log('🔘 Row[' + colMap['FieldRoutes_Button_Text'] + ']:', row[colMap['FieldRoutes_Button_Text']]);
+        console.log('🔗 FieldRoutes_Link column index:', colMap['FieldRoutes_Link']);
+        console.log('🔗 Row[' + colMap['FieldRoutes_Link'] + ']:', row[colMap['FieldRoutes_Link']]);
+        console.log('🔍 Column 16 (Q) value:', row[16]);
+        console.log('🔍 Column 17 (R) value:', row[17]);
+        console.log('🔍 CRM LINK column index:', colMap['CRM LINK']);
+        console.log('🔍 Row[' + colMap['CRM LINK'] + ']:', row[colMap['CRM LINK']]);
         
         const profileData = {
-          profileId: row[0],
-          companyName: row[1],        // Company_Name
-          location: row[2],           // Location  
-          timezone: row[3],           // Timezone
+          profileId: row[colMap['Profile_ID']],
+          companyName: row[colMap['Company_Name']],
+          location: row[colMap['Location']],
+          timezone: row[colMap['Timezone']],
           officeInfo: {
-            phone: row[4],            // Phone
-            email: row[5],            // Email
-            website: row[6],          // Website
-            address: row[7],          // Address
-            hours: row[8]             // Hours
+            phone: row[colMap['Phone']],
+            email: row[colMap['Email']],
+            website: row[colMap['Website']],
+            address: row[colMap['Address']],
+            hours: row[colMap['Hours']]
           },
-          bulletin: row[9],           // Bulletin
-          pestsNotCovered: row[10],   // Pests_Not_Covered
-          clientFolderUrl: row[11],   // Client_Folder_URL
-          wixProfileUrl: row[12],     // Wix_Profile_URL
-          lastUpdated: row[13],       // Last_Updated
-          syncStatus: row[14],        // Sync_Status
-          editFormUrl: row[15]        // Edit_Form_URL
+          bulletin: row[colMap['Bulletin']],
+          pestsNotCovered: row[colMap['Pests_Not_Covered']],
+          clientFolderUrl: row[colMap['Client_Folder_URL']],
+          wixProfileUrl: row[colMap['Wix_Profile_URL']],
+          lastUpdated: row[colMap['Last_Updated']],
+          syncStatus: row[colMap['Sync_Status']],
+          editFormUrl: row[colMap['Edit_Form_URL']],
+          // FieldRoutes configuration fields - read by header name with fallback to column indices
+          FieldRoutes_Button_Text: row[colMap['FieldRoutes_Button_Text']] || row[colMap['CRM LINK']] || row[16],
+          FieldRoutes_Link: row[colMap['FieldRoutes_Link']] || row[colMap['FieldRoutes_Link']] || row[17],
+          // Additional address and custom fields
+          Physical_Street: row[colMap['Physical_Street']],
+          Physical_Suite: row[colMap['Physical_Suite']],
+          Physical_City: row[colMap['Physical_City']],
+          Physical_State: row[colMap['Physical_State']],
+          Physical_Zip: row[colMap['Physical_Zip']],
+          Mailing_Street: row[colMap['Mailing_Street']],
+          Mailing_Suite: row[colMap['Mailing_Suite']],
+          Mailing_City: row[colMap['Mailing_City']],
+          Mailing_State: row[colMap['Mailing_State']],
+          Mailing_Zip: row[colMap['Mailing_Zip']],
+          Same_As_Physical: row[colMap['Same_As_Physical']],
+          Timezone_Custom: row[colMap['Timezone_Custom']],
+          Holidays_Observed: row[colMap['Holidays_Observed']]
         };
 
         // Get related data
@@ -3178,13 +3206,13 @@ function initializeProfileStructure(profileId, driveUrl) {
     const sheet = SpreadsheetApp.openById(MASTER_SHEET_ID);
     
     // Generate Edit Form URL
-    const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${profileId}&edit=true`;
+    const editFormUrl = `https://script.google.com/macros/s/AKfycbxtNf2wxZ8Nzno6IyJczpqvkM3RpuyZcnZCJ-xn8edtcC-jx_rGuzMn1DAqsbLAzDb2-Q/exec?form=intake&profileId=${profileId}&edit=true`;
     
     // 1. Pre-create Client_Profiles row
     let clientSheet = sheet.getSheetByName('Client_Profiles');
     if (!clientSheet) {
       clientSheet = sheet.insertSheet('Client_Profiles');
-      clientSheet.appendRow(['Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL', 'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 'Physical_City', 'Physical_State', 'Physical_Zip', 'Mailing_Street', 'Mailing_Suite', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical', 'Timezone_Custom', 'Holidays_Observed']);
+      clientSheet.appendRow(['Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL', 'FieldRoutes_Button_Text', 'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 'Physical_City', 'Physical_State', 'Physical_Zip', 'Mailing_Street', 'Mailing_Suite', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical', 'Timezone_Custom', 'Holidays_Observed']);
     }
     
     clientSheet.appendRow([
@@ -3289,7 +3317,7 @@ function updateClientProfileRow(sheet, profileId, formData) {
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === profileId) {
       // Update the row with form data
-      const editFormUrl = `https://script.google.com/macros/s/AKfycbwfG46Qj6HLdMfXe9TtNFkEgCPVOGYeygQEKZj6qc9Gktx9_5Qi8jQv7sxl3BAc5mop/exec?form=intake&profileId=${profileId}&edit=true`;
+      const editFormUrl = `https://script.google.com/macros/s/AKfycbxtNf2wxZ8Nzno6IyJczpqvkM3RpuyZcnZCJ-xn8edtcC-jx_rGuzMn1DAqsbLAzDb2-Q/exec?form=intake&profileId=${profileId}&edit=true`;
       
       const updatedRow = [
         profileId,                                    // A - Profile_ID
@@ -3625,23 +3653,36 @@ function getProfileDataAPI(profileId) {
       throw new Error('Profile ID is required');
     }
     
-    const profileData = getProfileFromMasterSheet(profileId);
+    const profileData = getProfileDataById(profileId);
+    
+    console.log('🔍 AppScript Debug - profileData.FieldRoutes_Button_Text:', profileData.FieldRoutes_Button_Text);
+    console.log('🔍 AppScript Debug - profileData.FieldRoutes_Link:', profileData.FieldRoutes_Link);
+    console.log('🔍 AppScript Debug - Full profileData keys:', Object.keys(profileData));
     
     // Convert to format expected by production web app
     const webAppData = {
-      companyName: profileData.Company_Name,
-      location: profileData.Location,
-      timezone: profileData.Timezone,
+      companyName: profileData.companyName,
+      location: profileData.location,
+      timezone: profileData.timezone,
       officeInfo: {
-        phone: profileData.Phone,
-        email: profileData.Email,
-        website: profileData.Website,
-        physicalAddress: profileData.Address,
-        officeHours: profileData.Hours,
-        fieldRoutesLink: profileData.FieldRoutes_Link || profileData.Website
+        phone: profileData.officeInfo?.phone,
+        email: profileData.officeInfo?.email,
+        website: profileData.officeInfo?.website,
+        physicalAddress: profileData.officeInfo?.address,
+        officeHours: profileData.officeInfo?.hours,
+        fieldRoutesLink: profileData.FieldRoutes_Link || profileData.officeInfo?.website
       },
-      bulletin: profileData.Bulletin,
-      pestsNotCovered: profileData.Pests_Not_Covered,
+      // FieldRoutes button configuration
+      fieldRoutesButton: {
+        text: profileData.FieldRoutes_Button_Text || 'FieldRoutes',
+        url: profileData.FieldRoutes_Link || profileData.officeInfo?.website,
+        show: !!(profileData.FieldRoutes_Button_Text || profileData.FieldRoutes_Link)
+      },
+      // Raw FieldRoutes data for client-side workaround
+      FieldRoutes_Button_Text: profileData.FieldRoutes_Button_Text,
+      FieldRoutes_Link: profileData.FieldRoutes_Link,
+      bulletin: profileData.bulletin,
+      pestsNotCovered: profileData.pestsNotCovered,
       services: profileData.services || [],
       technicians: profileData.technicians || [],
       policies: formatPoliciesForDisplay(profileData.policies || {}),
