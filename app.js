@@ -1,4 +1,6 @@
 // Main Application JavaScript - Complete Call Center Profile System
+// VERSION: 2025-01-07-ADDITIVE-BUNDLE-V2
+console.log('🔵 App.js Version: 2025-01-07-ADDITIVE-BUNDLE-V2');
 class GitHubProfileViewer {
     constructor() {
         this.clientData = {};
