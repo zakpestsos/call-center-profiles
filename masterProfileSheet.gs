@@ -951,10 +951,12 @@ function getProfileServices(profileId) {
   const servicesTab = masterSheet.getSheetByName('Services');
   const data = servicesTab.getDataRange().getValues();
   
+  console.log('🔍 Debug - Reading services for profileId:', profileId);
+  
   const services = [];
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === profileId) {
-      services.push({
+      const service = {
         name: data[i][1],
         serviceType: data[i][2],
         frequency: data[i][3],
@@ -967,11 +969,23 @@ function getProfileServices(profileId) {
         billingFrequency: data[i][10],
         agentNote: data[i][11],
         queueExt: data[i][12],
-        pricingTiers: JSON.parse(data[i][13] || '[]')
-      });
+        pricingTiers: JSON.parse(data[i][13] || '[]'),
+        // Additional fields from columns 15+
+        callAhead: data[i][14] || '',
+        leaveDuringService: data[i][15] || '',
+        followUp: data[i][16] || '',
+        prepSheet: data[i][17] || '',
+        recurringDuration: data[i][18] || ''
+      };
+      
+      console.log('🔍 Debug - Service agentNote value:', service.agentNote);
+      console.log('🔍 Debug - Service name:', service.name);
+      
+      services.push(service);
     }
   }
   
+  console.log('🔍 Debug - Total services found:', services.length);
   return services;
 }
 

@@ -1517,8 +1517,19 @@ class GitHubProfileViewer {
 
         const pricingTiers = serviceCard._pricingData;
 
+        console.log('🧮 Pricing Calculator Debug:', {
+            sqft: sqft,
+            totalTiers: pricingTiers.length
+        });
+
         // Find ALL tiers matching the square footage (for bundle components)
-        const matchingTiers = pricingTiers.filter(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
+        const matchingTiers = pricingTiers.filter(t => {
+            const matches = sqft >= t.sqftMin && sqft <= t.sqftMax;
+            console.log(`  ${t.serviceType}: [${t.sqftMin}-${t.sqftMax}] ${matches ? '✓' : '✗'}`);
+            return matches;
+        });
+
+        console.log('Matched', matchingTiers.length, 'tiers');
 
         if (matchingTiers.length === 0) {
             pricingDiv.innerHTML = `
@@ -1534,6 +1545,13 @@ class GitHubProfileViewer {
         // Check if this is a bundle pricing tier (has "Bundle Total" or "Component:" in serviceType)
         const bundleTotal = matchingTiers.find(t => t.serviceType && t.serviceType.includes('Bundle Total'));
         const components = matchingTiers.filter(t => t.serviceType && t.serviceType.startsWith('Component:'));
+
+        console.log('Bundle detection:', {
+            hasBundleTotal: !!bundleTotal,
+            bundleTotalPrice: bundleTotal?.recurringPrice,
+            componentCount: components.length,
+            componentNames: components.map(c => c.serviceType)
+        });
 
         if (bundleTotal || components.length > 0) {
             // This is bundle pricing with square footage tiers
@@ -3469,8 +3487,19 @@ document.addEventListener('keypress', function(e) {
 
         const pricingTiers = serviceCard._pricingData;
 
+        console.log('🧮 Pricing Calculator Debug:', {
+            sqft: sqft,
+            totalTiers: pricingTiers.length
+        });
+
         // Find ALL tiers matching the square footage (for bundle components)
-        const matchingTiers = pricingTiers.filter(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
+        const matchingTiers = pricingTiers.filter(t => {
+            const matches = sqft >= t.sqftMin && sqft <= t.sqftMax;
+            console.log(`  ${t.serviceType}: [${t.sqftMin}-${t.sqftMax}] ${matches ? '✓' : '✗'}`);
+            return matches;
+        });
+
+        console.log('Matched', matchingTiers.length, 'tiers');
 
         if (matchingTiers.length === 0) {
             pricingDiv.innerHTML = `
@@ -3486,6 +3515,13 @@ document.addEventListener('keypress', function(e) {
         // Check if this is a bundle pricing tier (has "Bundle Total" or "Component:" in serviceType)
         const bundleTotal = matchingTiers.find(t => t.serviceType && t.serviceType.includes('Bundle Total'));
         const components = matchingTiers.filter(t => t.serviceType && t.serviceType.startsWith('Component:'));
+
+        console.log('Bundle detection:', {
+            hasBundleTotal: !!bundleTotal,
+            bundleTotalPrice: bundleTotal?.recurringPrice,
+            componentCount: components.length,
+            componentNames: components.map(c => c.serviceType)
+        });
 
         if (bundleTotal || components.length > 0) {
             // This is bundle pricing with square footage tiers
