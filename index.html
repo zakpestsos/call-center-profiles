@@ -2016,6 +2016,188 @@ grid-template-columns: 1fr;
 grid-template-columns: 1fr;
 }
 }
+
+/* Additive Bundle Pricing Styles */
+.sqft-bundle-breakdown.additive {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bundle-component-additive-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-left: 3px solid rgba(59, 130, 246, 0.5);
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.bundle-component-additive-row:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-left-color: rgba(59, 130, 246, 0.8);
+    transform: translateX(2px);
+}
+
+.component-name-with-code {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+}
+
+.component-name {
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.component-code {
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.component-prices-additive {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.price-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.price-label-sm {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7rem;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.price-value-comp {
+    color: #60a5fa;
+    font-size: 1.25rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+}
+
+.plus-sign-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem 0;
+    margin: 0.25rem 0;
+}
+
+.plus-sign {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: 'Rajdhani', sans-serif;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.equals-sign-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+    margin: 1rem 0 0.75rem 0;
+    border-top: 2px solid rgba(16, 185, 129, 0.4);
+    border-bottom: 2px solid rgba(16, 185, 129, 0.4);
+    background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.1) 50%, transparent 100%);
+}
+
+.equals-sign {
+    color: #10b981;
+    font-size: 2.25rem;
+    font-weight: 900;
+    font-family: 'Rajdhani', sans-serif;
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+}
+
+.bundle-total-additive-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+    border: 2px solid rgba(16, 185, 129, 0.5);
+    border-radius: 0.75rem;
+    margin-top: 0.75rem;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.bundle-total-label-additive {
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.bundle-total-prices-additive {
+    display: flex;
+    gap: 2.5rem;
+    align-items: center;
+}
+
+.total-price-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.price-value-total {
+    color: #10b981;
+    font-size: 1.75rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 900;
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.7);
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .bundle-component-additive-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .component-prices-additive {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .bundle-total-additive-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .bundle-total-prices-additive {
+        width: 100%;
+        justify-content: space-around;
+    }
+}
 </style>
 </head>
 <body>
