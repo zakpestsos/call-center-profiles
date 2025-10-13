@@ -1517,10 +1517,71 @@ class GitHubProfileViewer {
 
         const pricingTiers = serviceCard._pricingData;
 
-        // Find the appropriate pricing tier
-        const tier = pricingTiers.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
+        // Find ALL tiers matching the square footage (for bundle components)
+        const matchingTiers = pricingTiers.filter(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
 
-        if (tier) {
+        if (matchingTiers.length === 0) {
+            pricingDiv.innerHTML = `
+                <div class="price-display-item">
+                    <div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div>
+                </div>
+            `;
+            rangeDiv.textContent = 'Please contact office for custom pricing';
+            resultDiv.classList.add('show');
+            return;
+        }
+
+        // Check if this is a bundle pricing tier (has "Bundle Total" or "Component:" in serviceType)
+        const bundleTotal = matchingTiers.find(t => t.serviceType && t.serviceType.includes('Bundle Total'));
+        const components = matchingTiers.filter(t => t.serviceType && t.serviceType.startsWith('Component:'));
+
+        if (bundleTotal || components.length > 0) {
+            // This is bundle pricing with square footage tiers
+            let html = '<div class="sqft-bundle-breakdown">';
+            
+            // Display bundle total first
+            if (bundleTotal) {
+                html += `
+                    <div class="bundle-total-row">
+                        <div class="bundle-total-label">
+                            <strong>Total Bundle Price</strong>
+                        </div>
+                        <div class="bundle-total-prices-inline">
+                            ${bundleTotal.firstPrice ? `<div class="bundle-price-inline"><span>First:</span><strong>${bundleTotal.firstPrice}</strong></div>` : ''}
+                            ${bundleTotal.recurringPrice ? `<div class="bundle-price-inline"><span>Recurring:</span><strong>${bundleTotal.recurringPrice}</strong></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Display components
+            if (components.length > 0) {
+                html += '<div class="bundle-components-breakdown">';
+                html += '<div class="components-header">Includes:</div>';
+                components.forEach(comp => {
+                    const componentName = comp.serviceType.replace('Component:', '').trim();
+                    html += `
+                        <div class="bundle-component-row">
+                            <div class="component-name">${componentName}</div>
+                            <div class="component-prices">
+                                ${comp.firstPrice ? `<span class="comp-price">First: ${comp.firstPrice}</span>` : ''}
+                                ${comp.recurringPrice ? `<span class="comp-price">Recurring: ${comp.recurringPrice}</span>` : ''}
+                                ${!comp.firstPrice && !comp.recurringPrice ? '<span class="comp-price included">Included</span>' : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            pricingDiv.innerHTML = html;
+            
+            const tier = matchingTiers[0];
+            rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+        } else {
+            // Standard single-tier pricing
+            const tier = matchingTiers[0];
             pricingDiv.innerHTML = `
                 <div class="price-display-item">
                     <div class="price-display-label">First Service</div>
@@ -1536,13 +1597,6 @@ class GitHubProfileViewer {
                 </div>
             `;
             rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
-        } else {
-            pricingDiv.innerHTML = `
-                <div class="price-display-item">
-                    <div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div>
-                </div>
-            `;
-            rangeDiv.textContent = 'Please contact office for custom pricing';
         }
 
         resultDiv.classList.add('show');
@@ -3415,10 +3469,71 @@ document.addEventListener('keypress', function(e) {
 
         const pricingTiers = serviceCard._pricingData;
 
-        // Find the appropriate pricing tier
-        const tier = pricingTiers.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
+        // Find ALL tiers matching the square footage (for bundle components)
+        const matchingTiers = pricingTiers.filter(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
 
-        if (tier) {
+        if (matchingTiers.length === 0) {
+            pricingDiv.innerHTML = `
+                <div class="price-display-item">
+                    <div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div>
+                </div>
+            `;
+            rangeDiv.textContent = 'Please contact office for custom pricing';
+            resultDiv.classList.add('show');
+            return;
+        }
+
+        // Check if this is a bundle pricing tier (has "Bundle Total" or "Component:" in serviceType)
+        const bundleTotal = matchingTiers.find(t => t.serviceType && t.serviceType.includes('Bundle Total'));
+        const components = matchingTiers.filter(t => t.serviceType && t.serviceType.startsWith('Component:'));
+
+        if (bundleTotal || components.length > 0) {
+            // This is bundle pricing with square footage tiers
+            let html = '<div class="sqft-bundle-breakdown">';
+            
+            // Display bundle total first
+            if (bundleTotal) {
+                html += `
+                    <div class="bundle-total-row">
+                        <div class="bundle-total-label">
+                            <strong>Total Bundle Price</strong>
+                        </div>
+                        <div class="bundle-total-prices-inline">
+                            ${bundleTotal.firstPrice ? `<div class="bundle-price-inline"><span>First:</span><strong>${bundleTotal.firstPrice}</strong></div>` : ''}
+                            ${bundleTotal.recurringPrice ? `<div class="bundle-price-inline"><span>Recurring:</span><strong>${bundleTotal.recurringPrice}</strong></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Display components
+            if (components.length > 0) {
+                html += '<div class="bundle-components-breakdown">';
+                html += '<div class="components-header">Includes:</div>';
+                components.forEach(comp => {
+                    const componentName = comp.serviceType.replace('Component:', '').trim();
+                    html += `
+                        <div class="bundle-component-row">
+                            <div class="component-name">${componentName}</div>
+                            <div class="component-prices">
+                                ${comp.firstPrice ? `<span class="comp-price">First: ${comp.firstPrice}</span>` : ''}
+                                ${comp.recurringPrice ? `<span class="comp-price">Recurring: ${comp.recurringPrice}</span>` : ''}
+                                ${!comp.firstPrice && !comp.recurringPrice ? '<span class="comp-price included">Included</span>' : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            pricingDiv.innerHTML = html;
+            
+            const tier = matchingTiers[0];
+            rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+        } else {
+            // Standard single-tier pricing
+            const tier = matchingTiers[0];
             pricingDiv.innerHTML = `
                 <div class="price-display-item">
                     <div class="price-display-label">First Service</div>
@@ -3434,13 +3549,6 @@ document.addEventListener('keypress', function(e) {
                 </div>
             `;
             rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
-        } else {
-            pricingDiv.innerHTML = `
-                <div class="price-display-item">
-                    <div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div>
-                </div>
-            `;
-            rangeDiv.textContent = 'Please contact office for custom pricing';
         }
 
         resultDiv.classList.add('show');
