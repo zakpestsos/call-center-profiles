@@ -6771,3 +6771,169 @@ font-style: italic;
 }
 }
 
+/* Additive Bundle Pricing Styles */
+
+.sqft-bundle-breakdown.additive {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+/* Individual Component Rows */
+.bundle-component-additive-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+}
+
+.component-name-with-code {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.component-name {
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.component-code {
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.component-prices-additive {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.price-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.price-label-sm {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.7rem;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.price-value-comp {
+    color: #60a5fa;
+    font-size: 1.1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+}
+
+/* Plus Sign Divider */
+.plus-sign-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.plus-sign {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+/* Equals Sign Divider */
+.equals-sign-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem 0;
+    margin: 0.5rem 0;
+    border-top: 2px solid rgba(16, 185, 129, 0.3);
+    border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.equals-sign {
+    color: #10b981;
+    font-size: 2rem;
+    font-weight: 900;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+/* Total Row */
+.bundle-total-additive-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.15);
+    border: 2px solid rgba(16, 185, 129, 0.4);
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.bundle-total-label-additive {
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.bundle-total-prices-additive {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.total-price-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.price-value-total {
+    color: #10b981;
+    font-size: 1.5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 900;
+    text-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .bundle-component-additive-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .component-prices-additive {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .bundle-total-additive-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .bundle-total-prices-additive {
+        width: 100%;
+        justify-content: space-around;
+    }
+}
+

@@ -1525,7 +1525,7 @@ class GitHubProfileViewer {
         // Find ALL tiers matching the square footage (for bundle components)
         const matchingTiers = pricingTiers.filter(t => {
             const matches = sqft >= t.sqftMin && sqft <= t.sqftMax;
-            console.log(`  ${t.serviceType}: [${t.sqftMin}-${t.sqftMax}] ${matches ? '✓' : '✗'}`);
+            console.log(`  ${t.serviceType || t.acreage || 'Tier'}: [${t.sqftMin}-${t.sqftMax}] ${matches ? '✓' : '✗'}`);
             return matches;
         });
 
@@ -1542,18 +1542,67 @@ class GitHubProfileViewer {
             return;
         }
 
-        // Check if this is a bundle pricing tier (has "Bundle Total" or "Component:" in serviceType)
-        const bundleTotal = matchingTiers.find(t => t.serviceType && t.serviceType.includes('Bundle Total'));
-        const components = matchingTiers.filter(t => t.serviceType && t.serviceType.startsWith('Component:'));
+        // Get the first matching tier
+        const tier = matchingTiers[0];
+        
+        // Check for NEW additive bundle format (with components array)
+        if (tier.components && Array.isArray(tier.components) && tier.components.length > 0) {
+            console.log('✨ Using NEW additive bundle format');
+            
+            let html = '<div class="sqft-bundle-breakdown additive">';
+            
+            // Display each component with prices
+            tier.components.forEach((comp, index) => {
+                const isLast = index === tier.components.length - 1;
+                html += `
+                    <div class="bundle-component-additive-row">
+                        <div class="component-name-with-code">
+                            <span class="component-name">${comp.name}</span>
+                            ${comp.shortCode ? `<span class="component-code">(${comp.shortCode})</span>` : ''}
+                        </div>
+                        <div class="component-prices-additive">
+                            ${comp.firstPrice ? `<div class="price-item"><span class="price-label-sm">First:</span><strong class="price-value-comp">${comp.firstPrice}</strong></div>` : ''}
+                            ${comp.recurringPrice ? `<div class="price-item"><span class="price-label-sm">Recurring:</span><strong class="price-value-comp">${comp.recurringPrice}</strong></div>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Add plus sign between components
+                if (!isLast) {
+                    html += '<div class="plus-sign-divider"><span class="plus-sign">+</span></div>';
+                }
+            });
+            
+            // Add equals sign divider
+            html += '<div class="equals-sign-divider"><span class="equals-sign">=</span></div>';
+            
+            // Display total with highlighted styling
+            html += `
+                <div class="bundle-total-additive-row">
+                    <div class="bundle-total-label-additive">
+                        <strong>Total Bundle Price</strong>
+                    </div>
+                    <div class="bundle-total-prices-additive">
+                        ${tier.totalFirst ? `<div class="total-price-item"><span class="price-label-sm">First:</span><strong class="price-value-total">${tier.totalFirst}</strong></div>` : ''}
+                        ${tier.totalRecurring ? `<div class="total-price-item"><span class="price-label-sm">Recurring:</span><strong class="price-value-total">${tier.totalRecurring}</strong></div>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            html += '</div>';
+            pricingDiv.innerHTML = html;
+            
+            const acreageText = tier.acreage ? ` (${tier.acreage})` : '';
+            rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft${acreageText}`;
+            
+        } else {
+            // Check for OLD bundle format (backward compatibility)
+            const bundleTotal = matchingTiers.find(t => t.serviceType && t.serviceType.includes('Bundle Total'));
+            const components = matchingTiers.filter(t => t.serviceType && t.serviceType.startsWith('Component:'));
 
-        console.log('Bundle detection:', {
-            hasBundleTotal: !!bundleTotal,
-            bundleTotalPrice: bundleTotal?.recurringPrice,
-            componentCount: components.length,
-            componentNames: components.map(c => c.serviceType)
-        });
+            console.log('📦 Using OLD bundle format (Bundle Total / Component:)');
 
-        if (bundleTotal || components.length > 0) {
+            if (bundleTotal || components.length > 0) {
             // This is bundle pricing with square footage tiers
             let html = '<div class="sqft-bundle-breakdown">';
             
@@ -1592,29 +1641,28 @@ class GitHubProfileViewer {
                 html += '</div>';
             }
             
-            html += '</div>';
-            pricingDiv.innerHTML = html;
-            
-            const tier = matchingTiers[0];
-            rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
-        } else {
-            // Standard single-tier pricing
-            const tier = matchingTiers[0];
-            pricingDiv.innerHTML = `
-                <div class="price-display-item">
-                    <div class="price-display-label">First Service</div>
-                    <div class="price-display-value">${tier.firstPrice}</div>
-                </div>
-                <div class="price-display-item">
-                    <div class="price-display-label">Recurring</div>
-                    <div class="price-display-value">${tier.recurringPrice}</div>
-                </div>
-                <div class="price-display-item">
-                    <div class="price-display-label">Service Type</div>
-                    <div class="price-display-value">${tier.serviceType}</div>
-                </div>
-            `;
-            rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+                html += '</div>';
+                pricingDiv.innerHTML = html;
+                
+                rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+            } else {
+                // Standard single-tier pricing
+                pricingDiv.innerHTML = `
+                    <div class="price-display-item">
+                        <div class="price-display-label">First Service</div>
+                        <div class="price-display-value">${tier.firstPrice}</div>
+                    </div>
+                    <div class="price-display-item">
+                        <div class="price-display-label">Recurring</div>
+                        <div class="price-display-value">${tier.recurringPrice}</div>
+                    </div>
+                    <div class="price-display-item">
+                        <div class="price-display-label">Service Type</div>
+                        <div class="price-display-value">${tier.serviceType}</div>
+                    </div>
+                `;
+                rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+            }
         }
 
         resultDiv.classList.add('show');
@@ -3495,7 +3543,7 @@ document.addEventListener('keypress', function(e) {
         // Find ALL tiers matching the square footage (for bundle components)
         const matchingTiers = pricingTiers.filter(t => {
             const matches = sqft >= t.sqftMin && sqft <= t.sqftMax;
-            console.log(`  ${t.serviceType}: [${t.sqftMin}-${t.sqftMax}] ${matches ? '✓' : '✗'}`);
+            console.log(`  ${t.serviceType || t.acreage || 'Tier'}: [${t.sqftMin}-${t.sqftMax}] ${matches ? '✓' : '✗'}`);
             return matches;
         });
 
@@ -3512,18 +3560,67 @@ document.addEventListener('keypress', function(e) {
             return;
         }
 
-        // Check if this is a bundle pricing tier (has "Bundle Total" or "Component:" in serviceType)
-        const bundleTotal = matchingTiers.find(t => t.serviceType && t.serviceType.includes('Bundle Total'));
-        const components = matchingTiers.filter(t => t.serviceType && t.serviceType.startsWith('Component:'));
+        // Get the first matching tier
+        const tier = matchingTiers[0];
+        
+        // Check for NEW additive bundle format (with components array)
+        if (tier.components && Array.isArray(tier.components) && tier.components.length > 0) {
+            console.log('✨ Using NEW additive bundle format');
+            
+            let html = '<div class="sqft-bundle-breakdown additive">';
+            
+            // Display each component with prices
+            tier.components.forEach((comp, index) => {
+                const isLast = index === tier.components.length - 1;
+                html += `
+                    <div class="bundle-component-additive-row">
+                        <div class="component-name-with-code">
+                            <span class="component-name">${comp.name}</span>
+                            ${comp.shortCode ? `<span class="component-code">(${comp.shortCode})</span>` : ''}
+                        </div>
+                        <div class="component-prices-additive">
+                            ${comp.firstPrice ? `<div class="price-item"><span class="price-label-sm">First:</span><strong class="price-value-comp">${comp.firstPrice}</strong></div>` : ''}
+                            ${comp.recurringPrice ? `<div class="price-item"><span class="price-label-sm">Recurring:</span><strong class="price-value-comp">${comp.recurringPrice}</strong></div>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Add plus sign between components
+                if (!isLast) {
+                    html += '<div class="plus-sign-divider"><span class="plus-sign">+</span></div>';
+                }
+            });
+            
+            // Add equals sign divider
+            html += '<div class="equals-sign-divider"><span class="equals-sign">=</span></div>';
+            
+            // Display total with highlighted styling
+            html += `
+                <div class="bundle-total-additive-row">
+                    <div class="bundle-total-label-additive">
+                        <strong>Total Bundle Price</strong>
+                    </div>
+                    <div class="bundle-total-prices-additive">
+                        ${tier.totalFirst ? `<div class="total-price-item"><span class="price-label-sm">First:</span><strong class="price-value-total">${tier.totalFirst}</strong></div>` : ''}
+                        ${tier.totalRecurring ? `<div class="total-price-item"><span class="price-label-sm">Recurring:</span><strong class="price-value-total">${tier.totalRecurring}</strong></div>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            html += '</div>';
+            pricingDiv.innerHTML = html;
+            
+            const acreageText = tier.acreage ? ` (${tier.acreage})` : '';
+            rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft${acreageText}`;
+            
+        } else {
+            // Check for OLD bundle format (backward compatibility)
+            const bundleTotal = matchingTiers.find(t => t.serviceType && t.serviceType.includes('Bundle Total'));
+            const components = matchingTiers.filter(t => t.serviceType && t.serviceType.startsWith('Component:'));
 
-        console.log('Bundle detection:', {
-            hasBundleTotal: !!bundleTotal,
-            bundleTotalPrice: bundleTotal?.recurringPrice,
-            componentCount: components.length,
-            componentNames: components.map(c => c.serviceType)
-        });
+            console.log('📦 Using OLD bundle format (Bundle Total / Component:)');
 
-        if (bundleTotal || components.length > 0) {
+            if (bundleTotal || components.length > 0) {
             // This is bundle pricing with square footage tiers
             let html = '<div class="sqft-bundle-breakdown">';
             
@@ -3562,29 +3659,28 @@ document.addEventListener('keypress', function(e) {
                 html += '</div>';
             }
             
-            html += '</div>';
-            pricingDiv.innerHTML = html;
-            
-            const tier = matchingTiers[0];
-            rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
-        } else {
-            // Standard single-tier pricing
-            const tier = matchingTiers[0];
-            pricingDiv.innerHTML = `
-                <div class="price-display-item">
-                    <div class="price-display-label">First Service</div>
-                    <div class="price-display-value">${tier.firstPrice}</div>
-                </div>
-                <div class="price-display-item">
-                    <div class="price-display-label">Recurring</div>
-                    <div class="price-display-value">${tier.recurringPrice}</div>
-                </div>
-                <div class="price-display-item">
-                    <div class="price-display-label">Service Type</div>
-                    <div class="price-display-value">${tier.serviceType}</div>
-                </div>
-            `;
-            rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+                html += '</div>';
+                pricingDiv.innerHTML = html;
+                
+                rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+            } else {
+                // Standard single-tier pricing
+                pricingDiv.innerHTML = `
+                    <div class="price-display-item">
+                        <div class="price-display-label">First Service</div>
+                        <div class="price-display-value">${tier.firstPrice}</div>
+                    </div>
+                    <div class="price-display-item">
+                        <div class="price-display-label">Recurring</div>
+                        <div class="price-display-value">${tier.recurringPrice}</div>
+                    </div>
+                    <div class="price-display-item">
+                        <div class="price-display-label">Service Type</div>
+                        <div class="price-display-value">${tier.serviceType}</div>
+                    </div>
+                `;
+                rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+            }
         }
 
         resultDiv.classList.add('show');
