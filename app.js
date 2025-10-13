@@ -966,25 +966,74 @@ class GitHubProfileViewer {
                 <!-- Pricing Calculator -->
                 <div class="pricing-calculator">
                     <div class="calculator-title">
-                        🧮 Pricing Calculator
+                        ${service.isBundle || service.bundleComponents ? '📦 Bundle Pricing' : '🧮 Pricing Calculator'}
                     </div>
-                    <div class="sqft-input-container">
-                        <input type="number" class="sqft-input" id="sqft_${serviceId}" placeholder="Enter square footage" min="0" step="1">
-                        <button class="calculate-btn" onclick="calculatePricing('${serviceId}')">Calculate</button>
-                    </div>
-                    <div class="pricing-result" id="result_${serviceId}">
-                        <div class="pricing-display" id="pricing_${serviceId}">
-                            <!-- Calculated pricing will appear here -->
+                    
+                    ${service.isBundle || service.bundleComponents ? `
+                        <!-- Bundle Pricing Display -->
+                        <div class="bundle-pricing-container">
+                            <div class="bundle-components-list">
+                                ${(service.bundleComponents || []).map(component => `
+                                    <div class="bundle-component-item">
+                                        <div class="bundle-component-name">
+                                            <strong>${component.name}</strong>
+                                            ${component.frequency ? `<span class="component-frequency">${component.frequency}</span>` : ''}
+                                        </div>
+                                        <div class="bundle-component-pricing">
+                                            <div class="component-price-item">
+                                                <span class="price-label">First:</span>
+                                                <span class="price-value">${component.firstPrice || 'N/A'}</span>
+                                            </div>
+                                            <div class="component-price-item">
+                                                <span class="price-label">Recurring:</span>
+                                                <span class="price-value">${component.recurringPrice || 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="bundle-total-pricing">
+                                <div class="bundle-total-label">
+                                    <strong>Total ${service.bundleLabel || service.name}</strong>
+                                </div>
+                                <div class="bundle-total-prices">
+                                    <div class="bundle-total-item">
+                                        <span class="total-label">First Service:</span>
+                                        <span class="total-value">${service.bundleTotalFirst || service.firstPrice || 'Contact for pricing'}</span>
+                                    </div>
+                                    <div class="bundle-total-item">
+                                        <span class="total-label">Recurring:</span>
+                                        <span class="total-value">${service.bundleTotalRecurring || service.recurringPrice || 'Contact for pricing'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            ${service.billingFrequency ? `
+                                <div class="bundle-billing-info">
+                                    Billed ${service.billingFrequency}
+                                </div>
+                            ` : ''}
                         </div>
-                        <div class="sqft-range-info" id="range_${serviceId}">
-                            <!-- Square footage range info will appear here -->
+                    ` : `
+                        <!-- Standard Square Footage Calculator -->
+                        <div class="sqft-input-container">
+                            <input type="number" class="sqft-input" id="sqft_${serviceId}" placeholder="Enter square footage" min="0" step="1">
+                            <button class="calculate-btn" onclick="calculatePricing('${serviceId}')">Calculate</button>
                         </div>
-                    </div>
+                        <div class="pricing-result" id="result_${serviceId}">
+                            <div class="pricing-display" id="pricing_${serviceId}">
+                                <!-- Calculated pricing will appear here -->
+                            </div>
+                            <div class="sqft-range-info" id="range_${serviceId}">
+                                <!-- Square footage range info will appear here -->
+                            </div>
+                        </div>
+                    `}
                 </div>
             `;
 
             // Store pricing data on the element for the calculator
             serviceCard._pricingData = service.pricingTiers || [];
+            serviceCard._serviceData = service;
         }
 
         return serviceCard;
@@ -2815,25 +2864,74 @@ document.addEventListener('keypress', function(e) {
                 <!-- Pricing Calculator -->
                 <div class="pricing-calculator">
                     <div class="calculator-title">
-                        🧮 Pricing Calculator
+                        ${service.isBundle || service.bundleComponents ? '📦 Bundle Pricing' : '🧮 Pricing Calculator'}
                     </div>
-                    <div class="sqft-input-container">
-                        <input type="number" class="sqft-input" id="sqft_${serviceId}" placeholder="Enter square footage" min="0" step="1">
-                        <button class="calculate-btn" onclick="calculatePricing('${serviceId}')">Calculate</button>
-                    </div>
-                    <div class="pricing-result" id="result_${serviceId}">
-                        <div class="pricing-display" id="pricing_${serviceId}">
-                            <!-- Calculated pricing will appear here -->
+                    
+                    ${service.isBundle || service.bundleComponents ? `
+                        <!-- Bundle Pricing Display -->
+                        <div class="bundle-pricing-container">
+                            <div class="bundle-components-list">
+                                ${(service.bundleComponents || []).map(component => `
+                                    <div class="bundle-component-item">
+                                        <div class="bundle-component-name">
+                                            <strong>${component.name}</strong>
+                                            ${component.frequency ? `<span class="component-frequency">${component.frequency}</span>` : ''}
+                                        </div>
+                                        <div class="bundle-component-pricing">
+                                            <div class="component-price-item">
+                                                <span class="price-label">First:</span>
+                                                <span class="price-value">${component.firstPrice || 'N/A'}</span>
+                                            </div>
+                                            <div class="component-price-item">
+                                                <span class="price-label">Recurring:</span>
+                                                <span class="price-value">${component.recurringPrice || 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="bundle-total-pricing">
+                                <div class="bundle-total-label">
+                                    <strong>Total ${service.bundleLabel || service.name}</strong>
+                                </div>
+                                <div class="bundle-total-prices">
+                                    <div class="bundle-total-item">
+                                        <span class="total-label">First Service:</span>
+                                        <span class="total-value">${service.bundleTotalFirst || service.firstPrice || 'Contact for pricing'}</span>
+                                    </div>
+                                    <div class="bundle-total-item">
+                                        <span class="total-label">Recurring:</span>
+                                        <span class="total-value">${service.bundleTotalRecurring || service.recurringPrice || 'Contact for pricing'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            ${service.billingFrequency ? `
+                                <div class="bundle-billing-info">
+                                    Billed ${service.billingFrequency}
+                                </div>
+                            ` : ''}
                         </div>
-                        <div class="sqft-range-info" id="range_${serviceId}">
-                            <!-- Square footage range info will appear here -->
+                    ` : `
+                        <!-- Standard Square Footage Calculator -->
+                        <div class="sqft-input-container">
+                            <input type="number" class="sqft-input" id="sqft_${serviceId}" placeholder="Enter square footage" min="0" step="1">
+                            <button class="calculate-btn" onclick="calculatePricing('${serviceId}')">Calculate</button>
                         </div>
-                    </div>
+                        <div class="pricing-result" id="result_${serviceId}">
+                            <div class="pricing-display" id="pricing_${serviceId}">
+                                <!-- Calculated pricing will appear here -->
+                            </div>
+                            <div class="sqft-range-info" id="range_${serviceId}">
+                                <!-- Square footage range info will appear here -->
+                            </div>
+                        </div>
+                    `}
                 </div>
             `;
 
             // Store pricing data on the element for the calculator
             serviceCard._pricingData = service.pricingTiers || [];
+            serviceCard._serviceData = service;
         }
 
         return serviceCard;
