@@ -2019,11 +2019,11 @@ grid-template-columns: 1fr;
 
 /* Additive Bundle Pricing Styles */
 .sqft-bundle-breakdown.additive {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
-    border: 1px solid rgba(59, 130, 246, 0.2);
+    background: linear-gradient(135deg, rgba(30, 30, 60, 0.95) 0%, rgba(20, 40, 50, 0.95) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
     border-radius: 0.75rem;
     padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .bundle-component-additive-row {
@@ -2031,17 +2031,18 @@ grid-template-columns: 1fr;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.25rem;
-    background: rgba(255, 255, 255, 0.08);
-    border-left: 3px solid rgba(59, 130, 246, 0.5);
+    background: linear-gradient(135deg, rgba(88, 28, 135, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%);
+    border-left: 4px solid rgba(139, 92, 246, 0.7);
     border-radius: 0.5rem;
     margin-bottom: 0.75rem;
     transition: all 0.2s ease;
 }
 
 .bundle-component-additive-row:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-left-color: rgba(59, 130, 246, 0.8);
-    transform: translateX(2px);
+    background: linear-gradient(135deg, rgba(88, 28, 135, 0.35) 0%, rgba(59, 130, 246, 0.25) 100%);
+    border-left-color: rgba(167, 139, 250, 0.9);
+    transform: translateX(3px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .component-name-with-code {
@@ -2052,17 +2053,18 @@ grid-template-columns: 1fr;
 }
 
 .component-name {
-    color: white;
+    color: #f0f0f0;
     font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: 0.3px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .component-code {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(167, 139, 250, 0.8);
     font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-style: italic;
     font-weight: 500;
 }
@@ -2081,7 +2083,7 @@ grid-template-columns: 1fr;
 }
 
 .price-label-sm {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(200, 200, 200, 0.7);
     font-size: 0.7rem;
     font-family: 'Inter', sans-serif;
     text-transform: uppercase;
@@ -2090,11 +2092,11 @@ grid-template-columns: 1fr;
 }
 
 .price-value-comp {
-    color: #60a5fa;
-    font-size: 1.25rem;
+    color: #22d3ee;
+    font-size: 1.3rem;
     font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+    font-weight: 800;
+    text-shadow: 0 0 15px rgba(34, 211, 238, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .plus-sign-divider {
@@ -2106,11 +2108,11 @@ grid-template-columns: 1fr;
 }
 
 .plus-sign {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(167, 139, 250, 0.7);
     font-size: 1.75rem;
     font-weight: 700;
     font-family: 'Rajdhani', sans-serif;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 15px rgba(167, 139, 250, 0.4);
 }
 
 .equals-sign-divider {
@@ -2119,9 +2121,9 @@ grid-template-columns: 1fr;
     align-items: center;
     padding: 1rem 0;
     margin: 1rem 0 0.75rem 0;
-    border-top: 2px solid rgba(16, 185, 129, 0.4);
-    border-bottom: 2px solid rgba(16, 185, 129, 0.4);
-    background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.1) 50%, transparent 100%);
+    border-top: 2px solid rgba(16, 185, 129, 0.6);
+    border-bottom: 2px solid rgba(16, 185, 129, 0.6);
+    background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.15) 50%, transparent 100%);
 }
 
 .equals-sign {
@@ -2129,7 +2131,7 @@ grid-template-columns: 1fr;
     font-size: 2.25rem;
     font-weight: 900;
     font-family: 'Rajdhani', sans-serif;
-    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+    text-shadow: 0 0 25px rgba(16, 185, 129, 0.8), 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .bundle-total-additive-row {
@@ -2137,20 +2139,21 @@ grid-template-columns: 1fr;
     justify-content: space-between;
     align-items: center;
     padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
-    border: 2px solid rgba(16, 185, 129, 0.5);
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.3) 0%, rgba(16, 185, 129, 0.25) 100%);
+    border: 2px solid rgba(16, 185, 129, 0.6);
     border-radius: 0.75rem;
     margin-top: 0.75rem;
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.3), 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .bundle-total-label-additive {
-    color: white;
+    color: #f0f0f0;
     font-family: 'Rajdhani', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .bundle-total-prices-additive {
@@ -2168,10 +2171,10 @@ grid-template-columns: 1fr;
 
 .price-value-total {
     color: #10b981;
-    font-size: 1.75rem;
+    font-size: 1.85rem;
     font-family: 'Rajdhani', sans-serif;
     font-weight: 900;
-    text-shadow: 0 0 20px rgba(16, 185, 129, 0.7);
+    text-shadow: 0 0 25px rgba(16, 185, 129, 0.9), 0 2px 8px rgba(0, 0, 0, 0.4);
     letter-spacing: 1px;
 }
 
