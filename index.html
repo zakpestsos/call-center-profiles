@@ -4210,10 +4210,74 @@ return;
 
 const pricingTiers = serviceCard._pricingData;
 
-// Find the appropriate pricing tier
-const tier = pricingTiers.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
+console.log('🧮 Pricing Calculator Debug:', {sqft: sqft, totalTiers: pricingTiers.length});
 
-if (tier) {
+// Find ALL tiers matching the square footage
+const matchingTiers = pricingTiers.filter(t => {
+const matches = sqft >= t.sqftMin && sqft <= t.sqftMax;
+console.log(`  ${t.serviceType || t.acreage || 'Tier'}: [${t.sqftMin}-${t.sqftMax}] ${matches ? '✓' : '✗'}`);
+return matches;
+});
+
+console.log('Matched', matchingTiers.length, 'tiers');
+
+if (matchingTiers.length === 0) {
+pricingDiv.innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div></div>`;
+rangeDiv.textContent = 'Please contact office for custom pricing';
+resultDiv.classList.add('show');
+return;
+}
+
+// Get the first matching tier
+const tier = matchingTiers[0];
+
+// Check for NEW additive bundle format (with components array)
+if (tier.components && Array.isArray(tier.components) && tier.components.length > 0) {
+console.log('✨ Using NEW additive bundle format');
+
+let html = '<div class="sqft-bundle-breakdown additive">';
+
+// Display each component with prices
+tier.components.forEach((comp, index) => {
+const isLast = index === tier.components.length - 1;
+html += `
+<div class="bundle-component-additive-row">
+<div class="component-name-with-code">
+<span class="component-name">${comp.name}</span>
+${comp.shortCode ? `<span class="component-code">(${comp.shortCode})</span>` : ''}
+</div>
+<div class="component-prices-additive">
+${comp.firstPrice ? `<div class="price-item"><span class="price-label-sm">First:</span><strong class="price-value-comp">${comp.firstPrice}</strong></div>` : ''}
+${comp.recurringPrice ? `<div class="price-item"><span class="price-label-sm">Recurring:</span><strong class="price-value-comp">${comp.recurringPrice}</strong></div>` : ''}
+</div>
+</div>`;
+
+if (!isLast) {
+html += '<div class="plus-sign-divider"><span class="plus-sign">+</span></div>';
+}
+});
+
+// Add equals sign divider
+html += '<div class="equals-sign-divider"><span class="equals-sign">=</span></div>';
+
+// Display total
+html += `
+<div class="bundle-total-additive-row">
+<div class="bundle-total-label-additive"><strong>Total Bundle Price</strong></div>
+<div class="bundle-total-prices-additive">
+${tier.totalFirst ? `<div class="total-price-item"><span class="price-label-sm">First:</span><strong class="price-value-total">${tier.totalFirst}</strong></div>` : ''}
+${tier.totalRecurring ? `<div class="total-price-item"><span class="price-label-sm">Recurring:</span><strong class="price-value-total">${tier.totalRecurring}</strong></div>` : ''}
+</div>
+</div>`;
+
+html += '</div>';
+pricingDiv.innerHTML = html;
+
+const acreageText = tier.acreage ? ` (${tier.acreage})` : '';
+rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft${acreageText}`;
+
+} else {
+// Standard single-tier pricing
 pricingDiv.innerHTML = `
 <div class="price-display-item">
 <div class="price-display-label">First Service</div>
@@ -4229,13 +4293,6 @@ pricingDiv.innerHTML = `
 </div>
 `;
 rangeDiv.textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
-} else {
-pricingDiv.innerHTML = `
-<div class="price-display-item">
-<div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div>
-</div>
-`;
-rangeDiv.textContent = 'Please contact office for custom pricing';
 }
 
 resultDiv.classList.add('show');
