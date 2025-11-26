@@ -641,8 +641,15 @@ class GitHubProfileViewer {
     }
 
     showAlertBanner() {
+        console.log('🔍 showAlertBanner called');
+        console.log('🔍 clientData.alerts value:', this.clientData.alerts);
+        console.log('🔍 clientData keys:', Object.keys(this.clientData));
+        
         const alertBanner = document.getElementById('alertBanner');
         const alertText = document.getElementById('alertText');
+        
+        console.log('🔍 alertBanner element:', alertBanner);
+        console.log('🔍 alertText element:', alertText);
         
         // Check if there's alert text in the client data
         if (this.clientData.alerts && this.clientData.alerts.trim() !== '') {
@@ -656,6 +663,7 @@ class GitHubProfileViewer {
         } else {
             // Hide the alert banner if no alerts
             alertBanner.style.display = 'none';
+            console.log('❌ No alerts to display');
         }
     }
 
@@ -2681,8 +2689,15 @@ document.addEventListener('keypress', function(e) {
     }
 
     showAlertBanner() {
+        console.log('🔍 showAlertBanner called');
+        console.log('🔍 clientData.alerts value:', this.clientData.alerts);
+        console.log('🔍 clientData keys:', Object.keys(this.clientData));
+        
         const alertBanner = document.getElementById('alertBanner');
         const alertText = document.getElementById('alertText');
+        
+        console.log('🔍 alertBanner element:', alertBanner);
+        console.log('🔍 alertText element:', alertText);
         
         // Check if there's alert text in the client data
         if (this.clientData.alerts && this.clientData.alerts.trim() !== '') {
@@ -2696,6 +2711,7 @@ document.addEventListener('keypress', function(e) {
         } else {
             // Hide the alert banner if no alerts
             alertBanner.style.display = 'none';
+            console.log('❌ No alerts to display');
         }
     }
 
