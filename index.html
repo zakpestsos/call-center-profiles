@@ -3001,6 +3001,9 @@ document.getElementById('locationInfo').textContent = clientData.location;
 // Update sticky header
 document.getElementById('stickyCompanyName').textContent = clientData.companyName;
 
+// Show alert banner if alerts exist
+showAlertBanner();
+
 // Update current time for client's timezone
 updateCurrentTime(clientData.timezone);
 
@@ -3099,6 +3102,33 @@ document.getElementById('topPestsNotCoveredContent').textContent = pestsText;
 
 // Show services section by default
 showSection('services');
+}
+
+// Alert Banner Function
+function showAlertBanner() {
+    console.log('🔍 showAlertBanner called');
+    console.log('🔍 clientData.alerts value:', clientData.alerts);
+    
+    const alertBanner = document.getElementById('alertBanner');
+    const alertText = document.getElementById('alertText');
+    
+    console.log('🔍 alertBanner element:', alertBanner);
+    console.log('🔍 alertText element:', alertText);
+    
+    // Check if there's alert text in the client data
+    if (clientData.alerts && clientData.alerts.trim() !== '') {
+        // Set the alert text
+        alertText.textContent = clientData.alerts;
+        
+        // Show the alert banner
+        alertBanner.style.display = 'block';
+        
+        console.log('🚨 Alert banner displayed:', clientData.alerts);
+    } else {
+        // Hide the alert banner if no alerts
+        alertBanner.style.display = 'none';
+        console.log('❌ No alerts to display - alerts value:', clientData.alerts);
+    }
 }
 
 // Weather functions
