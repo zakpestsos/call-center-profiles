@@ -585,6 +585,9 @@ class GitHubProfileViewer {
         // Update sticky header
         document.getElementById('stickyCompanyName').textContent = this.clientData.companyName;
 
+        // Show alert banner if there are alerts
+        this.showAlertBanner();
+
         // Update current time for client's timezone
         this.updateCurrentTime(this.clientData.timezone);
 
@@ -634,6 +637,25 @@ class GitHubProfileViewer {
             // Hide buttons if not configured
             fieldRoutesBtn.style.display = 'none';
             stickyFieldRoutesBtn.style.display = 'none';
+        }
+    }
+
+    showAlertBanner() {
+        const alertBanner = document.getElementById('alertBanner');
+        const alertText = document.getElementById('alertText');
+        
+        // Check if there's alert text in the client data
+        if (this.clientData.alerts && this.clientData.alerts.trim() !== '') {
+            // Set the alert text
+            alertText.textContent = this.clientData.alerts;
+            
+            // Show the alert banner
+            alertBanner.style.display = 'block';
+            
+            console.log('🚨 Alert banner displayed:', this.clientData.alerts);
+        } else {
+            // Hide the alert banner if no alerts
+            alertBanner.style.display = 'none';
         }
     }
 
@@ -2603,6 +2625,9 @@ document.addEventListener('keypress', function(e) {
         // Update sticky header
         document.getElementById('stickyCompanyName').textContent = this.clientData.companyName;
 
+        // Show alert banner if there are alerts
+        this.showAlertBanner();
+
         // Update current time for client's timezone
         this.updateCurrentTime(this.clientData.timezone);
 
@@ -2652,6 +2677,25 @@ document.addEventListener('keypress', function(e) {
             // Hide buttons if not configured
             fieldRoutesBtn.style.display = 'none';
             stickyFieldRoutesBtn.style.display = 'none';
+        }
+    }
+
+    showAlertBanner() {
+        const alertBanner = document.getElementById('alertBanner');
+        const alertText = document.getElementById('alertText');
+        
+        // Check if there's alert text in the client data
+        if (this.clientData.alerts && this.clientData.alerts.trim() !== '') {
+            // Set the alert text
+            alertText.textContent = this.clientData.alerts;
+            
+            // Show the alert banner
+            alertBanner.style.display = 'block';
+            
+            console.log('🚨 Alert banner displayed:', this.clientData.alerts);
+        } else {
+            // Hide the alert banner if no alerts
+            alertBanner.style.display = 'none';
         }
     }
 

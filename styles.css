@@ -6959,3 +6959,92 @@ font-style: italic;
     }
 }
 
+/* ========================================
+   ALERT BANNER - Scrolling News Ticker
+   ======================================== */
+
+.alert-banner {
+    background: linear-gradient(90deg, #dc2626 0%, #ef4444 50%, #dc2626 100%);
+    border-bottom: 2px solid #fca5a5;
+    padding: 0.75rem 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+    z-index: 999;
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.alert-icon {
+    font-size: 1.5rem;
+    animation: pulse-alert 2s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulse-alert {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+.alert-text-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    height: 1.5rem;
+}
+
+.alert-text {
+    display: inline-block;
+    white-space: nowrap;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: scroll-left 20s linear infinite;
+    padding-left: 100%;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* Pause scrolling on hover */
+.alert-banner:hover .alert-text {
+    animation-play-state: paused;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .alert-content {
+        padding: 0 1rem;
+    }
+
+    .alert-icon {
+        font-size: 1.2rem;
+    }
+
+    .alert-text {
+        font-size: 1rem;
+        animation: scroll-left 15s linear infinite;
+    }
+}
+

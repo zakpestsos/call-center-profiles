@@ -337,7 +337,8 @@ function updateProfileFromForm(formData) {
       Address: formData.address,
       Hours: formData.hours,
       Bulletin: formData.bulletin,
-      Pests_Not_Covered: formData.pestsNotCovered
+      Pests_Not_Covered: formData.pestsNotCovered,
+      Alerts: formData.alerts
     };
     
     // Update master sheet
@@ -2747,7 +2748,8 @@ function createClientProfileInMasterSheet(data) {
       data.hours || '',         // I - Hours
       data.bulletin || '',      // J - Bulletin
       data.pestsNotCovered || '', // K - Pests_Not_Covered
-      data.clientFolderUrl || '', // L - Client_Folder_URL
+      data.alerts || '',          // L - Alerts (NEW)
+      data.clientFolderUrl || '', // M - Client_Folder_URL
       '', // M - Wix_Profile_URL (no longer needed)
       new Date().toISOString(), // N - Last_Updated
       'ACTIVE', // O - Sync_Status
@@ -2852,6 +2854,7 @@ function getProfileDataById(profileId) {
           },
           bulletin: row[colMap['Bulletin']],
           pestsNotCovered: row[colMap['Pests_Not_Covered']],
+          alerts: row[colMap['Alerts']], // NEW: Alert banner text
           clientFolderUrl: row[colMap['Client_Folder_URL']],
           wixProfileUrl: row[colMap['Wix_Profile_URL']],
           lastUpdated: row[colMap['Last_Updated']],
@@ -3190,11 +3193,11 @@ function initializeProfileStructure(profileId, driveUrl) {
     let clientSheet = sheet.getSheetByName('Client_Profiles');
     if (!clientSheet) {
       clientSheet = sheet.insertSheet('Client_Profiles');
-      clientSheet.appendRow(['Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Client_Folder_URL', 'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL', 'FieldRoutes_Button_Text', 'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 'Physical_City', 'Physical_State', 'Physical_Zip', 'Mailing_Street', 'Mailing_Suite', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical', 'Timezone_Custom', 'Holidays_Observed']);
+      clientSheet.appendRow(['Profile_ID', 'Company_Name', 'Location', 'Timezone', 'Phone', 'Email', 'Website', 'Address', 'Hours', 'Bulletin', 'Pests_Not_Covered', 'Alerts', 'Client_Folder_URL', 'Wix_Profile_URL', 'Last_Updated', 'Sync_Status', 'Edit_Form_URL', 'FieldRoutes_Button_Text', 'FieldRoutes_Link', 'Physical_Street', 'Physical_Suite', 'Physical_City', 'Physical_State', 'Physical_Zip', 'Mailing_Street', 'Mailing_Suite', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Same_As_Physical', 'Timezone_Custom', 'Holidays_Observed']);
     }
     
     clientSheet.appendRow([
-      profileId, '', '', '', '', '', '', '', '', '', '', driveUrl, '', new Date().toISOString(), 'DRAFT', editFormUrl,
+      profileId, '', '', '', '', '', '', '', '', '', '', '', driveUrl, '', new Date().toISOString(), 'DRAFT', editFormUrl,
       // New address fields (empty for now)
       '', '', '', '', '', '', '', '', '', '', '', '',
       // New custom fields (empty for now)  
@@ -3309,7 +3312,8 @@ function updateClientProfileRow(sheet, profileId, formData) {
         formData.officeHours || formData.hours || '', // I - Hours
         formData.bulletin || '',                      // J - Bulletin
         formData.pestsNotCovered || '',               // K - Pests_Not_Covered
-        formData.googleDriveFolder || '',             // L - Client_Folder_URL
+        formData.alerts || '',                        // L - Alerts (NEW)
+        formData.googleDriveFolder || '',             // M - Client_Folder_URL
         '',                                           // M - Wix_Profile_URL (no longer needed)
         new Date().toISOString(),                     // N - Last_Updated
         'ACTIVE',                                     // O - Sync_Status

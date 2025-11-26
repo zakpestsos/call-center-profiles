@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Banner Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #60a5fa;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .demo-section {
+            background: #1e293b;
+            border: 1px solid #3b82f6;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* ALERT BANNER STYLES */
+        .alert-banner {
+            background: linear-gradient(90deg, #dc2626 0%, #ef4444 50%, #dc2626 100%);
+            border-bottom: 2px solid #fca5a5;
+            border-radius: 0.5rem;
+            padding: 0.75rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0 2rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            animation: pulse-alert 2s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse-alert {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        .alert-text-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            height: 1.5rem;
+        }
+
+        .alert-text {
+            display: inline-block;
+            white-space: nowrap;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: scroll-left 20s linear infinite;
+            padding-left: 100%;
+        }
+
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .alert-banner:hover .alert-text {
+            animation-play-state: paused;
+        }
+
+        .controls {
+            margin-top: 1rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f172a;
+            border: 1px solid #3b82f6;
+            border-radius: 0.5rem;
+            color: #e2e8f0;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .note {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.25rem;
+        }
+
+        .example-alerts {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .example-btn {
+            background: linear-gradient(135deg, #334155, #475569);
+            text-align: left;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .example-btn:hover {
+            background: linear-gradient(135deg, #475569, #64748b);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 Alert Banner Preview</h1>
+
+        <div class="demo-section">
+            <h2>Live Preview</h2>
+            <div class="alert-banner">
+                <div class="alert-content">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-text-wrapper">
+                        <span class="alert-text" id="alertText">⚠️ URGENT: Client has 2 dogs - MUST call ahead before service!</span>
+                    </div>
+                </div>
+            </div>
+            <p style="color: #94a3b8; font-style: italic;">Hover over the banner to pause scrolling</p>
+        </div>
+
+        <div class="demo-section">
+            <h2>Custom Alert Text</h2>
+            <input type="text" id="customInput" placeholder="Type your alert message here..." value="⚠️ URGENT: Client has 2 dogs - MUST call ahead before service!">
+            <button onclick="updateAlert()">Update Alert</button>
+            
+            <div class="note">
+                <strong>💡 Tip:</strong> The alert will scroll continuously from right to left. Keep messages brief (10-20 words) for best readability.
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Example Alerts</h2>
+            <p style="color: #94a3b8; margin-bottom: 1rem;">Click any example to preview it:</p>
+            
+            <div class="example-alerts">
+                <button class="example-btn" onclick="setExample(this.textContent)">⚠️ URGENT: Client has 2 dogs - MUST call ahead before service!</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">🔴 BILLING HOLD - DO NOT SCHEDULE until finance clears account</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">⚡ VIP CLIENT - Priority scheduling required - Owner prefers AM appointments</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">🚫 TEMPORARILY SUSPENDED - Collections issue pending - No new appointments</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">✅ NEW CLIENT - First service scheduled - Extra care with communication required</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">⏰ SEASONAL ONLY - April-October mosquito program - Renews automatically in spring</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">🎯 UPSELL OPPORTUNITY - Client interested in rodent program - Follow up after next service</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">⚠️ GATE CODE REQUIRED - Must call 24 hours before service to obtain entry code</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">🏠 VACANT PROPERTY - Lockbox on front door - Code: 1234 - Schedule anytime</button>
+                <button class="example-btn" onclick="setExample(this.textContent)">📞 CALL ONLY - Client does not respond to email - Phone communication preferred</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Speed Controls</h2>
+            <button onclick="changeSpeed(10)">Fast (10s)</button>
+            <button onclick="changeSpeed(20)">Normal (20s)</button>
+            <button onclick="changeSpeed(30)">Slow (30s)</button>
+            <div class="note">
+                <strong>ℹ️ Note:</strong> Speed changes are temporary for testing. Default is 20 seconds (normal).
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Implementation Notes</h2>
+            <ul style="line-height: 2; color: #cbd5e1;">
+                <li>✅ Banner appears <strong>only when alerts text exists</strong></li>
+                <li>✅ Scrolls continuously from right to left</li>
+                <li>✅ Pauses on hover for easy reading</li>
+                <li>✅ Icon pulses to grab attention</li>
+                <li>✅ Red color scheme indicates urgency</li>
+                <li>✅ Fully responsive on mobile</li>
+                <li>✅ No impact on page performance</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function updateAlert() {
+            const input = document.getElementById('customInput');
+            const alertText = document.getElementById('alertText');
+            alertText.textContent = input.value || 'No alert text';
+            
+            // Restart animation
+            alertText.style.animation = 'none';
+            setTimeout(() => {
+                alertText.style.animation = 'scroll-left 20s linear infinite';
+            }, 10);
+        }
+
+        function setExample(text) {
+            document.getElementById('customInput').value = text;
+            updateAlert();
+        }
+
+        function changeSpeed(seconds) {
+            const alertText = document.getElementById('alertText');
+            alertText.style.animation = `scroll-left ${seconds}s linear infinite`;
+        }
+    </script>
+</body>
+</html>
+
