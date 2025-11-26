@@ -3665,6 +3665,7 @@ function getProfileDataAPI(profileId) {
       FieldRoutes_Link: profileData.FieldRoutes_Link,
       bulletin: profileData.bulletin,
       pestsNotCovered: profileData.pestsNotCovered,
+      alerts: profileData.alerts, // Alert banner text
       services: profileData.services || [],
       technicians: profileData.technicians || [],
       policies: formatPoliciesForDisplay(profileData.policies || {}),
