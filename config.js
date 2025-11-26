@@ -3,7 +3,7 @@ const CONFIG = {
     // Google Sheets Configuration
     GOOGLE_SHEETS: {
         // Updated with your actual Google Apps Script Web App URL
-        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbyGFqmRCOnronrHHgyKXp4ylPYG8DqBQ2CUY9bQli3IRFU0jH5pX_G8zzIDqASFsmZ_Dw/exec', // Deployment v125 - Alerts feature working
+        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbyGFqmRCOnronrHHgyKXp4ylPYG8DqBQ2CUY9bQli3IRFU0jH5pX_G8zzIDqASFsmZ_Dw/exec', // Deployment v125 - Alerts working NOW
         
         // Alternative: Direct Google Sheets API (requires API key)
         API_KEY: 'YOUR_GOOGLE_SHEETS_API_KEY',
