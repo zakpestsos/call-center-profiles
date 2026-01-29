@@ -32,7 +32,7 @@ const CONFIG = {
     WEATHER: {
         // Using Open-Meteo (free, no API key required)
         BASE_URL: 'https://api.open-meteo.com/v1/forecast',
-        GEOCODING_URL: 'https://nominatim.openstreetmap.org/search'
+        GEOCODING_URL: 'https://geocoding-api.open-meteo.com/v1/search'
     },
 
     // Default fallback data for testing
