@@ -697,28 +697,33 @@ class GitHubProfileViewer {
         }
     }
 
-    async geocodeLocation(location) {
-        try {
-            const response = await fetch(
-                `${CONFIG.WEATHER.GEOCODING_URL}?q=${encodeURIComponent(location)}&format=json&limit=1`
-            );
-            
-            if (!response.ok) throw new Error('Geocoding failed');
-            
-            const data = await response.json();
-            if (data.length > 0) {
-                return {
-                    lat: parseFloat(data[0].lat),
-                    lon: parseFloat(data[0].lon)
-                };
-            }
-            
-            return null;
-        } catch (error) {
-            console.error('Geocoding error:', error);
-            return null;
-        }
+   async geocodeLocation(location) {
+  try {
+    const response = await fetch(
+      `${CONFIG.WEATHER.GEOCODING_URL}?name=${encodeURIComponent(location)}&count=1&language=en&format=json`
+    );
+
+    if (!response.ok) throw new Error('Geocoding failed');
+
+    const data = await response.json();
+    const r = data?.results?.[0];
+
+    if (r) {
+      return {
+        lat: Number(r.latitude),
+        lon: Number(r.longitude),
+        // optional if you want it later:
+        // name: r.name,
+        // timezone: r.timezone
+      };
     }
+
+    return null;
+  } catch (error) {
+    console.error('Geocoding error:', error);
+    return null;
+  }
+}
 
     displayWeatherForecast(dailyData) {
         const weatherContent = document.getElementById('weatherContent');
