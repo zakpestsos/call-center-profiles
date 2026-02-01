@@ -3202,27 +3202,35 @@ function showAlertBanner() {
 
 // Weather functions
 async function loadWeatherForecast(location) {
-    try {
-        // Get coordinates for the location
-        const geoResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`);
-        const geoData = await geoResponse.json();
-        
-        if (geoData.length === 0) {
-            throw new Error('Location not found');
-        }
-        
-        const lat = geoData[0].lat;
-        const lon = geoData[0].lon;
-        
-        // Get weather forecast
-        const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=7&temperature_unit=fahrenheit`);
-        const weatherData = await weatherResponse.json();
-        
-        displayWeatherForecast(weatherData.daily);
-    } catch (error) {
-        console.error('Error loading weather:', error);
-        document.getElementById('weatherContent').innerHTML = 'Weather unavailable';
+  try {
+    // Get coordinates for the location (Open-Meteo geocoding)
+    const geoResponse = await fetch(
+      `${CONFIG.WEATHER.GEOCODING_URL}?name=${encodeURIComponent(location)}&count=1&language=en&format=json`
+    );
+
+    if (!geoResponse.ok) throw new Error('Geocoding failed');
+
+    const geoData = await geoResponse.json();
+
+    if (!geoData.results || geoData.results.length === 0) {
+      throw new Error('Location not found');
     }
+
+    const { latitude, longitude } = geoData.results[0];
+
+    // Get weather forecast
+    const weatherResponse = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=7&temperature_unit=fahrenheit`
+    );
+
+    if (!weatherResponse.ok) throw new Error('Weather API error');
+
+    const weatherData = await weatherResponse.json();
+    displayWeatherForecast(weatherData.daily);
+  } catch (error) {
+    console.error('Error loading weather:', error);
+    document.getElementById('weatherContent').innerHTML = 'Weather unavailable';
+  }
 }
 
 function displayWeatherForecast(dailyData) {
