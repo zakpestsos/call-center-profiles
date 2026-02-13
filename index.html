@@ -2346,11 +2346,38 @@ grid-template-columns: 1fr;
     <div class="main-container">
         <!-- Navigation Sidebar -->
         <nav class="nav-sidebar">
-            <button class="nav-btn active" onclick="showSection('services')">Services</button>
-            <button class="nav-btn" onclick="showSection('policies')">Policies</button>
-            <button class="nav-btn" onclick="showSection('technicians')">Scheduling</button>
-            <button class="nav-btn" onclick="showSection('bulletin')">Bulletin</button>
-        </nav>
+  <button
+    class="nav-btn active"
+    data-section="services"
+    onclick="showSection('services', this)"
+  >
+    Services
+  </button>
+
+  <button
+    class="nav-btn"
+    data-section="policies"
+    onclick="showSection('policies', this)"
+  >
+    Policies
+  </button>
+
+  <button
+    class="nav-btn"
+    data-section="technicians"
+    onclick="showSection('technicians', this)"
+  >
+    Scheduling
+  </button>
+
+  <button
+    class="nav-btn"
+    data-section="bulletin"
+    onclick="showSection('bulletin', this)"
+  >
+    Bulletin
+  </button>
+</nav>
 
         <!-- Content Area -->
         <main class="content-area">
@@ -2558,47 +2585,155 @@ grid-template-columns: 1fr;
 <script>
 let clientData = {};
 
+    // ===============================
+// Profile cache (index.html)
+// ===============================
+const PROFILE_CACHE_TTL_MS = 20 * 60 * 60 * 1000; //  20 hours (tweak as desired)
+
+const _profileMemCache = new Map();   // key -> { expiresAt, data }
+const _profileInFlight = new Map();   // key -> Promise<data>
+
+function _profileCacheKey(fullApiUrl) {
+  // fullApiUrl already includes profileId, so it's a unique request key.
+  return `pestsos:profile:${encodeURIComponent(fullApiUrl)}`;
+}
+
+function getCachedProfile(fullApiUrl) {
+  const key = _profileCacheKey(fullApiUrl);
+  const now = Date.now();
+
+  // 1) In-memory
+  const mem = _profileMemCache.get(key);
+  if (mem && mem.expiresAt > now) return mem.data;
+
+  // 2) localStorage
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    if (!parsed || parsed.expiresAt <= now || !parsed.data) {
+      localStorage.removeItem(key);
+      return null;
+    }
+
+    // Rehydrate memory cache
+    _profileMemCache.set(key, parsed);
+    return parsed.data;
+  } catch {
+    return null;
+  }
+}
+
+function setCachedProfile(fullApiUrl, data, ttlMs = PROFILE_CACHE_TTL_MS) {
+  const key = _profileCacheKey(fullApiUrl);
+  const entry = { expiresAt: Date.now() + ttlMs, data };
+
+  _profileMemCache.set(key, entry);
+  try {
+    localStorage.setItem(key, JSON.stringify(entry));
+  } catch {
+    // ignore quota/private mode errors
+  }
+}
+
+function clearCachedProfile(fullApiUrl) {
+  const key = _profileCacheKey(fullApiUrl);
+  _profileMemCache.delete(key);
+  try { localStorage.removeItem(key); } catch {}
+}
+
+async function fetchJsonWithCache(fullApiUrl, { ttlMs = PROFILE_CACHE_TTL_MS } = {}) {
+  // De-dupe concurrent requests
+  if (_profileInFlight.has(fullApiUrl)) return _profileInFlight.get(fullApiUrl);
+
+  const p = (async () => {
+    const res = await fetch(fullApiUrl, { cache: "no-store" }); // avoid browser HTTP cache weirdness
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const data = await res.json();
+    if (data && data.error) throw new Error(data.error);
+
+    setCachedProfile(fullApiUrl, data, ttlMs);
+    return data;
+  })().finally(() => {
+    _profileInFlight.delete(fullApiUrl);
+  });
+
+  _profileInFlight.set(fullApiUrl, p);
+  return p;
+}
+    
 // Load profile data from Apps Script API
 async function loadProfileData() {
-    const profileId = getProfileIdFromUrl();
+  const profileId = getProfileIdFromUrl();
 
-    if (!profileId) {
-        showError('No profile ID provided in URL');
-        return;
+  if (!profileId) {
+    showError('No profile ID provided in URL');
+    return;
+  }
+
+  try {
+    const apiUrl = window.CONFIG?.GOOGLE_SHEETS?.WEB_APP_URL;
+    if (!apiUrl) throw new Error('API URL not configured');
+
+    const fullApiUrl = `${apiUrl}?profileId=${encodeURIComponent(profileId)}`;
+
+    console.log('🔍 Profile load:', { profileId, apiUrl, fullApiUrl });
+
+    // ---------------------------------------
+    // 1) Try cache first (fast path)
+    // ---------------------------------------
+    const cached = getCachedProfile(fullApiUrl);
+    if (cached) {
+      console.log('⚡ Using cached profile');
+      clientData = cached;
+
+      // Render immediately (no spinner)
+      populateClientData();
+      updateCurrentTime(clientData.timezone);
+      setInterval(() => updateCurrentTime(clientData.timezone), 60000);
+
+      // Optional: refresh in background (stale-while-revalidate)
+      fetchJsonWithCache(fullApiUrl)
+        .then((fresh) => {
+          // Only re-render if something changed (cheap compare)
+          // NOTE: This stringify is OK here because profile objects are not massive;
+          // if it gets big, we can switch to a hash/etag later.
+          if (JSON.stringify(fresh) !== JSON.stringify(clientData)) {
+            console.log('🔄 Cache refreshed with newer profile');
+            clientData = fresh;
+            populateClientData();
+          } else {
+            console.log('✅ Cache refresh found no changes');
+          }
+        })
+        .catch((e) => {
+          console.warn('Background refresh failed:', e);
+        });
+
+      return; // do not block UI on network
     }
 
-    try {
-        const apiUrl = window.CONFIG?.GOOGLE_SHEETS?.WEB_APP_URL;
-        if (!apiUrl) {
-            throw new Error('API URL not configured');
-        }
+    // ---------------------------------------
+    // 2) No cache: show loading and fetch
+    // ---------------------------------------
+    console.log('📡 No cache, fetching profile...');
+    // If you have a loading UI, this is where it remains visible.
+    // (Your index.html already shows loadingState by default)
 
-        console.log('📊 Fetching data from Apps Script API...');
-        console.log('🔗 URL:', apiUrl);
-        console.log('🔍 Looking for Profile ID:', profileId);
+    const data = await fetchJsonWithCache(fullApiUrl);
+    console.log('✅ Data received from Apps Script:', data);
 
-        const response = await fetch(`${apiUrl}?profileId=${encodeURIComponent(profileId)}`);
+    clientData = data;
+    populateClientData();
+    updateCurrentTime(clientData.timezone);
+    setInterval(() => updateCurrentTime(clientData.timezone), 60000);
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('✅ Data received from Apps Script:', data);
-
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        clientData = data;
-        populateClientData();
-        updateCurrentTime(clientData.timezone);
-        setInterval(() => updateCurrentTime(clientData.timezone), 60000);
-
-    } catch (error) {
-        console.error('Error loading profile:', error);
-        showError('Error loading profile data: ' + error.message);
-    }
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    showError('Error loading profile data: ' + error.message);
+  }
 }
 
 function getProfileIdFromUrl() {
@@ -3986,32 +4121,48 @@ serviceAreasGrid.appendChild(branchCard);
 }
 
 // Navigation functions
-function showSection(sectionName) {
-// Hide all sections
-document.querySelectorAll('.content-section').forEach(section => {
-section.classList.remove('active');
-});
+function showSection(sectionName, btnEl) {
+    console.log('🚨 showSection VERSION 2026-02-10', sectionName);
+  // Hide all sections
+  document.querySelectorAll('.content-section').forEach(section => {
+    section.classList.remove('active');
+  });
 
-// Remove active class from all nav buttons
-document.querySelectorAll('.nav-btn').forEach(btn => {
-btn.classList.remove('active');
-});
+  // Remove active class from all nav buttons
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
 
-// Show target section
-document.getElementById(sectionName + 'Section').classList.add('active');
+  // Show target section (guard)
+  const sectionEl = document.getElementById(sectionName + 'Section');
+  if (sectionEl) {
+    sectionEl.classList.add('active');
+  } else {
+    console.warn(`showSection: missing element #${sectionName}Section`);
+  }
 
-// Set active nav button
-if (event && event.target) {
-event.target.classList.add('active');
-} else {
-// Find and activate the correct button if called programmatically
-const buttons = document.querySelectorAll('.nav-btn');
-buttons.forEach(btn => {
-if (btn.textContent.toLowerCase().includes(sectionName.toLowerCase())) {
-btn.classList.add('active');
-}
-});
-}
+  // Set active nav button
+  if (btnEl && btnEl.classList) {
+    btnEl.classList.add('active');
+    return;
+  }
+
+  // Programmatic call: find matching button via data-section if available,
+  // otherwise fall back to onclick/text heuristics.
+  const byData = document.querySelector(`.nav-btn[data-section="${sectionName}"]`);
+  if (byData && byData.classList) {
+    byData.classList.add('active');
+    return;
+  }
+
+  const buttons = document.querySelectorAll('.nav-btn');
+  for (const btn of buttons) {
+    const onclick = btn.getAttribute('onclick') || '';
+    if (onclick.includes(`showSection('${sectionName}'`) || onclick.includes(`showSection("${sectionName}"`)) {
+      btn.classList.add('active');
+      return;
+    }
+  }
 }
 
 // Tool functions
