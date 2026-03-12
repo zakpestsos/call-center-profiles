@@ -2461,118 +2461,112 @@ function populateSchedulingPolicies() {
     const policies = clientData.policies || {};
     const allPolicies = Object.values(policies).flat();
 
-    function find(type) { return allPolicies.find(p => p.type === type); }
-    function val(p)     { return p ? (p.value || p.default || 'Not specified') : 'Not specified'; }
+    // Match by title (case-insensitive, partial) — works for both old type-keyed and new title-keyed data
+    function findByTitle(...titles) {
+        const lower = titles.map(t => t.toLowerCase());
+        return allPolicies.find(p => lower.some(t => (p.title || '').toLowerCase().includes(t)))
+            // fallback: try legacy type-based match
+            || allPolicies.find(p => lower.some(t => (p.type || '').toLowerCase().includes(t)));
+    }
 
-    // Sets inline preview + optional expanded full content, hides chevron if nothing extra to show
-    function setField(inlineId, fullId, p, fullHTML) {
+    function val(p) { return p ? (p.value || p.default || 'Not specified') : 'Not specified'; }
+
+    // Populate a hardcoded card: set inline text, full body, and manage chevron visibility
+    function setField(inlineId, fullId, p) {
         const inlineEl = document.getElementById(inlineId);
         const fullEl   = document.getElementById(fullId);
         const card     = inlineEl?.closest('.policy-item-compact');
         const chevron  = card?.querySelector('.policy-chevron');
 
-        const inlineText = val(p);
-        if (inlineEl) inlineEl.textContent = inlineText;
+        const text = val(p);
 
-        // Full content: use provided HTML, or fall back to the same value text
-        const hasFullContent = !!(fullHTML || (inlineText !== 'Not specified'));
-        if (fullEl) {
-            if (fullHTML) {
-                fullEl.innerHTML = fullHTML;
-            } else {
-                fullEl.textContent = inlineText;
-            }
-        }
-
-        // Only show chevron + allow toggling if the full content differs from inline
-        // (i.e. schedulingLayout, or value is long enough to warrant expanding)
-        const isExpandable = fullHTML || (inlineText.length > 40);
-        if (chevron) chevron.style.display = isExpandable ? '' : 'none';
-        if (card && !isExpandable) card.style.cursor = 'default';
-        if (card && !isExpandable) card.onclick = null;
-    }
-
-    const schedulingTimes = find('scheduling_times');
-    const maxDistance     = find('distance');
-    const sameDay         = find('sameday');
-    const confirmations   = find('confirmations');
-    const callAhead       = find('callahead');
-    const techSkilling    = find('techskilling');
-    const afterHours      = find('emergency');
-    const reservices      = find('reservices');
-
-    // Default Scheduling Windows — inline shows the default option, expanded shows the full layout
-    const schedulingInline = document.getElementById('defaultSchedulingTimesInline');
-    const schedulingFull   = document.getElementById('defaultSchedulingTimes');
-    const schedulingCard   = schedulingInline?.closest('.policy-item-compact');
-    const schedulingChevron = schedulingCard?.querySelector('.policy-chevron');
-    if (schedulingTimes) {
-        if (schedulingTimes.schedulingLayout && typeof schedulingTimes.schedulingLayout === 'object') {
-            const layoutHTML = Object.entries(schedulingTimes.schedulingLayout)
+        // For scheduling times: the value may be newline-separated "Key: value" lines — render as structured HTML
+        let fullHTML = null;
+        if (fullId === 'defaultSchedulingTimes' && text && text.includes('\n')) {
+            fullHTML = text.split('\n')
+                .map(line => line.trim()).filter(Boolean)
+                .map(line => {
+                    const colonIdx = line.indexOf(':');
+                    if (colonIdx > -1) {
+                        return `<div><strong>${line.slice(0, colonIdx).trim()}:</strong> ${line.slice(colonIdx + 1).trim()}</div>`;
+                    }
+                    return `<div>${line}</div>`;
+                }).join('');
+        } else if (p?.schedulingLayout && typeof p.schedulingLayout === 'object') {
+            fullHTML = Object.entries(p.schedulingLayout)
                 .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
                 .join('');
-            if (schedulingInline) schedulingInline.textContent = val(schedulingTimes);
-            if (schedulingFull)   schedulingFull.innerHTML     = layoutHTML;
-        } else {
-            const text = val(schedulingTimes);
-            if (schedulingInline) schedulingInline.textContent = text;
-            if (schedulingFull)   schedulingFull.textContent   = text;
-            // Hide chevron if short and no extra detail
-            if (schedulingChevron && text.length <= 40) {
-                schedulingChevron.style.display = 'none';
-                if (schedulingCard) { schedulingCard.style.cursor = 'default'; schedulingCard.onclick = null; }
-            }
         }
-    } else {
-        if (schedulingInline) schedulingInline.textContent = 'Not specified';
-        if (schedulingFull)   schedulingFull.textContent   = 'Not specified';
-        if (schedulingChevron) schedulingChevron.style.display = 'none';
+
+        // Inline: show first line only if multiline
+        const inlineText = text.includes('\n') ? text.split('\n')[0].trim() : text;
+        if (inlineEl) inlineEl.textContent = inlineText;
+        if (fullEl) {
+            if (fullHTML) fullEl.innerHTML = fullHTML;
+            else fullEl.textContent = text;
+        }
+
+        const isExpandable = !!(fullHTML || text.length > 40);
+        if (chevron) chevron.style.display = isExpandable ? '' : 'none';
+        if (card) {
+            card.style.cursor = isExpandable ? 'pointer' : 'default';
+            card.onclick = isExpandable ? function() { togglePolicyItem(this); } : null;
+        }
     }
 
-    setField('maxDistance',         'maxDistanceFull',         maxDistance,   null);
-    setField('sameDayPolicy',       'sameDayPolicyFull',       sameDay,       null);
-    setField('confirmationPolicy',  'confirmationPolicyFull',  confirmations, null);
-    setField('callAheadPolicy',     'callAheadPolicyFull',     callAhead,     null);
-    setField('techSkillingPolicy',  'techSkillingPolicyFull',  techSkilling,  null);
-    setField('afterHoursPolicy',    'afterHoursPolicyFull',    afterHours,    null);
+    // Find the scheduling group dynamically — handle "Scheduling", "Scheduling and Operations", etc.
+    const schedGroupName = Object.keys(policies).find(k => k.toLowerCase().includes('schedul')) || '';
+    const schedGroup     = schedGroupName ? (policies[schedGroupName] || []) : [];
 
+    // Known card titles and their element IDs
+    const knownCards = [
+        { titles: ['scheduling times', 'scheduling policy times'], inlineId: 'defaultSchedulingTimesInline', fullId: 'defaultSchedulingTimes' },
+        { titles: ['max distance'],                                 inlineId: 'maxDistance',                 fullId: 'maxDistanceFull' },
+        { titles: ['same day'],                                     inlineId: 'sameDayPolicy',               fullId: 'sameDayPolicyFull' },
+        { titles: ['appointment confirmation'],                     inlineId: 'confirmationPolicy',          fullId: 'confirmationPolicyFull' },
+        { titles: ['call ahead'],                                   inlineId: 'callAheadPolicy',             fullId: 'callAheadPolicyFull' },
+        { titles: ['tech skilling', 'technician skill'],            inlineId: 'techSkillingPolicy',          fullId: 'techSkillingPolicyFull' },
+        { titles: ['after hours', 'emergency'],                     inlineId: 'afterHoursPolicy',            fullId: 'afterHoursPolicyFull' },
+    ];
+
+    const matchedPolicies = new Set();
+    knownCards.forEach(({ titles, inlineId, fullId }) => {
+        const p = findByTitle(...titles);
+        if (p) matchedPolicies.add(p);
+        setField(inlineId, fullId, p);
+    });
+
+    // Reservices — used in the service policies section
+    const reservices = findByTitle('reservice');
+    if (reservices) matchedPolicies.add(reservices);
     const reservicesPolicyEl = document.getElementById('reservicesPolicy');
     if (reservicesPolicyEl) reservicesPolicyEl.textContent = val(reservices);
 
-    // Render any extra Scheduling and Operations items not already covered above
-    const knownTypes = new Set(['scheduling_times','distance','sameday','confirmations','callahead','techskilling','emergency']);
-    const schedGroup = policies['Scheduling and Operations'] || [];
-    const extras = schedGroup.filter(p => !knownTypes.has(p.type));
-
+    // Render any remaining scheduling items not already shown in a hardcoded card
     const quickRef = document.querySelector('.policy-quick-ref');
     quickRef?.querySelectorAll('.policy-item-compact.extra').forEach(el => el.remove());
 
+    const extras = schedGroup.filter(p => !matchedPolicies.has(p));
     if (quickRef && extras.length) {
         extras.forEach(p => {
-            const inlineVal = val(p);
-            let fullHTML = null;
-            if (p.schedulingLayout && typeof p.schedulingLayout === 'object') {
-                fullHTML = Object.entries(p.schedulingLayout)
-                    .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
-                    .join('');
-            }
-            const isExpandable = fullHTML || inlineVal.length > 40;
+            const inlineText = val(p);
+            const isExpandable = inlineText.length > 40;
 
             const item = document.createElement('div');
             item.className = 'policy-item-compact extra';
-            if (isExpandable) item.setAttribute('onclick', 'togglePolicyItem(this)');
+            if (isExpandable) item.onclick = function() { togglePolicyItem(this); };
             else item.style.cursor = 'default';
 
             item.innerHTML = `
                 <div class="policy-item-header">
                     <div class="policy-header-left">
                         <span class="policy-label">${p.title || p.type}</span>
-                        <span class="policy-value-inline">${inlineVal}</span>
+                        <span class="policy-value-inline">${inlineText.includes('\n') ? inlineText.split('\n')[0].trim() : inlineText}</span>
                     </div>
                     <span class="policy-chevron" style="${isExpandable ? '' : 'display:none'}">▼</span>
                 </div>
                 <div class="policy-item-body">
-                    <div class="policy-value-full">${fullHTML || inlineVal}</div>
+                    <div class="policy-value-full">${inlineText.replace(/\n/g, '<br>')}</div>
                 </div>`;
             quickRef.appendChild(item);
         });
@@ -2644,7 +2638,10 @@ function populatePolicies() {
         return;
     }
 
-    const groups = Object.keys(clientData.policies).filter(g => g !== 'Service Policies' && g !== 'Scheduling and Operations');
+    const groups = Object.keys(clientData.policies).filter(g => {
+        const lower = g.toLowerCase();
+        return lower !== 'service policies' && !lower.includes('schedul');
+    });
     if (!groups.length) {
         grid.innerHTML = '<div class="info-section"><div class="info-content">All policies have been moved to their respective sections.</div></div>';
         return;
@@ -3215,5 +3212,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.addEventListener('load', () => setTimeout(initializeStickyHeader, 200));
 </script>
+</body>
+</html>
+
 </body>
 </html>
