@@ -313,7 +313,7 @@ body {
 .alert-banner .alert-content { display: flex; align-items: center; justify-content: center; gap: 1rem; }
 .alert-banner .alert-icon { font-size: 1.5rem; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.1)} }
-.alert-banner .alert-text { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.03em; color: #ffffff; }
+.alert-banner .alert-text { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.03em; }
 
 /* ══════════════════════════════════════════════════════════════════
    PESTS NOT COVERED ALERT
@@ -1081,22 +1081,72 @@ body {
     margin-bottom: 1.25rem;
 }
 
-.policy-quick-ref { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.875rem; }
+.policy-quick-ref { display: flex; flex-direction: column; gap: 0.5rem; }
 
 .policy-item-compact {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 0.5rem;
-    padding: 0.875rem;
-    text-align: center;
-    transition: all 0.2s ease;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
 }
 
-.policy-item-compact:hover { border-color: var(--border-accent); transform: translateY(-1px); }
-.policy-label { color: var(--accent); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
-.policy-value { color: var(--text-primary); font-weight: 600; font-size: 0.88rem; }
+.policy-item-compact:hover { border-color: var(--border-accent); }
 
-#defaultSchedulingTimes { text-align: left !important; line-height: 1.6; }
+.policy-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    gap: 1rem;
+}
+
+.policy-item-header:hover { background: var(--bg-card-hover); }
+
+.policy-header-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; }
+
+.policy-label {
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.policy-value-inline {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.policy-chevron {
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+.policy-item-compact.open .policy-chevron { transform: rotate(180deg); }
+
+.policy-item-body {
+    display: none;
+    padding: 0 1rem 0.875rem 1rem;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+}
+
+.policy-item-compact.open .policy-item-body { display: block; }
+
+.policy-value-full { color: var(--text-primary); font-weight: 600; font-size: 0.9rem; line-height: 1.6; }
+
+#defaultSchedulingTimes { line-height: 1.6; }
 #defaultSchedulingTimes strong { color: var(--water); font-weight: 700; }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -1576,21 +1626,89 @@ body {
                     <!-- Scheduling Policies Quick Reference -->
                     <div class="scheduling-policies">
                         <div class="policy-quick-ref">
-                            <div class="policy-item-compact">
-                                <div class="policy-label">Default Scheduling Windows</div>
-                                <div class="policy-value" id="defaultSchedulingTimes">Loading...</div>
+                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">Default Scheduling Windows</span>
+                                        <span class="policy-value-inline" id="defaultSchedulingTimesInline">Loading...</span>
+                                    </div>
+                                    <span class="policy-chevron">▼</span>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="defaultSchedulingTimes"></div>
+                                </div>
                             </div>
-                            <div class="policy-item-compact">
-                                <div class="policy-label">Max Distance</div>
-                                <div class="policy-value" id="maxDistance">Loading...</div>
+                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">Max Distance</span>
+                                        <span class="policy-value-inline" id="maxDistance">Loading...</span>
+                                    </div>
+                                    <span class="policy-chevron">▼</span>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="maxDistanceFull"></div>
+                                </div>
                             </div>
-                            <div class="policy-item-compact">
-                                <div class="policy-label">Same Day Services</div>
-                                <div class="policy-value" id="sameDayPolicy">Loading...</div>
+                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">Same Day Services</span>
+                                        <span class="policy-value-inline" id="sameDayPolicy">Loading...</span>
+                                    </div>
+                                    <span class="policy-chevron">▼</span>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="sameDayPolicyFull"></div>
+                                </div>
                             </div>
-                            <div class="policy-item-compact">
-                                <div class="policy-label">Appointment Confirmations</div>
-                                <div class="policy-value" id="confirmationPolicy">Loading...</div>
+                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">Appointment Confirmations</span>
+                                        <span class="policy-value-inline" id="confirmationPolicy">Loading...</span>
+                                    </div>
+                                    <span class="policy-chevron">▼</span>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="confirmationPolicyFull"></div>
+                                </div>
+                            </div>
+                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">Call Ahead</span>
+                                        <span class="policy-value-inline" id="callAheadPolicy">Loading...</span>
+                                    </div>
+                                    <span class="policy-chevron">▼</span>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="callAheadPolicyFull"></div>
+                                </div>
+                            </div>
+                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">Tech Skilling</span>
+                                        <span class="policy-value-inline" id="techSkillingPolicy">Loading...</span>
+                                    </div>
+                                    <span class="policy-chevron">▼</span>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="techSkillingPolicyFull"></div>
+                                </div>
+                            </div>
+                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">After Hours Emergency</span>
+                                        <span class="policy-value-inline" id="afterHoursPolicy">Loading...</span>
+                                    </div>
+                                    <span class="policy-chevron">▼</span>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="afterHoursPolicyFull"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2294,11 +2412,11 @@ function subDetailItem(label, value) {
 // ─── Technicians ──────────────────────────────────────────────────────────────
 function populateTechnicians() {
     const grid = document.getElementById('techniciansGrid');
+    populateSchedulingPolicies();
     if (!clientData.technicians?.length) {
         grid.innerHTML = '<div class="info-section"><div class="info-content">No technician information available.</div></div>';
         return;
     }
-    populateSchedulingPolicies();
     grid.innerHTML = '';
     clientData.technicians.forEach(tech => grid.appendChild(createTechnicianCard(tech)));
 }
@@ -2343,36 +2461,126 @@ function populateSchedulingPolicies() {
     const policies = clientData.policies || {};
     const allPolicies = Object.values(policies).flat();
 
-    function find(predicate) {
-        return allPolicies.find(predicate);
+    function find(type) { return allPolicies.find(p => p.type === type); }
+    function val(p)     { return p ? (p.value || p.default || 'Not specified') : 'Not specified'; }
+
+    // Sets inline preview + optional expanded full content, hides chevron if nothing extra to show
+    function setField(inlineId, fullId, p, fullHTML) {
+        const inlineEl = document.getElementById(inlineId);
+        const fullEl   = document.getElementById(fullId);
+        const card     = inlineEl?.closest('.policy-item-compact');
+        const chevron  = card?.querySelector('.policy-chevron');
+
+        const inlineText = val(p);
+        if (inlineEl) inlineEl.textContent = inlineText;
+
+        // Full content: use provided HTML, or fall back to the same value text
+        const hasFullContent = !!(fullHTML || (inlineText !== 'Not specified'));
+        if (fullEl) {
+            if (fullHTML) {
+                fullEl.innerHTML = fullHTML;
+            } else {
+                fullEl.textContent = inlineText;
+            }
+        }
+
+        // Only show chevron + allow toggling if the full content differs from inline
+        // (i.e. schedulingLayout, or value is long enough to warrant expanding)
+        const isExpandable = fullHTML || (inlineText.length > 40);
+        if (chevron) chevron.style.display = isExpandable ? '' : 'none';
+        if (card && !isExpandable) card.style.cursor = 'default';
+        if (card && !isExpandable) card.onclick = null;
     }
 
-    const schedulingTimes = find(p => p.type === 'scheduling_times');
-    const maxDistance     = find(p => p.type === 'distance');
-    const sameDay         = find(p => p.type === 'sameday');
-    const confirmations   = find(p => p.type === 'confirmations');
-    const reservices      = find(p => p.type === 'reservices');
+    const schedulingTimes = find('scheduling_times');
+    const maxDistance     = find('distance');
+    const sameDay         = find('sameday');
+    const confirmations   = find('confirmations');
+    const callAhead       = find('callahead');
+    const techSkilling    = find('techskilling');
+    const afterHours      = find('emergency');
+    const reservices      = find('reservices');
 
-    const schedulingEl = document.getElementById('defaultSchedulingTimes');
-    if (schedulingTimes && (schedulingTimes.value || schedulingTimes.default)) {
-        const text = (schedulingTimes.value || schedulingTimes.default)
-            .replace(/\n\n/g, '\n')
-            .replace(/Inspection:/g, '<strong>Inspection:</strong>')
-            .replace(/Initial\/Interior:/g, '<br><strong>Initial/Interior:</strong>')
-            .replace(/Regular:/g, '<br><strong>Regular:</strong>');
-        schedulingEl.innerHTML = text;
+    // Default Scheduling Windows — inline shows the default option, expanded shows the full layout
+    const schedulingInline = document.getElementById('defaultSchedulingTimesInline');
+    const schedulingFull   = document.getElementById('defaultSchedulingTimes');
+    const schedulingCard   = schedulingInline?.closest('.policy-item-compact');
+    const schedulingChevron = schedulingCard?.querySelector('.policy-chevron');
+    if (schedulingTimes) {
+        if (schedulingTimes.schedulingLayout && typeof schedulingTimes.schedulingLayout === 'object') {
+            const layoutHTML = Object.entries(schedulingTimes.schedulingLayout)
+                .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
+                .join('');
+            if (schedulingInline) schedulingInline.textContent = val(schedulingTimes);
+            if (schedulingFull)   schedulingFull.innerHTML     = layoutHTML;
+        } else {
+            const text = val(schedulingTimes);
+            if (schedulingInline) schedulingInline.textContent = text;
+            if (schedulingFull)   schedulingFull.textContent   = text;
+            // Hide chevron if short and no extra detail
+            if (schedulingChevron && text.length <= 40) {
+                schedulingChevron.style.display = 'none';
+                if (schedulingCard) { schedulingCard.style.cursor = 'default'; schedulingCard.onclick = null; }
+            }
+        }
     } else {
-        schedulingEl.textContent = 'Not specified';
+        if (schedulingInline) schedulingInline.textContent = 'Not specified';
+        if (schedulingFull)   schedulingFull.textContent   = 'Not specified';
+        if (schedulingChevron) schedulingChevron.style.display = 'none';
     }
 
-    document.getElementById('maxDistance').textContent    = maxDistance   ? (maxDistance.value   || maxDistance.default   || 'Not specified') : 'Not specified';
-    document.getElementById('sameDayPolicy').textContent  = sameDay       ? (sameDay.value       || sameDay.default       || 'Not specified') : 'Not specified';
-    document.getElementById('confirmationPolicy').textContent = confirmations ? (confirmations.value || confirmations.default || 'Not specified') : 'Not specified';
+    setField('maxDistance',         'maxDistanceFull',         maxDistance,   null);
+    setField('sameDayPolicy',       'sameDayPolicyFull',       sameDay,       null);
+    setField('confirmationPolicy',  'confirmationPolicyFull',  confirmations, null);
+    setField('callAheadPolicy',     'callAheadPolicyFull',     callAhead,     null);
+    setField('techSkillingPolicy',  'techSkillingPolicyFull',  techSkilling,  null);
+    setField('afterHoursPolicy',    'afterHoursPolicyFull',    afterHours,    null);
 
     const reservicesPolicyEl = document.getElementById('reservicesPolicy');
-    if (reservicesPolicyEl) {
-        reservicesPolicyEl.textContent = reservices ? (reservices.value || reservices.default || 'Not specified') : 'Not specified';
+    if (reservicesPolicyEl) reservicesPolicyEl.textContent = val(reservices);
+
+    // Render any extra Scheduling and Operations items not already covered above
+    const knownTypes = new Set(['scheduling_times','distance','sameday','confirmations','callahead','techskilling','emergency']);
+    const schedGroup = policies['Scheduling and Operations'] || [];
+    const extras = schedGroup.filter(p => !knownTypes.has(p.type));
+
+    const quickRef = document.querySelector('.policy-quick-ref');
+    quickRef?.querySelectorAll('.policy-item-compact.extra').forEach(el => el.remove());
+
+    if (quickRef && extras.length) {
+        extras.forEach(p => {
+            const inlineVal = val(p);
+            let fullHTML = null;
+            if (p.schedulingLayout && typeof p.schedulingLayout === 'object') {
+                fullHTML = Object.entries(p.schedulingLayout)
+                    .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
+                    .join('');
+            }
+            const isExpandable = fullHTML || inlineVal.length > 40;
+
+            const item = document.createElement('div');
+            item.className = 'policy-item-compact extra';
+            if (isExpandable) item.setAttribute('onclick', 'togglePolicyItem(this)');
+            else item.style.cursor = 'default';
+
+            item.innerHTML = `
+                <div class="policy-item-header">
+                    <div class="policy-header-left">
+                        <span class="policy-label">${p.title || p.type}</span>
+                        <span class="policy-value-inline">${inlineVal}</span>
+                    </div>
+                    <span class="policy-chevron" style="${isExpandable ? '' : 'display:none'}">▼</span>
+                </div>
+                <div class="policy-item-body">
+                    <div class="policy-value-full">${fullHTML || inlineVal}</div>
+                </div>`;
+            quickRef.appendChild(item);
+        });
     }
+}
+
+function togglePolicyItem(el) {
+    el.classList.toggle('open');
 }
 
 function toggleReservicePolicies() {
@@ -2436,7 +2644,7 @@ function populatePolicies() {
         return;
     }
 
-    const groups = Object.keys(clientData.policies).filter(g => g !== 'Service Policies');
+    const groups = Object.keys(clientData.policies).filter(g => g !== 'Service Policies' && g !== 'Scheduling and Operations');
     if (!groups.length) {
         grid.innerHTML = '<div class="info-section"><div class="info-content">All policies have been moved to their respective sections.</div></div>';
         return;
