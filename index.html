@@ -1101,11 +1101,12 @@ body {
     cursor: pointer;
     user-select: none;
     gap: 1rem;
+    overflow: hidden;
 }
 
 .policy-item-header:hover { background: var(--bg-card-hover); }
 
-.policy-header-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; }
+.policy-header-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; overflow: hidden; }
 
 .policy-label {
     color: var(--accent);
@@ -1124,6 +1125,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 60%;
 }
 
 .policy-chevron {
@@ -2107,9 +2109,12 @@ function populateClientData() {
         frUrl  = clientData.fieldRoutesButton.url;
         showFR = true;
     } else if (clientData.FieldRoutes_Button_Text || clientData.FieldRoutes_Link) {
-        frText = clientData.FieldRoutes_Button_Text || 'FieldRoutes';
+        // Use FieldRoutes_Link as the href; FieldRoutes_Button_Text may itself be a URL so never display it raw
         frUrl  = clientData.FieldRoutes_Link || clientData.officeInfo?.website;
-        showFR = !!(clientData.FieldRoutes_Button_Text || clientData.FieldRoutes_Link);
+        const rawText = clientData.FieldRoutes_Button_Text || '';
+        // If the text looks like a URL, ignore it and use a sensible default instead
+        frText = (rawText.startsWith('http') || rawText.includes('://')) ? 'FieldRoutes' : (rawText || 'FieldRoutes');
+        showFR = !!frUrl;
     }
 
     if (showFR && frText && frUrl) {
