@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2781,7 +2782,7 @@ function showPolicyInnerTab(groupSlug, idx, btn) {
     document.getElementById(`inner-panel-${groupSlug}-${idx}`)?.classList.add('active');
 }
  
-function slugify(str) { return str.replace(/\s+/g, '-').toLowerCase(); }
+function slugify(str) { return str.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase(); }
  
 function buildPolicyItemHTML(policy) {
     const valueBlock = policy.schedulingLayout
