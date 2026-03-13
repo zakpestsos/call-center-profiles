@@ -16,7 +16,7 @@
     --water:  #0C8FCB;
     --metal:  #C6C9C9;
     --white:  #ffffff;
-
+ 
     /* Dark theme tokens */
     --bg-page:        #08071a;
     --bg-header:      #1A173D;
@@ -50,7 +50,7 @@
     --pricing-bg:     linear-gradient(135deg, rgba(26, 23, 61, 0.95), rgba(15, 14, 40, 0.98));
     --tool-btn-bg:    linear-gradient(135deg, #0a7aad, #085f87);
 }
-
+ 
 /* ── Light mode overrides ── */
 [data-theme="light"] {
     --bg-page:        #f4f4f8;
@@ -85,12 +85,12 @@
     --pricing-bg:     linear-gradient(135deg, #f0eff8, #e4e2f0);
     --tool-btn-bg:    linear-gradient(135deg, #DD1E33, #b01828);
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    RESET & BASE
    ══════════════════════════════════════════════════════════════════ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
+ 
 body {
     font-family: 'Nunito Sans', sans-serif;
     background: var(--bg-page);
@@ -99,7 +99,7 @@ body {
     overflow-x: hidden;
     transition: background 0.3s ease, color 0.3s ease;
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    HEADER
    ══════════════════════════════════════════════════════════════════ */
@@ -110,7 +110,7 @@ body {
     position: relative;
     overflow: hidden;
 }
-
+ 
 .header::before {
     content: '';
     position: absolute;
@@ -119,12 +119,12 @@ body {
     background: linear-gradient(90deg, transparent, var(--scan-color), transparent);
     animation: scan 4s infinite;
 }
-
+ 
 @keyframes scan {
     0%   { left: -100%; }
     100% { left: 100%; }
 }
-
+ 
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -132,7 +132,7 @@ body {
     position: relative;
     z-index: 2;
 }
-
+ 
 .company-info h1 {
     font-family: 'Alegreya', serif;
     font-size: 2.2rem;
@@ -141,9 +141,9 @@ body {
     margin-bottom: 0.3rem;
     letter-spacing: -0.01em;
 }
-
+ 
 .company-info h1 span.brand-red { color: var(--accent); }
-
+ 
 .company-info .location {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 0.9rem;
@@ -155,9 +155,9 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
 }
-
+ 
 .time-weather-container { display: flex; gap: 1rem; align-items: center; }
-
+ 
 .current-time {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.15);
@@ -168,7 +168,7 @@ body {
     color: var(--white);
     font-size: 0.95rem;
 }
-
+ 
 .weather-forecast {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.15);
@@ -176,20 +176,20 @@ body {
     border-radius: 0.5rem;
     min-width: 300px;
 }
-
+ 
 .weather-forecast-content {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 0.5rem;
 }
-
+ 
 .weather-day { text-align: center; padding: 0.2rem; }
 .weather-day-name { font-size: 0.7rem; color: var(--metal); margin-bottom: 0.15rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .weather-temp { font-size: 0.95rem; color: var(--white); font-weight: 700; }
 .weather-desc { font-size: 0.75rem; }
-
+ 
 .header-actions { display: flex; gap: 0.75rem; align-items: center; }
-
+ 
 /* Theme toggle button */
 .theme-toggle {
     background: rgba(255,255,255,0.1);
@@ -207,7 +207,7 @@ body {
     background: rgba(255,255,255,0.2);
     transform: rotate(20deg);
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    STICKY HEADER
    ══════════════════════════════════════════════════════════════════ */
@@ -222,9 +222,9 @@ body {
     transform: translateY(-100%);
     transition: transform 0.3s ease;
 }
-
+ 
 .sticky-header.show { transform: translateY(0); }
-
+ 
 .sticky-content {
     display: flex;
     justify-content: space-between;
@@ -233,12 +233,12 @@ body {
     margin: 0 auto;
     gap: 1rem;
 }
-
+ 
 .sticky-company { font-family: 'Alegreya', serif; font-size: 1.1rem; font-weight: 700; color: var(--white); }
 .sticky-time { font-family: 'Nunito Sans', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--metal); }
 .sticky-weather { font-size: 0.85rem; color: var(--metal); }
 .sticky-actions { display: flex; gap: 0.5rem; }
-
+ 
 .sticky-btn {
     background: rgba(221, 30, 51, 0.2);
     border: 1px solid var(--accent);
@@ -252,17 +252,17 @@ body {
     transition: all 0.2s ease;
     cursor: pointer;
 }
-
+ 
 .sticky-btn:hover {
     background: var(--accent);
     transform: translateY(-1px);
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    TOP INFO CARDS
    ══════════════════════════════════════════════════════════════════ */
 .top-info-section { margin: 1.25rem 0; padding: 0 1.5rem; }
-
+ 
 .info-cards-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -270,7 +270,7 @@ body {
     max-width: 1600px;
     margin: 0 auto;
 }
-
+ 
 .info-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -280,7 +280,7 @@ body {
     box-shadow: var(--shadow);
     transition: background 0.3s ease;
 }
-
+ 
 .info-card-title {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 0.8rem;
@@ -293,9 +293,9 @@ body {
     align-items: center;
     gap: 0.5rem;
 }
-
+ 
 .info-card-content { color: var(--text-secondary); line-height: 1.6; font-size: 0.9rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    ALERT BANNER
    ══════════════════════════════════════════════════════════════════ */
@@ -309,12 +309,12 @@ body {
     display: none;
     text-align: center;
 }
-
+ 
 .alert-banner .alert-content { display: flex; align-items: center; justify-content: center; gap: 1rem; }
 .alert-banner .alert-icon { font-size: 1.5rem; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.1)} }
-.alert-banner .alert-text { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.03em; }
-
+.alert-banner .alert-text { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.03em; color: #ffffff; }
+ 
 /* ══════════════════════════════════════════════════════════════════
    PESTS NOT COVERED ALERT
    ══════════════════════════════════════════════════════════════════ */
@@ -329,7 +329,7 @@ body {
 .pests-not-covered-alert.show { display: block; }
 .alert-title { font-family: 'Nunito Sans', sans-serif; font-weight: 800; color: var(--accent); font-size: 1rem; margin-bottom: 0.4rem; }
 .alert-content { color: var(--text-secondary); font-size: 0.9rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    MAIN LAYOUT
    ══════════════════════════════════════════════════════════════════ */
@@ -342,7 +342,7 @@ body {
     margin: 0 auto;
     min-height: calc(100vh - 120px);
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    NAVIGATION SIDEBAR
    ══════════════════════════════════════════════════════════════════ */
@@ -359,9 +359,9 @@ body {
     top: 20px;
     transition: top 0.3s ease, background 0.3s ease;
 }
-
+ 
 .nav-sidebar.sticky-header-active { top: 90px; max-height: calc(100vh - 170px); }
-
+ 
 .nav-btn {
     display: block;
     width: 100%;
@@ -378,20 +378,20 @@ body {
     transition: all 0.2s ease;
     text-align: left;
 }
-
+ 
 .nav-btn:hover {
     border-color: var(--accent);
     color: var(--accent);
     transform: translateX(4px);
 }
-
+ 
 .nav-btn.active {
     background: var(--nav-btn-active);
     border-color: transparent;
     color: var(--white);
     box-shadow: var(--shadow-accent);
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    CONTENT AREA
    ══════════════════════════════════════════════════════════════════ */
@@ -405,15 +405,15 @@ body {
     overflow: hidden;
     min-width: 0;
 }
-
+ 
 .content-section { display: none; }
 .content-section.active { display: block; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    SERVICE TABS
    ══════════════════════════════════════════════════════════════════ */
 .service-tabs-wrapper { display: flex; flex-direction: column; width: 100%; }
-
+ 
 .service-tabs-bar {
     display: flex;
     flex-wrap: wrap;
@@ -425,7 +425,7 @@ body {
     justify-content: center;
     width: calc(100% + 4rem);
 }
-
+ 
 .svc-tab-btn {
     position: relative;
     background: var(--tab-inactive);
@@ -446,16 +446,16 @@ body {
     justify-content: center;
     gap: 0.45rem;
 }
-
+ 
 .svc-tab-btn:hover { border-color: var(--accent); color: var(--accent); }
-
+ 
 .svc-tab-btn.active {
     background: var(--tab-active-bg);
     border-color: var(--tab-active-border);
     color: var(--tab-active-text);
     box-shadow: var(--shadow);
 }
-
+ 
 .svc-tab-btn .tab-freq-badge {
     display: inline-flex;
     align-items: center;
@@ -472,25 +472,25 @@ body {
     font-weight: 800;
     white-space: nowrap;
 }
-
+ 
 .svc-tab-btn.active .tab-freq-badge {
     background: rgba(255,255,255,0.15);
     border-color: rgba(255,255,255,0.3);
     color: var(--white);
 }
-
-.service-tab-panels { width: 100%; padding-top: 1.5rem; }
+ 
+.service-tab-panels { width: 100%; padding-top: 1.5rem; margin-top: 0; }
 .svc-tab-panel { display: none; animation: tabFadeIn 0.25s ease; }
 .svc-tab-panel.active { display: block; }
-
+ 
 @keyframes tabFadeIn {
     from { opacity: 0; transform: translateY(5px); }
     to   { opacity: 1; transform: translateY(0); }
 }
-
+ 
 /* Sub-tabs */
 .sub-tabs-wrapper { margin-top: 1rem; }
-
+ 
 .sub-tabs-bar {
     display: flex;
     flex-wrap: wrap;
@@ -499,7 +499,7 @@ body {
     justify-content: center;
     width: 100%;
 }
-
+ 
 .sub-tab-btn {
     background: var(--tab-inactive);
     border: 1px solid var(--border);
@@ -512,19 +512,19 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
 }
-
+ 
 .sub-tab-btn:hover { border-color: var(--accent); color: var(--accent); }
-
+ 
 .sub-tab-btn.active {
     background: var(--navy);
     border-color: var(--accent);
     color: var(--white);
     box-shadow: 0 2px 8px rgba(221,30,51,0.2);
 }
-
+ 
 .sub-tab-panel { display: none; animation: tabFadeIn 0.2s ease; }
 .sub-tab-panel.active { display: block; }
-
+ 
 /* Panel header */
 .svc-panel-header {
     display: flex;
@@ -535,21 +535,21 @@ body {
     border-bottom: 1px solid var(--border);
     gap: 1rem;
 }
-
+ 
 .svc-panel-name {
     font-family: 'Alegreya', serif;
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-heading);
 }
-
+ 
 .svc-panel-desc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    SERVICE CARDS (used in pest search fallback)
    ══════════════════════════════════════════════════════════════════ */
 .services-grid { display: grid; gap: 1.25rem; }
-
+ 
 .service-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -557,16 +557,16 @@ body {
     padding: 1.5rem;
     transition: all 0.2s ease;
 }
-
+ 
 .service-card:hover {
     border-color: var(--accent);
     box-shadow: var(--shadow-accent);
     transform: translateY(-2px);
 }
-
+ 
 .service-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
 .service-name { font-family: 'Alegreya', serif; font-size: 1.2rem; font-weight: 700; color: var(--text-heading); flex: 1; }
-
+ 
 .service-frequency {
     background: rgba(12, 143, 203, 0.12);
     border: 1px solid rgba(12, 143, 203, 0.3);
@@ -581,9 +581,9 @@ body {
     margin-left: 1rem;
     flex-shrink: 0;
 }
-
+ 
 .service-description { color: var(--text-secondary); margin-bottom: 0.75rem; line-height: 1.6; font-size: 0.9rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    SERVICE DETAILS GRID
    ══════════════════════════════════════════════════════════════════ */
@@ -594,17 +594,17 @@ body {
     padding: 1rem;
     margin: 0.75rem 0;
 }
-
+ 
 .service-details-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.75rem;
 }
-
+ 
 .detail-item { display: flex; flex-direction: column; }
 .detail-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; font-weight: 700; }
 .detail-value { color: var(--text-primary); font-weight: 600; font-size: 0.9rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    PESTS COVERED
    ══════════════════════════════════════════════════════════════════ */
@@ -615,10 +615,10 @@ body {
     padding: 0.75rem;
     margin: 0.75rem 0;
 }
-
+ 
 .pests-covered-title { font-size: 0.7rem; font-weight: 800; color: var(--water); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
 .pests-covered-list { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    AGENT NOTES
    ══════════════════════════════════════════════════════════════════ */
@@ -630,16 +630,16 @@ body {
     padding: 0.75rem;
     margin: 0.75rem 0;
 }
-
+ 
 .agent-note-title { font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
 .agent-note-title::before { content: "⚠️"; }
 .agent-note-content { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; font-style: italic; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    SUBSERVICES
    ══════════════════════════════════════════════════════════════════ */
 .subservices-container { margin: 0.75rem 0; }
-
+ 
 .subservice-item {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -648,11 +648,11 @@ body {
     padding: 1.25rem;
     transition: all 0.2s ease;
 }
-
+ 
 .subservice-item:hover { border-color: var(--border-accent); }
 .subservice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; }
 .subservice-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
-
+ 
 .subservice-frequency {
     background: rgba(12,143,203,0.1);
     border: 1px solid rgba(12,143,203,0.3);
@@ -664,9 +664,9 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-
+ 
 .subservice-description { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 0.65rem; line-height: 1.4; }
-
+ 
 .subservice-pests {
     background: rgba(12,143,203,0.04);
     border: 1px solid rgba(12,143,203,0.15);
@@ -674,10 +674,10 @@ body {
     padding: 0.5rem;
     margin-bottom: 0.65rem;
 }
-
+ 
 .subservice-pests-title { font-size: 0.65rem; font-weight: 800; color: var(--water); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 0.25rem; }
 .subservice-pests-list { color: var(--text-muted); font-size: 0.8rem; line-height: 1.3; }
-
+ 
 .subservice-details {
     background: rgba(0,0,0,0.1);
     border: 1px solid var(--border);
@@ -685,12 +685,12 @@ body {
     padding: 0.65rem;
     margin: 0.65rem 0;
 }
-
+ 
 .subservice-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.4rem; }
 .subservice-detail-item { display: flex; flex-direction: column; }
 .subservice-detail-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 0.15rem; font-weight: 700; }
 .subservice-detail-value { color: var(--text-primary); font-weight: 600; font-size: 0.8rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    PRICING CALCULATOR
    ══════════════════════════════════════════════════════════════════ */
@@ -702,7 +702,7 @@ body {
     padding: 1rem;
     margin-top: 1rem;
 }
-
+ 
 .service-info-summary {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -714,11 +714,11 @@ body {
     font-weight: 600;
     color: var(--text-primary);
 }
-
+ 
 .calculator-title { font-family: 'Nunito Sans', sans-serif; font-weight: 800; color: var(--text-heading); font-size: 0.95rem; margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.4rem; }
-
+ 
 .sqft-input-container { display: flex; gap: 0.65rem; align-items: center; margin-bottom: 0.75rem; }
-
+ 
 .sqft-input {
     flex: 1;
     background: var(--bg-input);
@@ -731,7 +731,7 @@ body {
 }
 .sqft-input:focus { outline: none; border-color: var(--accent); }
 .sqft-input::placeholder { color: var(--text-muted); }
-
+ 
 .calculate-btn {
     background: var(--accent);
     border: 1px solid var(--accent-hover);
@@ -744,16 +744,16 @@ body {
     transition: all 0.2s ease;
 }
 .calculate-btn:hover { background: rgba(255,255,255,0.28); }
-
+ 
 .pricing-result { background: var(--bg-input); border: 1px solid var(--border); border-radius: 0.4rem; padding: 0.65rem; display: none; }
 .pricing-result.show { display: block; }
-
+ 
 .pricing-display { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.65rem; }
 .price-display-item { text-align: center; }
 .price-display-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .price-display-value { font-size: 1.05rem; font-weight: 800; color: var(--water); }
 .sqft-range-info { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center; }
-
+ 
 /* Pricing info grid */
 .pricing-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.08); border-radius: 0.5rem; }
 .pricing-info-item { display: flex; flex-direction: column; padding: 0.65rem; background: rgba(255,255,255,0.08); border-radius: 0.4rem; }
@@ -762,7 +762,7 @@ body {
 .pricing-info-label { font-weight: 600; color: rgba(255,255,255,0.85); }
 .pricing-info-value { font-weight: 800; color: white; }
 .pricing-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.4rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    TOOLS SIDEBAR
    ══════════════════════════════════════════════════════════════════ */
@@ -779,11 +779,11 @@ body {
     top: 20px;
     transition: top 0.3s ease, background 0.3s ease;
 }
-
+ 
 .tools-sidebar.sticky-header-active { top: 90px; max-height: calc(100vh - 170px); }
-
+ 
 .tool-section { margin-bottom: 1.75rem; position: relative; }
-
+ 
 .tool-title {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 0.75rem;
@@ -793,7 +793,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
 }
-
+ 
 .tool-input {
     width: 100%;
     background: var(--bg-input);
@@ -806,9 +806,9 @@ body {
     margin-bottom: 0.65rem;
     transition: border-color 0.2s ease;
 }
-
+ 
 .tool-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(221,30,51,0.1); }
-
+ 
 .tool-btn {
     width: 100%;
     background: var(--tool-btn-bg);
@@ -823,9 +823,9 @@ body {
     transition: all 0.2s ease;
     margin-bottom: 0.5rem;
 }
-
+ 
 .tool-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-
+ 
 .tool-result {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -838,7 +838,7 @@ body {
     display: flex;
     align-items: center;
 }
-
+ 
 /* Search popup */
 .search-popup {
     position: absolute;
@@ -852,12 +852,12 @@ body {
     overflow-y: auto;
     animation: slideDown 0.2s ease-out;
 }
-
+ 
 @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-
+ 
 .search-popup-content { padding: 0.75rem; }
 .search-popup-header { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 0.65rem; }
-
+ 
 .search-popup-item {
     padding: 0.65rem;
     border-radius: 0.4rem;
@@ -866,7 +866,7 @@ body {
     transition: all 0.15s ease;
     border: 1px solid transparent;
 }
-
+ 
 .search-popup-item:hover { background: var(--accent-soft); border-color: var(--accent); }
 .search-popup-item.covered { background: rgba(12,143,203,0.08); border-color: rgba(12,143,203,0.25); }
 .search-popup-item.not-covered { background: rgba(221,30,51,0.08); border-color: rgba(221,30,51,0.25); }
@@ -874,7 +874,7 @@ body {
 .search-popup-item-icon { display: inline-block; width: 20px; font-weight: bold; }
 .search-popup-item-text { color: var(--text-primary); font-size: 0.9rem; }
 .search-popup-item-detail { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
-
+ 
 .search-highlight {
     background: rgba(221,30,51,0.15);
     border: 1px solid rgba(221,30,51,0.3);
@@ -883,7 +883,7 @@ body {
     color: var(--accent);
     font-weight: 700;
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    CYBER BTN (header actions)
    ══════════════════════════════════════════════════════════════════ */
@@ -900,14 +900,14 @@ body {
     transition: all 0.2s ease;
     cursor: pointer;
 }
-
+ 
 .cyber-btn:hover {
     background: var(--accent);
     border-color: var(--accent);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(221,30,51,0.35);
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    INFO SECTIONS (bulletin, pests not covered)
    ══════════════════════════════════════════════════════════════════ */
@@ -919,21 +919,21 @@ body {
     padding: 1.25rem;
     margin-bottom: 1.25rem;
 }
-
+ 
 .info-title { font-family: 'Alegreya', serif; font-size: 1.25rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.75rem; }
 .info-content { color: var(--text-secondary); line-height: 1.6; white-space: pre-line; font-size: 0.9rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    LOADING / ERROR
    ══════════════════════════════════════════════════════════════════ */
 .loading { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 1rem; }
 .error { text-align: center; padding: 3rem; color: var(--accent); font-size: 1rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    MODAL
    ══════════════════════════════════════════════════════════════════ */
 .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: 1000; }
-
+ 
 .modal-content {
     position: absolute;
     top: 50%; left: 50%;
@@ -948,22 +948,22 @@ body {
     max-height: 80vh;
     overflow-y: auto;
 }
-
+ 
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
 .modal-title { font-family: 'Alegreya', serif; font-size: 1.4rem; font-weight: 700; color: var(--text-heading); }
 .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
 .close-btn:hover { color: var(--accent); }
-
+ 
 .office-info { display: grid; gap: 0.75rem; }
 .office-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 0.65rem 0.75rem; background: var(--bg-input); border-radius: 0.4rem; border: 1px solid var(--border); }
 .office-label { font-weight: 700; color: var(--text-muted); font-size: 0.85rem; margin-right: 1rem; }
 .office-value { color: var(--text-primary); text-align: right; white-space: pre-line; font-size: 0.9rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    POLICIES
    ══════════════════════════════════════════════════════════════════ */
 .policies-container { display: flex; gap: 1.25rem; min-height: 500px; }
-
+ 
 .policies-sidebar {
     width: 220px;
     background: var(--bg-input);
@@ -971,7 +971,7 @@ body {
     border-radius: 0.75rem;
     padding: 1.25rem;
 }
-
+ 
 .policies-main {
     flex: 1;
     background: var(--bg-input);
@@ -979,7 +979,7 @@ body {
     border-radius: 0.75rem;
     padding: 1.25rem;
 }
-
+ 
 .policy-group-btn {
     display: block; width: 100%;
     background: var(--nav-btn-bg);
@@ -995,14 +995,14 @@ body {
     transition: all 0.2s ease;
     text-align: left;
 }
-
+ 
 .policy-group-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateX(3px); }
 .policy-group-btn.active { background: var(--nav-btn-active); border-color: transparent; color: white; }
-
+ 
 .policy-group-content { display: none; }
 .policy-group-content.active { display: block; }
 .policy-group-title { font-family: 'Alegreya', serif; color: var(--text-heading); font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
-
+ 
 .policy-item {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -1011,28 +1011,28 @@ body {
     margin-bottom: 0.875rem;
     transition: all 0.2s ease;
 }
-
+ 
 .policy-item:hover { border-color: var(--border-accent); transform: translateY(-1px); }
 .policy-item-title { color: var(--text-heading); font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
 .policy-item-description { color: var(--text-muted); line-height: 1.5; margin-bottom: 0.75rem; font-size: 0.85rem; }
-
+ 
 .policy-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.65rem; }
-
+ 
 .policy-detail {
     background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: 0.4rem;
     padding: 0.65rem;
 }
-
+ 
 .policy-detail-label { color: var(--accent); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
 .policy-detail-value { color: var(--text-primary); font-weight: 600; font-size: 0.9rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    SCHEDULING
    ══════════════════════════════════════════════════════════════════ */
 .scheduling-container { padding: 0; overflow: hidden; min-width: 0; }
-
+ 
 .scheduling-header {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -1040,11 +1040,11 @@ body {
     padding: 1.25rem;
     margin-bottom: 1.25rem;
 }
-
+ 
 .scheduling-title { color: var(--text-heading); font-family: 'Alegreya', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.875rem; text-align: center; }
 .scheduling-quick-tools { display: flex; gap: 0.875rem; justify-content: center; flex-wrap: wrap; }
 .scheduling-tool { display: flex; gap: 0.5rem; align-items: center; }
-
+ 
 .scheduling-input, .scheduling-select {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -1056,9 +1056,9 @@ body {
     transition: border-color 0.2s ease;
     font-family: 'Nunito Sans', sans-serif;
 }
-
+ 
 .scheduling-input:focus, .scheduling-select:focus { outline: none; border-color: var(--accent); }
-
+ 
 .scheduling-btn {
     background: var(--accent);
     border: none;
@@ -1072,9 +1072,9 @@ body {
     font-family: 'Nunito Sans', sans-serif;
     white-space: nowrap;
 }
-
+ 
 .scheduling-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-
+ 
 .scheduling-policies {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -1084,9 +1084,9 @@ body {
     overflow: hidden;
     min-width: 0;
 }
-
+ 
 .policy-quick-ref { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; overflow: hidden; }
-
+ 
 .policy-item-compact {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -1095,24 +1095,22 @@ body {
     transition: border-color 0.2s ease;
     min-width: 0;
 }
-
+ 
 .policy-item-compact:hover { border-color: var(--border-accent); }
-
+ 
 .policy-item-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     padding: 0.75rem 1rem;
-    cursor: pointer;
+    cursor: default;
     user-select: none;
-    gap: 1rem;
+    gap: 0.3rem;
     overflow: hidden;
 }
-
-.policy-item-header:hover { background: var(--bg-card-hover); }
-
-.policy-header-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; overflow: hidden; }
-
+ 
+.policy-header-left { display: flex; align-items: flex-start; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 0; width: 100%; }
+ 
 .policy-label {
     color: var(--accent);
     font-size: 0.75rem;
@@ -1122,40 +1120,33 @@ body {
     white-space: nowrap;
     flex-shrink: 0;
 }
-
+ 
 .policy-value-inline {
     color: var(--text-primary);
     font-weight: 600;
     font-size: 0.85rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 60%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    max-width: 100%;
+    line-height: 1.5;
 }
-
-.policy-chevron {
-    color: var(--text-muted);
-    font-size: 0.65rem;
-    transition: transform 0.25s ease;
-    flex-shrink: 0;
-}
-
-.policy-item-compact.open .policy-chevron { transform: rotate(180deg); }
-
+ 
+.policy-chevron { display: none; }
+ 
 .policy-item-body {
-    display: none;
-    padding: 0 1rem 0.875rem 1rem;
-    border-top: 1px solid var(--border);
-    padding-top: 0.75rem;
+    display: block;
+    padding: 0;
 }
-
-.policy-item-compact.open .policy-item-body { display: block; }
-
-.policy-value-full { color: var(--text-primary); font-weight: 600; font-size: 0.9rem; line-height: 1.6; }
-
+ 
+.policy-value-full { display: none; }
+ 
+/* Keep open class harmless */
+.policy-item-compact.open .policy-chevron { transform: none; }
+ 
 #defaultSchedulingTimes { line-height: 1.6; }
 #defaultSchedulingTimes strong { color: var(--water); font-weight: 700; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    SERVICE POLICIES SECTION
    ══════════════════════════════════════════════════════════════════ */
@@ -1166,11 +1157,11 @@ body {
     padding: 1.25rem;
     margin-bottom: 1.25rem;
 }
-
+ 
 .service-policies-header { text-align: center; margin-bottom: 1.25rem; }
 .service-policies-title { color: var(--text-heading); font-family: 'Alegreya', serif; font-size: 1.3rem; font-weight: 700; margin: 0 0 0.4rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
 .service-policies-subtitle { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.875rem; }
-
+ 
 .toggle-policies-btn {
     background: rgba(221,30,51,0.08);
     border: 1px solid rgba(221,30,51,0.3);
@@ -1186,13 +1177,13 @@ body {
     gap: 0.4rem;
     font-family: 'Nunito Sans', sans-serif;
 }
-
+ 
 .toggle-policies-btn:hover { background: rgba(221,30,51,0.15); }
 .toggle-icon { transition: transform 0.3s ease; font-size: 0.7rem; }
 .toggle-icon.rotated { transform: rotate(180deg); }
-
+ 
 .service-policies-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
-
+ 
 .service-policy-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -1205,10 +1196,10 @@ body {
     position: relative;
     overflow: hidden;
 }
-
+ 
 .service-policy-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--accent), var(--water)); }
 .service-policy-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
-
+ 
 .service-policy-icon {
     font-size: 1.5rem;
     flex-shrink: 0;
@@ -1218,11 +1209,11 @@ body {
     width: 2.75rem; height: 2.75rem;
     display: flex; align-items: center; justify-content: center;
 }
-
+ 
 .service-policy-content { flex: 1; }
 .service-policy-title { color: var(--text-heading); font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
 .service-policy-description { color: var(--text-muted); font-size: 0.8rem; line-height: 1.4; margin-bottom: 0.65rem; }
-
+ 
 .service-policy-value {
     color: var(--water);
     font-size: 0.88rem;
@@ -1233,10 +1224,10 @@ body {
     padding: 0.4rem 0.65rem;
     display: inline-block;
 }
-
+ 
 .reservices-card { grid-column: 1 / -1; }
 .reservices-settings { display: flex; flex-direction: column; gap: 0.75rem; }
-
+ 
 .reservices-setting {
     display: flex;
     justify-content: space-between;
@@ -1246,14 +1237,14 @@ body {
     border-radius: 0.4rem;
     padding: 0.65rem 0.875rem;
 }
-
+ 
 .setting-label { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
 .setting-value { color: var(--accent); font-size: 0.88rem; font-weight: 800; background: rgba(221,30,51,0.08); border: 1px solid rgba(221,30,51,0.25); border-radius: 0.35rem; padding: 0.3rem 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; }
-
+ 
 .reservices-policy { background: var(--water-soft); border: 1px solid rgba(12,143,203,0.2); border-radius: 0.4rem; padding: 0.875rem; margin-top: 0.65rem; }
 .policy-note-title { color: var(--water); font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
 .policy-note-content { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.5; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    TECHNICIANS
    ══════════════════════════════════════════════════════════════════ */
@@ -1265,7 +1256,7 @@ body {
     overflow: hidden;
     box-shadow: var(--shadow);
 }
-
+ 
 .search-results-header {
     background: linear-gradient(135deg, var(--accent), #b01828);
     padding: 0.875rem 1.25rem;
@@ -1273,9 +1264,9 @@ body {
     justify-content: space-between;
     align-items: center;
 }
-
+ 
 .search-results-header h3 { color: white; margin: 0; font-size: 1.1rem; font-weight: 700; font-family: 'Alegreya', serif; }
-
+ 
 .close-search-btn {
     background: rgba(255,255,255,0.15);
     border: 1px solid rgba(255,255,255,0.25);
@@ -1288,12 +1279,12 @@ body {
     font-weight: bold;
     transition: all 0.2s ease;
 }
-
+ 
 .close-search-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
 .search-results-content { padding: 1.25rem; }
-
+ 
 .technicians-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; }
-
+ 
 .tech-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -1303,14 +1294,14 @@ body {
     position: relative;
     overflow: hidden;
 }
-
+ 
 .tech-card:hover { border-color: var(--border-accent); transform: translateY(-2px); box-shadow: var(--shadow); }
-
+ 
 .tech-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: var(--accent); }
-
+ 
 .tech-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.875rem; }
 .tech-name { color: var(--text-heading); font-family: 'Alegreya', serif; font-size: 1.2rem; font-weight: 700; margin: 0; }
-
+ 
 .tech-role-badge {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -1322,24 +1313,24 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-
+ 
 .tech-role-badge.inspector { color: var(--accent); border-color: var(--border-accent); }
 .tech-role-badge.both { color: var(--accent); border-color: var(--border-accent); }
-
+ 
 .tech-company { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.875rem; }
-
+ 
 .tech-details { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.875rem; }
-
+ 
 .tech-detail {
     background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: 0.4rem;
     padding: 0.65rem;
 }
-
+ 
 .tech-detail-label { color: var(--text-muted); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
 .tech-detail-value { color: var(--text-primary); font-weight: 600; font-size: 0.85rem; }
-
+ 
 .tech-schedule {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -1347,10 +1338,10 @@ body {
     padding: 0.875rem;
     margin-bottom: 0.875rem;
 }
-
+ 
 .tech-schedule-title { color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
 .tech-schedule-value { color: var(--text-primary); font-weight: 600; line-height: 1.4; font-size: 0.88rem; }
-
+ 
 .tech-restrictions {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -1358,22 +1349,22 @@ body {
     padding: 0.875rem;
     margin-bottom: 0.875rem;
 }
-
+ 
 .tech-restrictions-title { color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
 .tech-restrictions-value { color: var(--text-secondary); font-weight: 600; line-height: 1.4; font-size: 0.88rem; }
-
+ 
 .tech-notes {
     background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: 0.6rem;
     padding: 0.875rem;
 }
-
+ 
 .tech-notes-title { color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
 .tech-notes-value { color: var(--text-secondary); font-weight: 600; line-height: 1.4; font-size: 0.88rem; }
-
+ 
 .zip-coverage-list { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem; }
-
+ 
 .zip-badge {
     background: rgba(12,143,203,0.1);
     border: 1px solid rgba(12,143,203,0.3);
@@ -1383,7 +1374,7 @@ body {
     font-size: 0.72rem;
     font-weight: 700;
 }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    ADDITIVE BUNDLE PRICING
    ══════════════════════════════════════════════════════════════════ */
@@ -1393,7 +1384,7 @@ body {
     border-radius: 0.75rem;
     padding: 1.25rem;
 }
-
+ 
 .bundle-component-additive-row {
     display: flex;
     justify-content: space-between;
@@ -1405,7 +1396,7 @@ body {
     margin-bottom: 0.65rem;
     transition: all 0.2s ease;
 }
-
+ 
 .bundle-component-additive-row:hover { background: rgba(221,30,51,0.14); transform: translateX(3px); }
 .component-name-with-code { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
 .component-name { color: #f0f0f0; font-family: 'Nunito Sans', sans-serif; font-size: 1rem; font-weight: 800; }
@@ -1422,7 +1413,7 @@ body {
 .bundle-total-prices-additive { display: flex; gap: 2rem; align-items: center; }
 .total-price-item { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
 .price-value-total { color: #10b981; font-size: 1.65rem; font-family: 'Nunito Sans', sans-serif; font-weight: 900; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    SERVICE AREAS
    ══════════════════════════════════════════════════════════════════ */
@@ -1430,14 +1421,14 @@ body {
 .price-item { background: var(--bg-input); padding: 0.5rem; border-radius: 0.4rem; border: 1px solid var(--border); }
 .price-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.2rem; font-weight: 700; }
 .price-value { font-weight: 700; color: #10b981; font-size: 0.85rem; }
-
+ 
 /* ══════════════════════════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
     .main-container { grid-template-columns: 180px 1fr 250px; gap: 1.25rem; padding: 1.25rem; }
 }
-
+ 
 @media (max-width: 768px) {
     .main-container { grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
     .header-content { flex-direction: column; gap: 0.875rem; text-align: center; }
@@ -1466,7 +1457,43 @@ body {
     .reservices-setting { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
     .setting-value { align-self: stretch; text-align: center; }
 }
-
+ 
+/* ══════════════════════════════════════════════════════════════════
+   DISCOUNT POLICY BLOCK
+   ══════════════════════════════════════════════════════════════════ */
+.discount-policy-block {
+    background: linear-gradient(135deg, rgba(12, 143, 203, 0.08), rgba(12, 143, 203, 0.04));
+    border: 1px solid rgba(12, 143, 203, 0.3);
+    border-left: 4px solid var(--water);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0;
+    display: none;
+}
+ 
+.discount-policy-block.show { display: block; }
+ 
+.discount-policy-title {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--water);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+ 
+.discount-policy-content {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+ 
 /* ── Policy inner tabs ───────────────────────────────────────────── */
 .policy-inner-tabs-bar {
     display: flex;
@@ -1476,7 +1503,7 @@ body {
     border-bottom: 1px solid var(--border);
     padding-bottom: 0.875rem;
 }
-
+ 
 .policy-inner-tab-btn {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -1490,25 +1517,25 @@ body {
     transition: all 0.2s ease;
     white-space: nowrap;
 }
-
+ 
 .policy-inner-tab-btn:hover {
     border-color: var(--accent);
     color: var(--accent);
 }
-
+ 
 .policy-inner-tab-btn.active {
     background: var(--bg-active-tab);
     border-color: var(--accent);
     color: var(--tab-active-text);
     box-shadow: var(--shadow);
 }
-
+ 
 .policy-inner-panel { display: none; animation: tabFadeIn 0.2s ease; }
 .policy-inner-panel.active { display: block; }
 </style>
 </head>
 <body>
-
+ 
     <!-- Header -->
     <header class="header">
         <div class="header-content">
@@ -1532,7 +1559,7 @@ body {
             </div>
         </div>
     </header>
-
+ 
     <!-- Sticky Header -->
     <header class="sticky-header" id="stickyHeader">
         <div class="sticky-content">
@@ -1546,7 +1573,7 @@ body {
             </div>
         </div>
     </header>
-
+ 
     <!-- Top Info Section -->
     <div class="top-info-section">
         <div class="info-cards-container">
@@ -1560,13 +1587,13 @@ body {
             </div>
         </div>
     </div>
-
+ 
     <!-- Pests Not Covered Alert -->
     <div class="pests-not-covered-alert" id="pestsNotCoveredAlert">
         <div class="alert-title">⚠️ Pest Not Covered</div>
         <div class="alert-content" id="alertContent"></div>
     </div>
-
+ 
     <!-- Alert Banner -->
     <div class="alert-banner" id="alertBanner">
         <div class="alert-content">
@@ -1576,10 +1603,10 @@ body {
             </div>
         </div>
     </div>
-
+ 
     <!-- Main Container -->
     <div class="main-container">
-
+ 
         <!-- Navigation Sidebar -->
         <nav class="nav-sidebar">
             <button class="nav-btn active" data-section="services" onclick="showSection('services', this)">Services</button>
@@ -1587,12 +1614,12 @@ body {
             <button class="nav-btn" data-section="technicians" onclick="showSection('technicians', this)">Scheduling</button>
             <button class="nav-btn" data-section="bulletin" onclick="showSection('bulletin', this)">Bulletin</button>
         </nav>
-
+ 
         <!-- Content Area -->
         <main class="content-area">
             <div id="loadingState" class="loading"><div>Loading client profile...</div></div>
             <div id="errorState" class="error" style="display: none;"><div>Error loading profile data</div></div>
-
+ 
             <!-- Services Section -->
             <div id="servicesSection" class="content-section">
                 <!-- Service Tabs -->
@@ -1600,12 +1627,17 @@ body {
                     <div class="service-tabs-bar" id="serviceTabsBar">
                         <!-- Tab buttons injected by JS -->
                     </div>
+                    <!-- Discount Policy Block (between tab bar and panels) -->
+                    <div class="discount-policy-block" id="discountPolicyBlock">
+                        <div class="discount-policy-title">🏷️ Discount Policy</div>
+                        <div class="discount-policy-content" id="discountPolicyContent"></div>
+                    </div>
                     <div class="service-tab-panels" id="serviceTabPanels">
                         <!-- Tab panels injected by JS -->
                     </div>
                 </div>
             </div>
-
+ 
             <!-- Technicians / Scheduling Section -->
             <div id="techniciansSection" class="content-section">
                 <div class="scheduling-container">
@@ -1629,7 +1661,7 @@ body {
                             </div>
                         </div>
                     </div>
-
+ 
                     <!-- Scheduling Policies Quick Reference -->
                     <div class="scheduling-policies">
                         <div class="policy-quick-ref">
@@ -1719,7 +1751,7 @@ body {
                             </div>
                         </div>
                     </div>
-
+ 
                     <!-- Service Policies -->
                     <div class="service-policies-section">
                         <div class="service-policies-header">
@@ -1754,7 +1786,7 @@ body {
                             </div>
                         </div>
                     </div>
-
+ 
                     <!-- Tech Search Results -->
                     <div class="tech-search-results" id="techSearchResults" style="display: none;">
                         <div class="search-results-header">
@@ -1763,22 +1795,22 @@ body {
                         </div>
                         <div class="search-results-content" id="searchResultsContent"></div>
                     </div>
-
+ 
                     <!-- Technicians Grid -->
                     <div id="techniciansGrid" class="technicians-grid"></div>
                 </div>
             </div>
-
+ 
             <!-- Policies Section -->
             <div id="policiesSection" class="content-section">
                 <div id="policiesGrid" class="services-grid"></div>
             </div>
-
+ 
             <!-- Service Areas Section -->
             <div id="serviceAreasSection" class="content-section">
                 <div id="serviceAreasGrid" class="services-grid"></div>
             </div>
-
+ 
             <!-- Bulletin Section -->
             <div id="bulletinSection" class="content-section">
                 <div class="info-section">
@@ -1786,7 +1818,7 @@ body {
                     <div class="info-content" id="bulletinContent"></div>
                 </div>
             </div>
-
+ 
             <!-- Pests Not Covered Section -->
             <div id="pestsNotCoveredSection" class="content-section">
                 <div class="info-section">
@@ -1795,7 +1827,7 @@ body {
                 </div>
             </div>
         </main>
-
+ 
         <!-- Tools Sidebar -->
         <aside class="tools-sidebar">
             <!-- Pest Search -->
@@ -1809,7 +1841,7 @@ body {
                     <div class="search-popup-content" id="searchPopupContent"></div>
                 </div>
             </div>
-
+ 
             <!-- Service Area Check -->
             <div class="tool-section">
                 <div class="tool-title">Service Area Check</div>
@@ -1817,7 +1849,7 @@ body {
                 <button class="tool-btn" onclick="checkZip()">Check Area</button>
                 <div class="tool-result" id="zipResult">Enter ZIP to check</div>
             </div>
-
+ 
             <!-- Acreage Converter -->
             <div class="tool-section">
                 <div class="tool-title">Acreage Converter</div>
@@ -1827,7 +1859,7 @@ body {
             </div>
         </aside>
     </div>
-
+ 
     <!-- Office Info Modal -->
     <div id="officeModal" class="modal">
         <div class="modal-content">
@@ -1838,21 +1870,21 @@ body {
             <div class="office-info" id="officeInfo"></div>
         </div>
     </div>
-
+ 
 <script src="config-github.js"></script>
 <script>
 // ─── State ────────────────────────────────────────────────────────────────────
 let clientData = {};
-
+ 
 // ─── Profile Cache ────────────────────────────────────────────────────────────
 const PROFILE_CACHE_TTL_MS = 5 * 60 * 1000;
 const _profileMemCache   = new Map();
 const _profileInFlight   = new Map();
-
+ 
 function _profileCacheKey(url) {
     return `pestsos:profile:${encodeURIComponent(url)}`;
 }
-
+ 
 function getCachedProfile(url) {
     const key = _profileCacheKey(url);
     const now = Date.now();
@@ -1870,14 +1902,14 @@ function getCachedProfile(url) {
         return parsed.data;
     } catch { return null; }
 }
-
+ 
 function setCachedProfile(url, data, ttlMs = PROFILE_CACHE_TTL_MS) {
     const key   = _profileCacheKey(url);
     const entry = { expiresAt: Date.now() + ttlMs, data };
     _profileMemCache.set(key, entry);
     try { localStorage.setItem(key, JSON.stringify(entry)); } catch { /* quota/private mode */ }
 }
-
+ 
 async function fetchJsonWithCache(url, { ttlMs = PROFILE_CACHE_TTL_MS } = {}) {
     if (_profileInFlight.has(url)) return _profileInFlight.get(url);
     const p = (async () => {
@@ -1891,19 +1923,19 @@ async function fetchJsonWithCache(url, { ttlMs = PROFILE_CACHE_TTL_MS } = {}) {
     _profileInFlight.set(url, p);
     return p;
 }
-
+ 
 // ─── Profile Load ─────────────────────────────────────────────────────────────
 async function loadProfileData() {
     const profileId = getProfileIdFromUrl();
     if (!profileId) { showError('No profile ID provided in URL'); return; }
-
+ 
     try {
         const apiUrl = window.CONFIG?.GOOGLE_SHEETS?.WEB_APP_URL;
         if (!apiUrl) throw new Error('API URL not configured');
-
+ 
         const fullUrl = `${apiUrl}?profileId=${encodeURIComponent(profileId)}`;
         const cached  = getCachedProfile(fullUrl);
-
+ 
         if (cached) {
             clientData = cached;
             initPage();
@@ -1918,35 +1950,35 @@ async function loadProfileData() {
                 .catch(e => console.warn('Background refresh failed:', e));
             return;
         }
-
+ 
         const data = await fetchJsonWithCache(fullUrl);
         clientData  = data;
         initPage();
-
+ 
     } catch (error) {
         showError('Error loading profile data: ' + error.message);
     }
 }
-
+ 
 // Start the clock once and reuse the interval
 function initPage() {
     populateClientData();
     updateCurrentTime(clientData.timezone);
 }
-
+ 
 function getProfileIdFromUrl() {
     return new URLSearchParams(window.location.search).get('profileId');
 }
-
+ 
 function showError(message) {
     document.getElementById('loadingState').style.display = 'none';
-
+ 
     const errorEl = document.getElementById('errorState');
     if (errorEl) {
         errorEl.style.display = 'block';
         errorEl.innerHTML = `<div>Error: ${message}</div>`;
     }
-
+ 
     // Fallback: show sample data when no profileId is present
     if (!getProfileIdFromUrl()) {
         clientData = {
@@ -1963,6 +1995,8 @@ function showError(message) {
             },
             bulletin: "This is test data - no Wix connection detected",
             pestsNotCovered: "Carpenter Ants, Bed Bugs, Termites (requires separate treatment)",
+            discountPolicy: "Senior Discount: 10% off initial service for customers 65+\nMilitary Discount: 15% off for active duty and veterans\nReferral Credit: $25 credit applied after referred customer completes first service\nAnnual Prepay: 5% discount when full year is paid upfront",
+            poisonProcedure: "1. Confirm pest type and severity before recommending any rodenticide or bait station treatment.\n2. Always ask if children or pets are present in the home.\n3. Tamper-resistant bait stations are required in all residential settings.\n4. Document product name, EPA registration number, and placement locations in the service report.\n5. Advise customer to keep children and pets away from treated areas for minimum 24 hours.\n6. If accidental ingestion is suspected, direct customer to call Poison Control immediately: 1-800-222-1222.",
             services: [{
                 name: "General Pest Control",
                 description: "Comprehensive pest control service with multiple frequency options to meet your specific needs",
@@ -2086,29 +2120,29 @@ function showError(message) {
         populateClientData();
     }
 }
-
+ 
 // ─── Populate Page ────────────────────────────────────────────────────────────
 function populateClientData() {
     document.getElementById('loadingState').style.display = 'none';
-
+ 
     document.getElementById('companyName').textContent    = clientData.companyName;
     document.getElementById('locationInfo').textContent   = clientData.location;
     document.getElementById('stickyCompanyName').textContent = clientData.companyName;
-
+ 
     showAlertBanner();
     loadWeatherForecast(clientData.location);
-
+ 
     // Website links
     if (clientData.officeInfo?.website) {
         document.getElementById('websiteLink').href       = clientData.officeInfo.website;
         document.getElementById('stickyWebsiteLink').href = clientData.officeInfo.website;
     }
-
+ 
     // FieldRoutes button
     const fieldRoutesBtn       = document.getElementById('fieldRoutesLink');
     const stickyFieldRoutesBtn = document.getElementById('stickyFieldRoutesLink');
     let frText = null, frUrl = null, showFR = false;
-
+ 
     if (clientData.fieldRoutesButton?.show) {
         frText = clientData.fieldRoutesButton.text;
         frUrl  = clientData.fieldRoutesButton.url;
@@ -2121,7 +2155,7 @@ function populateClientData() {
         frText = (rawText.startsWith('http') || rawText.includes('://')) ? 'FieldRoutes' : (rawText || 'FieldRoutes');
         showFR = !!frUrl;
     }
-
+ 
     if (showFR && frText && frUrl) {
         fieldRoutesBtn.textContent       = frText;
         stickyFieldRoutesBtn.textContent = frText === 'FieldRoutes' ? 'Routes' : frText;
@@ -2133,23 +2167,35 @@ function populateClientData() {
         fieldRoutesBtn.style.display       = 'none';
         stickyFieldRoutesBtn.style.display = 'none';
     }
-
+ 
     populateServices();
     populateTechnicians();
     populatePolicies();
     populateServiceAreas();
-
+ 
     const bulletinText = clientData.bulletin || 'No bulletin information available.';
     document.getElementById('bulletinContent').textContent      = bulletinText;
     document.getElementById('topBulletinContent').textContent   = bulletinText;
-
+ 
     const pestsText = clientData.pestsNotCovered || 'No pest exclusions listed.';
     document.getElementById('pestsNotCoveredContent').textContent    = pestsText;
     document.getElementById('topPestsNotCoveredContent').textContent = pestsText;
-
+ 
+    // Discount Policy
+    const discountBlock   = document.getElementById('discountPolicyBlock');
+    const discountContent = document.getElementById('discountPolicyContent');
+    if (clientData.discountPolicy?.trim()) {
+        discountContent.textContent = clientData.discountPolicy;
+        discountBlock.classList.add('show');
+    } else {
+        discountBlock.classList.remove('show');
+    }
+ 
+    // Poison Procedure — now rendered inside Policies tab, no standalone element needed
+ 
     showSection('services');
 }
-
+ 
 // ─── Alert Banner ─────────────────────────────────────────────────────────────
 function showAlertBanner() {
     const banner   = document.getElementById('alertBanner');
@@ -2161,14 +2207,14 @@ function showAlertBanner() {
         banner.style.display  = 'none';
     }
 }
-
+ 
 // ─── Weather ──────────────────────────────────────────────────────────────────
 async function loadWeatherForecast(location) {
     try {
         const geoRes  = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`);
         const geoData = await geoRes.json();
         if (!geoData.length) throw new Error('Location not found');
-
+ 
         const { lat, lon } = geoData[0];
         const wxRes  = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=7&temperature_unit=fahrenheit`);
         const wxData = await wxRes.json();
@@ -2177,7 +2223,7 @@ async function loadWeatherForecast(location) {
         document.getElementById('weatherContent').innerHTML = 'Weather unavailable';
     }
 }
-
+ 
 function displayWeatherForecast(daily) {
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     let html   = '';
@@ -2194,31 +2240,31 @@ function displayWeatherForecast(daily) {
     document.getElementById('weatherContent').innerHTML = html;
     updateStickyWeather(`${getWeatherIcon(daily.weather_code[0])} ${Math.round(daily.temperature_2m_max[0])}°F`);
 }
-
+ 
 function getWeatherIcon(code) {
     const icons = { 0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️', 45:'🌫️', 48:'🌫️', 51:'🌦️', 53:'🌦️', 55:'🌦️', 61:'🌧️', 63:'🌧️', 65:'🌧️', 71:'🌨️', 73:'🌨️', 75:'🌨️', 95:'⛈️' };
     return icons[code] || '🌤️';
 }
-
+ 
 // ─── Services ─────────────────────────────────────────────────────────────────
 function populateServices() {
     const tabsBar   = document.getElementById('serviceTabsBar');
     const tabPanels = document.getElementById('serviceTabPanels');
     if (!tabsBar || !tabPanels) return;
-
+ 
     if (!clientData.services?.length) {
         tabPanels.innerHTML = '<div class="info-section"><div class="info-content">No services available.</div></div>';
         return;
     }
-
+ 
     tabsBar.innerHTML   = '';
     tabPanels.innerHTML = '';
-
+ 
     clientData.services.forEach((service, idx) => {
         const tabId    = `svc-tab-${idx}`;
         const panelId  = `svc-panel-${idx}`;
         const freqLabel = service.subServices?.length ? 'Multi' : (service.frequency || '');
-
+ 
         // Tab button
         const btn = document.createElement('button');
         btn.className   = 'svc-tab-btn';
@@ -2227,7 +2273,7 @@ function populateServices() {
         btn.innerHTML   = `${service.name || 'Service'}${freqLabel ? `<span class="tab-freq-badge">${freqLabel}</span>` : ''}`;
         btn.addEventListener('click', () => activateServiceTab(tabId, panelId));
         tabsBar.appendChild(btn);
-
+ 
         // Panel
         const panel = document.createElement('div');
         panel.className = 'svc-tab-panel';
@@ -2237,39 +2283,39 @@ function populateServices() {
     });
     // All collapsed by default — no tab activated on load
 }
-
+ 
 function activateServiceTab(tabId, panelId) {
     // Deactivate all tabs and panels
     document.querySelectorAll('.svc-tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.svc-tab-panel').forEach(p => p.classList.remove('active'));
-
+ 
     const btn   = document.getElementById(tabId);
     const panel = document.getElementById(panelId);
-
+ 
     // If already active (same tab clicked), collapse it
     if (btn && btn.classList.contains('was-active')) {
         btn.classList.remove('was-active');
         return;
     }
-
+ 
     document.querySelectorAll('.svc-tab-btn').forEach(b => b.classList.remove('was-active'));
     btn?.classList.add('active', 'was-active');
     panel?.classList.add('active');
 }
-
+ 
 // Build the full content panel for one service
 function buildServicePanel(service, svcIdx) {
     const wrapper   = document.createElement('div');
     const serviceId = `service_${svcIdx}`;
     wrapper.setAttribute('data-service-id', serviceId);
-
+ 
     if (service.subServices?.length) {
         // ── Service with sub-service tabs ──
         wrapper._subServicesData = service.subServices;
-
+ 
         let subTabsHTML = '<div class="sub-tabs-bar">';
         let subPanelsHTML = '';
-
+ 
         service.subServices.forEach((sub, i) => {
             const subTabId   = `sub-tab-${svcIdx}-${i}`;
             const subPanelId = `sub-panel-${svcIdx}-${i}`;
@@ -2278,7 +2324,7 @@ function buildServicePanel(service, svcIdx) {
             subPanelsHTML += `<div class="sub-tab-panel" id="${subPanelId}">${buildSubServiceHTML(subId, sub)}</div>`;
         });
         subTabsHTML += '</div>';
-
+ 
         wrapper.innerHTML = `
             <div class="svc-panel-header">
                 <div>
@@ -2303,7 +2349,7 @@ function buildServicePanel(service, svcIdx) {
                 ${subTabsHTML}
                 ${subPanelsHTML}
             </div>`;
-
+ 
         wrapper._subServicesData = service.subServices;
     } else {
         // ── Regular service ──
@@ -2351,21 +2397,21 @@ function buildServicePanel(service, svcIdx) {
     }
     return wrapper;
 }
-
+ 
 function activateSubTab(tabId, panelId) {
     // Find the parent sub-tabs-wrapper to scope deactivation
     const btn   = document.getElementById(tabId);
     const panel = document.getElementById(panelId);
     if (!btn || !panel) return;
-
+ 
     const wrapper = btn.closest('.sub-tabs-wrapper');
     wrapper?.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
     wrapper?.querySelectorAll('.sub-tab-panel').forEach(p => p.classList.remove('active'));
-
+ 
     btn.classList.add('active');
     panel.classList.add('active');
 }
-
+ 
 // createServiceCard kept as a thin wrapper so pest-search filterServicesByPest still works
 function createServiceCard(service) {
     const idx   = (clientData.services || []).indexOf(service);
@@ -2373,11 +2419,11 @@ function createServiceCard(service) {
     panel.className = 'service-card';
     return panel;
 }
-
+ 
 function detailItem(label, value) {
     return `<div class="detail-item"><div class="detail-label">${label}</div><div class="detail-value">${value || 'N/A'}</div></div>`;
 }
-
+ 
 function buildSubServiceHTML(subServiceId, sub) {
     return `
         <div class="subservice-item">
@@ -2414,11 +2460,11 @@ function buildSubServiceHTML(subServiceId, sub) {
             </div>
         </div>`;
 }
-
+ 
 function subDetailItem(label, value) {
     return `<div class="subservice-detail-item"><div class="subservice-detail-label">${label}</div><div class="subservice-detail-value">${value || 'N/A'}</div></div>`;
 }
-
+ 
 // ─── Technicians ──────────────────────────────────────────────────────────────
 function populateTechnicians() {
     const grid = document.getElementById('techniciansGrid');
@@ -2430,21 +2476,21 @@ function populateTechnicians() {
     grid.innerHTML = '';
     clientData.technicians.forEach(tech => grid.appendChild(createTechnicianCard(tech)));
 }
-
+ 
 function createTechnicianCard(tech) {
     const card = document.createElement('div');
     card.className = 'tech-card';
     card.setAttribute('data-company',   tech.company  || '');
     card.setAttribute('data-role',      tech.role     || '');
     card.setAttribute('data-zip-codes', (tech.zipCodes || []).join(','));
-
+ 
     const roleClass   = tech.role === 'Inspector' ? 'inspector' : tech.role === 'Both' ? 'both' : 'technician';
     const restrictions = tech.restrictions || tech.doesNotService || '';
     const notes        = tech.notes || tech.additionalNotes || '';
     const zipBadges    = tech.zipCodes?.length
         ? `<div class="zip-coverage-list">${tech.zipCodes.map(z => `<span class="zip-badge">${z}</span>`).join('')}</div>`
         : '';
-
+ 
     card.innerHTML = `
         <div class="tech-header">
             <div>
@@ -2466,11 +2512,11 @@ function createTechnicianCard(tech) {
         ${zipBadges}`;
     return card;
 }
-
+ 
 function populateSchedulingPolicies() {
     const policies = clientData.policies || {};
     const allPolicies = Object.values(policies).flat();
-
+ 
     // Match by title (case-insensitive, partial) — works for both old type-keyed and new title-keyed data
     function findByTitle(...titles) {
         const lower = titles.map(t => t.toLowerCase());
@@ -2478,18 +2524,24 @@ function populateSchedulingPolicies() {
             // fallback: try legacy type-based match
             || allPolicies.find(p => lower.some(t => (p.type || '').toLowerCase().includes(t)));
     }
-
-    function val(p) { return p ? (p.value || p.default || 'Not specified') : 'Not specified'; }
-
+ 
+    function val(p) {
+        if (!p) return 'Not specified';
+        const selected = p.value || p.default || '';
+        // If the stored value is literally "Custom" with no fallback text, show nothing useful
+        if (selected.toLowerCase() === 'custom') return 'Contact office for details';
+        return selected || 'Not specified';
+    }
+ 
     // Populate a hardcoded card: set inline text, full body, and manage chevron visibility
     function setField(inlineId, fullId, p) {
         const inlineEl = document.getElementById(inlineId);
         const fullEl   = document.getElementById(fullId);
         const card     = inlineEl?.closest('.policy-item-compact');
         const chevron  = card?.querySelector('.policy-chevron');
-
+ 
         const text = val(p);
-
+ 
         // For scheduling times: the value may be newline-separated "Key: value" lines — render as structured HTML
         let fullHTML = null;
         if (fullId === 'defaultSchedulingTimes' && text && text.includes('\n')) {
@@ -2507,7 +2559,7 @@ function populateSchedulingPolicies() {
                 .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
                 .join('');
         }
-
+ 
         // Inline: show first line only if multiline
         const inlineText = text.includes('\n') ? text.split('\n')[0].trim() : text;
         if (inlineEl) inlineEl.textContent = inlineText;
@@ -2515,7 +2567,7 @@ function populateSchedulingPolicies() {
             if (fullHTML) fullEl.innerHTML = fullHTML;
             else fullEl.textContent = text;
         }
-
+ 
         const isExpandable = !!(fullHTML || text.length > 40);
         if (chevron) chevron.style.display = isExpandable ? '' : 'none';
         if (card) {
@@ -2523,11 +2575,11 @@ function populateSchedulingPolicies() {
             card.onclick = isExpandable ? function() { togglePolicyItem(this); } : null;
         }
     }
-
+ 
     // Find the scheduling group dynamically — handle "Scheduling", "Scheduling and Operations", etc.
     const schedGroupName = Object.keys(policies).find(k => k.toLowerCase().includes('schedul')) || '';
     const schedGroup     = schedGroupName ? (policies[schedGroupName] || []) : [];
-
+ 
     // Known card titles and their element IDs
     const knownCards = [
         { titles: ['scheduling times', 'scheduling policy times'], inlineId: 'defaultSchedulingTimesInline', fullId: 'defaultSchedulingTimes' },
@@ -2538,35 +2590,35 @@ function populateSchedulingPolicies() {
         { titles: ['tech skilling', 'technician skill'],            inlineId: 'techSkillingPolicy',          fullId: 'techSkillingPolicyFull' },
         { titles: ['after hours', 'emergency'],                     inlineId: 'afterHoursPolicy',            fullId: 'afterHoursPolicyFull' },
     ];
-
+ 
     const matchedPolicies = new Set();
     knownCards.forEach(({ titles, inlineId, fullId }) => {
         const p = findByTitle(...titles);
         if (p) matchedPolicies.add(p);
         setField(inlineId, fullId, p);
     });
-
+ 
     // Reservices — used in the service policies section
     const reservices = findByTitle('reservice');
     if (reservices) matchedPolicies.add(reservices);
     const reservicesPolicyEl = document.getElementById('reservicesPolicy');
     if (reservicesPolicyEl) reservicesPolicyEl.textContent = val(reservices);
-
+ 
     // Render any remaining scheduling items not already shown in a hardcoded card
     const quickRef = document.querySelector('.policy-quick-ref');
     quickRef?.querySelectorAll('.policy-item-compact.extra').forEach(el => el.remove());
-
+ 
     const extras = schedGroup.filter(p => !matchedPolicies.has(p));
     if (quickRef && extras.length) {
         extras.forEach(p => {
             const inlineText = val(p);
             const isExpandable = inlineText.length > 40;
-
+ 
             const item = document.createElement('div');
             item.className = 'policy-item-compact extra';
             if (isExpandable) item.onclick = function() { togglePolicyItem(this); };
             else item.style.cursor = 'default';
-
+ 
             item.innerHTML = `
                 <div class="policy-item-header">
                     <div class="policy-header-left">
@@ -2582,11 +2634,11 @@ function populateSchedulingPolicies() {
         });
     }
 }
-
+ 
 function togglePolicyItem(el) {
     el.classList.toggle('open');
 }
-
+ 
 function toggleReservicePolicies() {
     const details    = document.getElementById('reservicesDetails');
     const toggleText = document.getElementById('toggleText');
@@ -2596,7 +2648,7 @@ function toggleReservicePolicies() {
     toggleText.textContent        = isHidden ? 'Hide Reservice Details' : 'Show Reservice Details';
     toggleIcon.classList.toggle('rotated', isHidden);
 }
-
+ 
 // ─── Tech Search / Filter ─────────────────────────────────────────────────────
 function findTechByZip() {
     const zip = document.getElementById('zipLookup').value.trim();
@@ -2604,7 +2656,7 @@ function findTechByZip() {
     const matches = clientData.technicians.filter(t => t.zipCodes?.includes(zip));
     showSearchResults(`Technicians servicing ZIP ${zip}`, matches);
 }
-
+ 
 function filterByServiceType() {
     const type = document.getElementById('serviceTypeLookup').value;
     if (!type) { showAllTechs(); return; }
@@ -2612,13 +2664,13 @@ function filterByServiceType() {
     const matches = clientData.technicians.filter(t => (roleMap[type] || []).includes(t.role));
     showSearchResults(`${type.charAt(0).toUpperCase() + type.slice(1)} Results`, matches);
 }
-
+ 
 function showSearchResults(title, techs) {
     document.getElementById('techniciansGrid').style.display    = 'none';
     const resultsBox = document.getElementById('techSearchResults');
     resultsBox.style.display = 'block';
     resultsBox.querySelector('h3').textContent = title;
-
+ 
     const content = document.getElementById('searchResultsContent');
     if (!techs.length) {
         content.innerHTML = '<div class="info-section"><div class="info-content">No technicians found matching your criteria.</div></div>';
@@ -2630,16 +2682,16 @@ function showSearchResults(title, techs) {
     content.innerHTML = '';
     content.appendChild(searchGrid);
 }
-
+ 
 function clearTechSearch() {
     document.getElementById('techSearchResults').style.display = 'none';
     document.getElementById('techniciansGrid').style.display   = 'grid';
     document.getElementById('zipLookup').value          = '';
     document.getElementById('serviceTypeLookup').value  = '';
 }
-
+ 
 function showAllTechs() { clearTechSearch(); }
-
+ 
 // ─── Policies ─────────────────────────────────────────────────────────────────
 function populatePolicies() {
     const grid = document.getElementById('policiesGrid');
@@ -2647,33 +2699,50 @@ function populatePolicies() {
         grid.innerHTML = '<div class="info-section"><div class="info-content">No policy information available.</div></div>';
         return;
     }
-
+ 
     const groups = Object.keys(clientData.policies).filter(g => {
         const lower = g.toLowerCase();
         return lower !== 'service policies' && !lower.includes('schedul');
     });
-    if (!groups.length) {
+ 
+    // Inject Poison Procedure as a synthetic policy group if data exists
+    const hasPoisonProcedure = !!clientData.poisonProcedure?.trim();
+ 
+    if (!groups.length && !hasPoisonProcedure) {
         grid.innerHTML = '<div class="info-section"><div class="info-content">All policies have been moved to their respective sections.</div></div>';
         return;
     }
-
+ 
+    const poisonGroupName = '☠️ Poison Procedure';
+ 
+    const allGroups = hasPoisonProcedure ? [...groups, poisonGroupName] : groups;
+ 
     grid.innerHTML = `
         <div class="policies-container">
             <div class="policies-sidebar">
-                ${groups.map(g => `<button class="policy-group-btn" onclick="showPolicyGroup('${g}')" id="btn-${slugify(g)}">${g}</button>`).join('')}
+                ${allGroups.map(g => `<button class="policy-group-btn" onclick="showPolicyGroup('${g}')" id="btn-${slugify(g)}">${g}</button>`).join('')}
             </div>
             <div class="policies-main">
-                ${groups.map(g => {
-                    const policies = clientData.policies[g];
+                ${allGroups.map(g => {
                     const groupSlug = slugify(g);
+ 
+                    // Poison Procedure synthetic group
+                    if (g === poisonGroupName) {
+                        return `<div class="policy-group-content" id="content-${groupSlug}">
+                            <div class="policy-group-title">${g}</div>
+                            <div class="policy-item">
+                                <div class="policy-item-description" style="white-space:pre-line;font-size:0.9rem;line-height:1.7;color:var(--text-secondary)">${clientData.poisonProcedure}</div>
+                            </div>
+                        </div>`;
+                    }
+ 
+                    const policies = clientData.policies[g];
                     if (policies.length <= 1) {
-                        // Single policy — no tabs needed
                         return `<div class="policy-group-content" id="content-${groupSlug}">
                             <div class="policy-group-title">${g}</div>
                             ${buildPolicyItemHTML(policies[0])}
                         </div>`;
                     }
-                    // Multiple policies — render as inner tabs
                     return `<div class="policy-group-content" id="content-${groupSlug}">
                         <div class="policy-group-title" style="margin-bottom:1rem">${g}</div>
                         <div class="policy-inner-tabs-bar" id="inner-tabs-${groupSlug}">
@@ -2694,26 +2763,26 @@ function populatePolicies() {
                 }).join('')}
             </div>
         </div>`;
-
-    showPolicyGroup(groups[0]);
+ 
+    showPolicyGroup(allGroups[0]);
 }
-
+ 
 function showPolicyGroup(groupName) {
     document.querySelectorAll('.policy-group-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.policy-group-content').forEach(c => c.classList.remove('active'));
     document.getElementById(`btn-${slugify(groupName)}`)?.classList.add('active');
     document.getElementById(`content-${slugify(groupName)}`)?.classList.add('active');
 }
-
+ 
 function showPolicyInnerTab(groupSlug, idx, btn) {
     document.querySelectorAll(`#inner-tabs-${groupSlug} .policy-inner-tab-btn`).forEach(b => b.classList.remove('active'));
     document.querySelectorAll(`#inner-panels-${groupSlug} .policy-inner-panel`).forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(`inner-panel-${groupSlug}-${idx}`)?.classList.add('active');
 }
-
+ 
 function slugify(str) { return str.replace(/\s+/g, '-').toLowerCase(); }
-
+ 
 function buildPolicyItemHTML(policy) {
     const valueBlock = policy.schedulingLayout
         ? `<div class="policy-details"><div class="policy-detail" style="grid-column:1/-1">
@@ -2726,7 +2795,7 @@ function buildPolicyItemHTML(policy) {
                <div class="policy-detail-label">${getAgentLabel(policy.type)}</div>
                <div class="policy-detail-value">${policy.value || policy.default || 'Not specified'}</div>
            </div></div>`;
-
+ 
     return `
         <div class="policy-item">
             <div class="policy-item-title">${policy.title || 'Unknown Policy'}</div>
@@ -2734,9 +2803,9 @@ function buildPolicyItemHTML(policy) {
             ${valueBlock}
         </div>`;
 }
-
-
-
+ 
+ 
+ 
 function getAgentLabel(type) {
     const labels = {
         vehicles: 'We Service Vehicles', commercial: 'Commercial Service Available',
@@ -2754,7 +2823,7 @@ function getAgentLabel(type) {
     };
     return labels[type] || '';
 }
-
+ 
 // ─── Service Areas ────────────────────────────────────────────────────────────
 function populateServiceAreas() {
     const grid = document.getElementById('serviceAreasGrid');
@@ -2762,13 +2831,13 @@ function populateServiceAreas() {
         grid.innerHTML = '<div class="info-section"><div class="info-content">No service area information available.</div></div>';
         return;
     }
-
+ 
     const grouped = clientData.serviceAreas.reduce((acc, area) => {
         const branch = area.branch || 'Unknown Branch';
         (acc[branch] = acc[branch] || []).push(area);
         return acc;
     }, {});
-
+ 
     grid.innerHTML = '';
     Object.entries(grouped).forEach(([branch, areas]) => {
         const card = document.createElement('div');
@@ -2785,19 +2854,19 @@ function populateServiceAreas() {
         grid.appendChild(card);
     });
 }
-
+ 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 function showSection(sectionName, btnEl) {
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
+ 
     document.getElementById(sectionName + 'Section')?.classList.add('active');
-
+ 
     const btn = btnEl
         || document.querySelector(`.nav-btn[data-section="${sectionName}"]`);
     btn?.classList.add('active');
 }
-
+ 
 // ─── Tool Functions ───────────────────────────────────────────────────────────
 function convertAcres() {
     const acres    = parseFloat(document.getElementById('acresInput').value);
@@ -2810,7 +2879,7 @@ function convertAcres() {
     resultEl.textContent = `${Math.round(acres * 43560).toLocaleString()} sq ft`;
     resultEl.style.color = '#10b981';
 }
-
+ 
 function checkZip() {
     const zip      = document.getElementById('zipInput').value.trim();
     const resultEl = document.getElementById('zipResult');
@@ -2819,7 +2888,7 @@ function checkZip() {
         resultEl.style.color = '#ef4444';
         return;
     }
-
+ 
     if (clientData.serviceAreas?.length) {
         const found = clientData.serviceAreas.find(a => String(a.zip) === zip);
         if (found) {
@@ -2831,7 +2900,7 @@ function checkZip() {
         }
         return;
     }
-
+ 
     // Fallback static lookup
     const fallback = { '75001':'Dallas North Branch','75002':'Dallas North Branch','77001':'Houston Central Branch','78701':'Austin Branch','73301':'Austin Branch' };
     if (fallback[zip]) {
@@ -2842,22 +2911,22 @@ function checkZip() {
         resultEl.style.color = '#ef4444';
     }
 }
-
+ 
 // ─── Office Modal ─────────────────────────────────────────────────────────────
 async function openOfficeModal() {
     const modal     = document.getElementById('officeModal');
     const container = document.getElementById('officeInfo');
     if (!modal || !container) return;
-
+ 
     modal.style.display = 'block';
     if (!clientData) { container.innerHTML = 'Profile data not loaded.'; return; }
-
+ 
     const office = clientData.officeInfo || {};
     const holidaysRaw = clientData.holidays || office.holidaysObserved || office.holidays || [];
     const holidays = Array.isArray(holidaysRaw)
         ? holidaysRaw
         : String(holidaysRaw).split('\n').filter(Boolean);
-
+ 
     container.innerHTML = `
         <div><strong>Phone:</strong> ${office.phone || '—'}</div>
         <div><strong>Email:</strong> ${office.email || '—'}</div>
@@ -2867,22 +2936,22 @@ async function openOfficeModal() {
             ${holidays.length ? holidays.map(h => `• ${h}`).join('<br>') : '—'}
         </div>`;
 }
-
+ 
 function closeOfficeModal() {
     document.getElementById('officeModal').style.display = 'none';
 }
-
+ 
 // Close modal on outside click
 window.addEventListener('click', e => {
     const modal = document.getElementById('officeModal');
     if (e.target === modal) closeOfficeModal();
 });
-
+ 
 // ─── Time ─────────────────────────────────────────────────────────────────────
 function updateCurrentTime(timezone) {
     const tzMap = { Pacific: 'America/Los_Angeles', Mountain: 'America/Denver', Central: 'America/Chicago', Eastern: 'America/New_York' };
     const tz    = tzMap[timezone] || 'America/Chicago';
-
+ 
     function tick() {
         const t = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: tz });
         document.getElementById('currentTime').textContent = t;
@@ -2891,23 +2960,23 @@ function updateCurrentTime(timezone) {
     tick();
     setInterval(tick, 60000);
 }
-
+ 
 function updateStickyWeather(text) {
     document.getElementById('stickyWeather').textContent = text;
 }
-
+ 
 // ─── Sticky Header ────────────────────────────────────────────────────────────
 function initializeStickyHeader() {
     const stickyHeader = document.getElementById('stickyHeader');
     const header       = document.querySelector('.header');
     if (!stickyHeader || !header) { setTimeout(initializeStickyHeader, 200); return; }
-
+ 
     const navSidebar   = document.querySelector('.nav-sidebar');
     const toolsSidebar = document.querySelector('.tools-sidebar');
     const headerHeight = header.offsetHeight;
     let ticking        = false;
     let transitioning  = false;
-
+ 
     window.addEventListener('scroll', () => {
         if (ticking || transitioning) return;
         requestAnimationFrame(() => {
@@ -2931,15 +3000,15 @@ function initializeStickyHeader() {
         ticking = true;
     }, { passive: true });
 }
-
+ 
 // ─── Pest Search ──────────────────────────────────────────────────────────────
 function searchPests() {
     const term = document.getElementById('pestSearch').value.toLowerCase().trim();
     if (!term) { hideSearchPopup(); return; }
-
+ 
     let foundInServices = [];
     let exactInServices = false;
-
+ 
     clientData.services.forEach(service => {
         const check = (pestsStr, label) => {
             if (!pestsStr) return;
@@ -2954,7 +3023,7 @@ function searchPests() {
         check(service.pests, service.name);
         service.subServices?.forEach(sub => check(sub.pests, `${service.name} (${sub.name})`));
     });
-
+ 
     let foundInNotCovered = false;
     if (clientData.pestsNotCovered && !exactInServices) {
         const notCoveredList = clientData.pestsNotCovered.toLowerCase().split(',').map(p => p.trim());
@@ -2962,13 +3031,13 @@ function searchPests() {
             foundInNotCovered = true;
         }
     }
-
+ 
     showSearchPopup(term, foundInServices, foundInNotCovered, exactInServices);
 }
-
+ 
 function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServices) {
     let html = '';
-
+ 
     if (foundInServices.length) {
         foundInServices.sort((a, b) => b.exactMatch - a.exactMatch);
         html += `<div class="search-popup-header">${exactInServices ? `✅ "${term}" is COVERED in:` : `🔍 Found "${term}" in:`}</div>`;
@@ -2980,7 +3049,7 @@ function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServic
                 </div>`;
         });
     }
-
+ 
     if (foundInNotCovered && foundInServices.length) {
         html += `<div class="search-popup-item warning"><div><span class="search-popup-item-icon">⚠️</span><span class="search-popup-item-text">Some types may not be covered</span></div><div class="search-popup-item-detail">Check service details for specifics</div></div>`;
     } else if (foundInNotCovered) {
@@ -2990,10 +3059,10 @@ function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServic
         html += `<div class="search-popup-header">❓ No coverage found for "${term}"</div>
                  <div class="search-popup-item"><div><span class="search-popup-item-icon">📞</span><span class="search-popup-item-text">Contact office for details</span></div><div class="search-popup-item-detail">Pest may require special treatment</div></div>`;
     }
-
+ 
     document.getElementById('searchPopupContent').innerHTML = html;
     document.getElementById('searchPopup').style.display    = 'block';
-
+ 
     const resultEl = document.getElementById('pestSearchResult');
     if (foundInServices.length) {
         resultEl.textContent = exactInServices ? `✅ "${term}" is covered` : `🔍 Found "${term}"`;
@@ -3006,7 +3075,7 @@ function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServic
         resultEl.style.color = '#94a3b8';
     }
 }
-
+ 
 function selectSearchResult(serviceName, term) {
     hideSearchPopup();
     showSection('services');
@@ -3021,11 +3090,11 @@ function selectSearchResult(serviceName, term) {
         }
     }, 300);
 }
-
+ 
 function hideSearchPopup() {
     document.getElementById('searchPopup').style.display = 'none';
 }
-
+ 
 function clearSearch() {
     document.getElementById('pestSearch').value  = '';
     hideSearchPopup();
@@ -3034,44 +3103,44 @@ function clearSearch() {
     document.getElementById('pestsNotCoveredAlert')?.classList.remove('show');
     populateServices();
 }
-
+ 
 function filterServicesByPest(term) {
     const tabsBar   = document.getElementById('serviceTabsBar');
     const tabPanels = document.getElementById('serviceTabPanels');
     if (!tabsBar || !tabPanels) return;
-
+ 
     // Re-render all services but only matching ones, in a simple flat grid
     tabsBar.innerHTML   = '';
     tabPanels.innerHTML = '';
-
+ 
     const matching = (clientData.services || []).filter(service => {
         const mainMatch = service.pests?.toLowerCase().includes(term);
         const subMatch  = service.subServices?.some(s => s.pests?.toLowerCase().includes(term));
         return mainMatch || subMatch;
     });
-
+ 
     if (!matching.length) {
         tabPanels.innerHTML = '<div class="info-section"><div class="info-content">No services found matching that pest.</div></div>';
         return;
     }
-
+ 
     matching.forEach((service, idx) => {
         const tabId   = `svc-tab-f-${idx}`;
         const panelId = `svc-panel-f-${idx}`;
         const freqLabel = service.subServices?.length ? 'Multi' : (service.frequency || '');
-
+ 
         const btn = document.createElement('button');
         btn.className = 'svc-tab-btn active';
         btn.id = tabId;
         btn.innerHTML = `${service.name || 'Service'}${freqLabel ? `<span class="tab-freq-badge">${freqLabel}</span>` : ''}`;
         btn.addEventListener('click', () => activateServiceTab(tabId, panelId));
         tabsBar.appendChild(btn);
-
+ 
         const panel = document.createElement('div');
         panel.className = 'svc-tab-panel active';
         panel.id = panelId;
         const content = buildServicePanel(service, idx);
-
+ 
         // Highlight matching pest terms
         const re = new RegExp(`(${term})`, 'gi');
         content.querySelectorAll('.pests-covered').forEach(el => {
@@ -3080,20 +3149,20 @@ function filterServicesByPest(term) {
         panel.appendChild(content);
         tabPanels.appendChild(panel);
     });
-
+ 
     showSection('services');
 }
-
+ 
 // ─── Pricing Calculators ──────────────────────────────────────────────────────
 function calculatePricing(serviceId) {
     const sqft    = parseInt(document.getElementById(`sqft_${serviceId}`).value);
     const resultEl = document.getElementById(`result_${serviceId}`);
     if (!sqft || sqft <= 0) { resultEl.classList.remove('show'); return; }
-
+ 
     const card    = document.querySelector(`[data-service-id="${serviceId}"]`);
     const tiers   = card?._pricingData;
     if (!tiers) { document.getElementById(`pricing_${serviceId}`).innerHTML = '<div class="price-display-item"><div class="price-display-value">No pricing tiers available</div></div>'; resultEl.classList.add('show'); return; }
-
+ 
     const tier = tiers.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
     if (!tier) {
         document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div></div>`;
@@ -3101,7 +3170,7 @@ function calculatePricing(serviceId) {
         resultEl.classList.add('show');
         return;
     }
-
+ 
     // Additive bundle format
     if (tier.components?.length) {
         let html = '<div class="sqft-bundle-breakdown additive">';
@@ -3131,30 +3200,32 @@ function calculatePricing(serviceId) {
         document.getElementById(`range_${serviceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft${tier.acreage ? ` (${tier.acreage})` : ''}`;
     } else {
         // Standard pricing
+        const svcTypeLabel = tier.serviceType || tier.serviceFrequency || tier.soldAsName || tier.serviceTypeDesc || '';
         document.getElementById(`pricing_${serviceId}`).innerHTML = `
-            <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice}</div></div>
-            <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice}</div></div>
-            <div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${tier.serviceType}</div></div>`;
+            <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice || '—'}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice || '—'}</div></div>
+            ${svcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${svcTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${serviceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
     }
     resultEl.classList.add('show');
 }
-
+ 
 function calculateSubServicePricing(subServiceId, subServiceIndex) {
     const sqft    = parseInt(document.getElementById(`sqft_${subServiceId}`).value);
     const resultEl = document.getElementById(`result_${subServiceId}`);
     if (!sqft || sqft <= 0) { resultEl.classList.remove('show'); return; }
-
+ 
     const parentId = subServiceId.split('_sub_')[0];
     const card     = document.querySelector(`[data-service-id="${parentId}"]`);
     const sub      = card?._subServicesData?.[subServiceIndex];
     const tier     = sub?.pricingTiers?.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
-
+ 
     if (tier) {
+        const subSvcTypeLabel = tier.serviceType || tier.serviceFrequency || tier.soldAsName || tier.serviceTypeDesc || '';
         document.getElementById(`pricing_${subServiceId}`).innerHTML = `
-            <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice}</div></div>
-            <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice}</div></div>
-            <div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${tier.serviceType}</div></div>`;
+            <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice || '—'}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice || '—'}</div></div>
+            ${subSvcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${subSvcTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${subServiceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
     } else {
         document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div></div>`;
@@ -3162,39 +3233,39 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
     }
     resultEl.classList.add('show');
 }
-
+ 
 // ─── Init ─────────────────────────────────────────────────────────────────────
-
+ 
 // ─── Theme (dark/light) ───────────────────────────────────────────────────────
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('pestsos-theme', theme);
     document.getElementById('themeToggle').textContent = theme === 'light' ? '🌙' : '☀️';
 }
-
+ 
 function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     applyTheme(current === 'dark' ? 'light' : 'dark');
 }
-
+ 
 function initTheme() {
     const saved = localStorage.getItem('pestsos-theme');
     if (saved) { applyTheme(saved); return; }
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(prefersDark ? 'dark' : 'light');
 }
-
+ 
 // Listen for system preference changes
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
     if (!localStorage.getItem('pestsos-theme')) {
         applyTheme(e.matches ? 'dark' : 'light');
     }
 });
-
+ 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     loadProfileData();
-
+ 
     // Pest search: real-time + Enter key
     const pestInput = document.getElementById('pestSearch');
     pestInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchPests(); });
@@ -3204,13 +3275,13 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (!v.length) clearSearch();
         else hideSearchPopup();
     });
-
+ 
     // Hide pest popup on outside click
     document.addEventListener('click', e => {
         const popup = document.getElementById('searchPopup');
         if (!pestInput.contains(e.target) && !popup.contains(e.target) && popup.style.display === 'block') hideSearchPopup();
     });
-
+ 
     // Enter key in sqft inputs
     document.addEventListener('keypress', e => {
         if (e.key === 'Enter' && e.target.classList.contains('sqft-input')) {
@@ -3219,11 +3290,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
+ 
 window.addEventListener('load', () => setTimeout(initializeStickyHeader, 200));
 </script>
-</body>
-</html>
-
 </body>
 </html>
