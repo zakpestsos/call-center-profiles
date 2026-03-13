@@ -544,7 +544,7 @@ body {
     color: var(--text-heading);
 }
  
-.svc-panel-desc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+.svc-panel-desc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; white-space: pre-line; }
  
 /* ══════════════════════════════════════════════════════════════════
    SERVICE CARDS (used in pest search fallback)
@@ -666,7 +666,7 @@ body {
     letter-spacing: 0.5px;
 }
  
-.subservice-description { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 0.65rem; line-height: 1.4; }
+.subservice-description { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 0.65rem; line-height: 1.4; white-space: pre-line; }
  
 .subservice-pests {
     background: rgba(12,143,203,0.04);
@@ -2330,7 +2330,7 @@ function buildServicePanel(service, svcIdx) {
             <div class="svc-panel-header">
                 <div>
                     <div class="svc-panel-name">${service.name || 'Unnamed Service'}</div>
-                    <div class="svc-panel-desc">${service.description || ''}</div>
+                    <div class="svc-panel-desc">${(service.description || '').replace(/\n/g, '<br>')}</div>
                 </div>
                 <div class="service-frequency" style="flex-shrink:0">Multiple Options</div>
             </div>
@@ -2358,7 +2358,7 @@ function buildServicePanel(service, svcIdx) {
             <div class="svc-panel-header">
                 <div>
                     <div class="svc-panel-name">${service.name || 'Unnamed Service'}</div>
-                    <div class="svc-panel-desc">${service.description || ''}</div>
+                    <div class="svc-panel-desc">${(service.description || '').replace(/\n/g, '<br>')}</div>
                 </div>
                 <div class="service-frequency" style="flex-shrink:0">${service.frequency || 'N/A'}</div>
             </div>
@@ -2432,7 +2432,7 @@ function buildSubServiceHTML(subServiceId, sub) {
                 <div class="subservice-name">${sub.name}</div>
                 <div class="subservice-frequency">${sub.frequency}</div>
             </div>
-            <div class="subservice-description">${sub.description}</div>
+            <div class="subservice-description">${(sub.description || '').replace(/\n/g, '<br>')}</div>
             ${sub.agentNote ? `<div class="agent-note"><div class="agent-note-title">Agent Note</div><div class="agent-note-content">${sub.agentNote}</div></div>` : ''}
             <div class="subservice-pests">
                 <div class="subservice-pests-title">Pests Covered</div>
