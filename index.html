@@ -2034,7 +2034,10 @@ async function fetchJsonWithCache(url, { ttlMs = PROFILE_CACHE_TTL_MS } = {}) {
 // ─── Profile Load ─────────────────────────────────────────────────────────────
 async function loadProfileData() {
     const profileId = getProfileIdFromUrl();
-    if (!profileId) { showError('No profile ID provided in URL'); return; }
+    if (!profileId) {
+        loadDummyData();
+        return;
+    }
  
     try {
         const apiUrl = window.CONFIG?.GOOGLE_SHEETS?.WEB_APP_URL;
@@ -2079,13 +2082,16 @@ function getProfileIdFromUrl() {
  
 function showError(message) {
     document.getElementById('loadingState').style.display = 'none';
- 
+
     const errorEl = document.getElementById('errorState');
     if (errorEl) {
         errorEl.style.display = 'block';
         errorEl.innerHTML = `<div>Error: ${message}</div>`;
     }
- 
+}
+
+function loadDummyData() {
+    document.getElementById('loadingState').style.display = 'none';
     // Fallback: show sample data when no profileId is present
     if (!getProfileIdFromUrl()) {
         clientData = {
@@ -2223,6 +2229,26 @@ function showError(message) {
                     { sqftMin: 1001, sqftMax: 2500,  firstPrice: "$895.00", recurringPrice: "N/A", serviceType: "Bed Bug" },
                     { sqftMin: 2501, sqftMax: 999999, firstPrice: "Requires Client Follow-Up", recurringPrice: "N/A", serviceType: "Bed Bug" }
                 ]
+            }, {
+                name: "Free Termite Inspection",
+                serviceIdentifier: "Termite",
+                description: "No-cost inspection to assess termite activity and damage throughout the structure.",
+                serviceType: "Free Inspection",
+                frequency: "One Time", contract: "None", guarantee: "N/A", duration: "45-60 minutes",
+                productType: "Termite", billingFrequency: "N/A",
+                pests: "Subterranean Termites, Drywood Termites",
+                agentNote: "Schedule inspection before quoting any termite treatment. Inspector will provide written estimate on-site.",
+                pricingTiers: []
+            }, {
+                name: "Paid Wildlife Inspection",
+                serviceIdentifier: "Rodent/Wildlife",
+                description: "Comprehensive wildlife entry assessment. Fee applied toward any exclusion work scheduled within 30 days.",
+                serviceType: "Paid Inspection",
+                frequency: "One Time", contract: "None", guarantee: "N/A", duration: "30-45 minutes",
+                productType: "Rodent Control", billingFrequency: "Due at time of service",
+                pests: "Mice, Rats, Squirrels, Raccoons",
+                agentNote: "Inspection fee is $75. Waived if customer books exclusion within 30 days.",
+                pricingTiers: [{ pricingMode: "flat", flatPrice: "$75.00" }]
             }, {
                 name: "Lawn Care Add-On",
                 serviceIdentifier: "Non-pest Services",
@@ -2670,6 +2696,31 @@ function buildServicePanel(service, svcIdx) {
         wrapper._subServicesData = service.subServices;
     } else {
         // ── Regular service ──
+        const isInspection = (service.serviceType || '').toLowerCase().includes('inspection');
+        const flatPrice = service.pricingTiers?.[0]?.flatPrice;
+        let calculatorHTML;
+        if (isInspection) {
+            const priceDisplay = flatPrice && flatPrice !== '—' ? flatPrice : 'Free Inspection';
+            calculatorHTML = `<div class="calculator-title">🔍 Inspection Pricing</div>
+                <div class="pricing-result show">
+                    <div class="pricing-display">
+                        <div class="price-display-item">
+                            <div class="price-display-label">Price</div>
+                            <div class="price-display-value">${priceDisplay}</div>
+                        </div>
+                    </div>
+                </div>`;
+        } else {
+            calculatorHTML = `<div class="calculator-title">🧮 Pricing Calculator</div>
+                <div class="service-info-summary">
+                    ${service.productType || service.name} • ${service.serviceFrequencyCustom || service.frequency} service • Billed ${service.billingFrequencyCustom || service.billingFrequency}
+                </div>
+                ${pricingInputHTML(serviceId, service.pricingTiers)}
+                <div class="pricing-result" id="result_${serviceId}">
+                    <div class="pricing-display" id="pricing_${serviceId}"></div>
+                    <div class="sqft-range-info" id="range_${serviceId}"></div>
+                </div>`;
+        }
         wrapper.innerHTML = `
             <div class="svc-panel-header">
                 <div>
@@ -2696,21 +2747,13 @@ function buildServicePanel(service, svcIdx) {
                 </div>
             </div>
             <div class="pricing-calculator">
-                <div class="calculator-title">🧮 Pricing Calculator</div>
-                <div class="service-info-summary">
-                    ${service.productType || service.name} • ${service.serviceFrequencyCustom || service.frequency} service • Billed ${service.billingFrequencyCustom || service.billingFrequency}
-                </div>
-                ${pricingInputHTML(serviceId, service.pricingTiers)}
-                <div class="pricing-result" id="result_${serviceId}">
-                    <div class="pricing-display" id="pricing_${serviceId}"></div>
-                    <div class="sqft-range-info" id="range_${serviceId}"></div>
-                </div>
+                ${calculatorHTML}
             </div>`;
         wrapper._pricingData = service.pricingTiers || [];
         wrapper._serviceData = service;
 
-        // Auto-show flat pricing immediately — no input needed
-        if (service.pricingTiers?.[0]?.pricingMode === 'flat') {
+        // Auto-show flat pricing immediately — no input needed (skip inspections, they render inline)
+        if (!isInspection && service.pricingTiers?.[0]?.pricingMode === 'flat') {
             setTimeout(() => calculatePricing(serviceId), 0);
         }
     }
