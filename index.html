@@ -2862,28 +2862,30 @@ function calculateBundlePricing(bundleId) {
     const cards = [];
     let totalFirst = 0, totalRecurring = 0;
     let totalFirstUnknown = false, totalRecurringUnknown = false;
+    let totalFirstMissingInput = false, totalRecurringMissingInput = false;
+
+    const parsePrice = str => {
+        const n = parseFloat(String(str || '').replace(/[^0-9.]/g, ''));
+        return isNaN(n) ? null : n;
+    };
 
     Object.entries(sp).forEach(([svcName, pricing]) => {
         const mode = pricing.pricingMode || 'sqft';
 
+        // ── Flat pricing ──────────────────────────────────────────────────────
         if (mode === 'flat') {
             const flat = pricing.flatPrice || '—';
             cards.push(`<div class="bundle-price-card">
                 <div class="bundle-price-card-name">${svcName}</div>
                 <div class="bundle-price-row"><span class="bundle-price-label">Price</span><span class="bundle-price-value">${flat}</span></div>
             </div>`);
-            // Try to parse flat price as a dollar amount for totalling
-            const flatN = parseFloat(String(flat).replace(/[^0-9.]/g, ''));
-            if (!isNaN(flatN)) {
-                totalFirst     += flatN;
-                totalRecurring += flatN;
-            } else {
-                totalFirstUnknown     = true;
-                totalRecurringUnknown = true;
-            }
+            const flatN = parsePrice(flat);
+            if (flatN !== null) { totalFirst += flatN; totalRecurring += flatN; }
+            else { totalFirstUnknown = true; totalRecurringUnknown = true; }
             return;
         }
 
+        // ── Sqft / acreage — resolve tier ─────────────────────────────────────
         const inputEl = document.getElementById(`bnd-input-${bundleId}-${mode}`);
         const val     = mode === 'acreage' ? parseFloat(inputEl?.value) : parseInt(inputEl?.value);
         const unit    = pricingUnitLabel(mode);
@@ -2893,20 +2895,41 @@ function calculateBundlePricing(bundleId) {
                 <div class="bundle-price-card-name">${svcName}</div>
                 <div class="bundle-price-row"><span class="bundle-price-label" style="color:var(--text-muted);font-style:italic;">Enter ${unit} above</span></div>
             </div>`);
-            totalFirstUnknown = true;
-            totalRecurringUnknown = true;
+            totalFirstMissingInput = totalFirstUnknown = true;
+            totalRecurringMissingInput = totalRecurringUnknown = true;
             return;
         }
 
-        // Single-tier pricing stored directly on the servicePricing entry
-        const firstRaw     = pricing.firstPrice     || '—';
-        const recurringRaw = pricing.recurringPrice || '—';
+        // Build a full tiers array: base entry is tier 1, extra tiers follow
+        const allTiers = [
+            { sqftMin: Number(pricing.sqftMin) || 0, sqftMax: Number(pricing.sqftMax) || 999999,
+              firstPrice: pricing.firstPrice, recurringPrice: pricing.recurringPrice }
+        ].concat((pricing.tiers || []).map(t => ({
+            sqftMin:        Number(t.sqftMin) || 0,
+            sqftMax:        Number(t.sqftMax) || 999999,
+            firstPrice:     t.firstPrice,
+            recurringPrice: t.recurringPrice
+        })));
 
-        // Try to parse dollar amounts for totalling
-        const parsePrice = str => {
-            const n = parseFloat(String(str).replace(/[^0-9.]/g, ''));
-            return isNaN(n) ? null : n;
-        };
+        const tier = allTiers.find(t => val >= t.sqftMin && val <= t.sqftMax);
+
+        if (!tier) {
+            const maxCovered = Math.max(...allTiers.map(t => t.sqftMax));
+            const msg = val > maxCovered
+                ? `Contact home office for pricing on ${val.toLocaleString()} ${unit}`
+                : `No pricing for ${val.toLocaleString()} ${unit}`;
+            cards.push(`<div class="bundle-price-card">
+                <div class="bundle-price-card-name">${svcName}</div>
+                <div class="bundle-price-row"><span class="bundle-price-label" style="font-style:italic;">${msg}</span></div>
+            </div>`);
+            totalFirstUnknown = true; totalRecurringUnknown = true;
+            return;
+        }
+
+        const firstRaw     = tier.firstPrice     || '—';
+        const recurringRaw = tier.recurringPrice || '—';
+        const rangeLabel   = `${tier.sqftMin.toLocaleString()}–${tier.sqftMax.toLocaleString()} ${unit}`;
+
         const fp = parsePrice(firstRaw);
         const rp = parsePrice(recurringRaw);
         if (fp !== null) totalFirst     += fp; else totalFirstUnknown     = true;
@@ -2914,26 +2937,31 @@ function calculateBundlePricing(bundleId) {
 
         cards.push(`<div class="bundle-price-card">
             <div class="bundle-price-card-name">${svcName}</div>
-            ${firstRaw !== '—'     ? `<div class="bundle-price-row"><span class="bundle-price-label">First</span><span class="bundle-price-value">${firstRaw}</span></div>` : ''}
+            ${firstRaw     !== '—' ? `<div class="bundle-price-row"><span class="bundle-price-label">First</span><span class="bundle-price-value">${firstRaw}</span></div>` : ''}
             ${recurringRaw !== '—' ? `<div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value">${recurringRaw}</span></div>` : ''}
+            <div class="bundle-price-row"><span class="bundle-price-label" style="font-size:0.68rem;color:var(--text-muted);">${rangeLabel}</span></div>
         </div>`);
     });
 
     breakdownEl.innerHTML = cards.join('');
 
-    // Total row
-    const fmtTotal = (n, unknown) => unknown ? 'Contact office' : `$${n.toFixed(2)}`;
+    // ── Total row ─────────────────────────────────────────────────────────────
+    const fmtTotal = (n, unknown, missingInput) => {
+        if (!unknown) return `$${n.toFixed(2)}`;
+        if (missingInput) return 'Enter sq ft / acreage above';
+        return 'Contact home office';
+    };
     totalEl.innerHTML = `
         <div style="background:rgba(16,185,129,0.1);border:2px solid rgba(16,185,129,0.35);border-radius:0.6rem;padding:0.75rem 1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
             <span style="font-weight:800;color:var(--text-heading);font-size:0.95rem;">Bundle Total</span>
             <div style="display:flex;gap:1.5rem;">
                 <div style="text-align:center;">
                     <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem;">First</div>
-                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalFirst, totalFirstUnknown)}</div>
+                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalFirst, totalFirstUnknown, totalFirstMissingInput)}</div>
                 </div>
                 <div style="text-align:center;">
                     <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem;">Recurring</div>
-                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalRecurring, totalRecurringUnknown)}</div>
+                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalRecurring, totalRecurringUnknown, totalRecurringMissingInput)}</div>
                 </div>
             </div>
         </div>`;
@@ -3718,8 +3746,12 @@ function calculatePricing(serviceId) {
 
     const tier = tiers.find(t => val >= t.sqftMin && val <= t.sqftMax);
     if (!tier) {
-        document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${val.toLocaleString()} ${unit}</div></div>`;
-        document.getElementById(`range_${serviceId}`).textContent = 'Please contact office for custom pricing';
+        const maxCovered = Math.max(...tiers.map(t => t.sqftMax));
+        const msg = val > maxCovered
+            ? `Please contact the home office for pricing on ${val.toLocaleString()} ${unit}`
+            : `No pricing available for ${val.toLocaleString()} ${unit}`;
+        document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">${msg}</div></div>`;
+        document.getElementById(`range_${serviceId}`).textContent = val > maxCovered ? `Our pricing covers up to ${maxCovered.toLocaleString()} ${unit}` : '';
         resultEl.classList.add('show');
         return;
     }
@@ -3741,12 +3773,21 @@ function calculatePricing(serviceId) {
                 </div>`;
             if (i < tier.components.length - 1) html += '<div class="plus-sign-divider"><span class="plus-sign">+</span></div>';
         });
+        const parsePrice = str => {
+            if (!str) return 0;
+            const n = parseFloat(str.toString().replace(/[^0-9.]/g, ''));
+            return isNaN(n) ? 0 : n;
+        };
+        const computedFirst     = tier.totalFirst     ? tier.totalFirst
+            : (() => { const s = tier.components.reduce((a, c) => a + parsePrice(c.firstPrice), 0); return s > 0 ? '$' + s.toFixed(2).replace(/\.00$/, '') : ''; })();
+        const computedRecurring = tier.totalRecurring ? tier.totalRecurring
+            : (() => { const s = tier.components.reduce((a, c) => a + parsePrice(c.recurringPrice), 0); return s > 0 ? '$' + s.toFixed(2).replace(/\.00$/, '') : ''; })();
         html += `<div class="equals-sign-divider"><span class="equals-sign">=</span></div>
                  <div class="bundle-total-additive-row">
                      <div class="bundle-total-label-additive"><strong>Total Bundle Price</strong></div>
                      <div class="bundle-total-prices-additive">
-                         ${tier.totalFirst     ? `<div class="total-price-item"><span class="price-label-sm">First:</span><strong class="price-value-total">${tier.totalFirst}</strong></div>` : ''}
-                         ${tier.totalRecurring ? `<div class="total-price-item"><span class="price-label-sm">Recurring:</span><strong class="price-value-total">${tier.totalRecurring}</strong></div>` : ''}
+                         ${computedFirst     ? `<div class="total-price-item"><span class="price-label-sm">First:</span><strong class="price-value-total">${computedFirst}</strong></div>` : ''}
+                         ${computedRecurring ? `<div class="total-price-item"><span class="price-label-sm">Recurring:</span><strong class="price-value-total">${computedRecurring}</strong></div>` : ''}
                      </div>
                  </div></div>`;
         document.getElementById(`pricing_${serviceId}`).innerHTML = html;
@@ -3793,8 +3834,12 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
             ${subSvcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${subSvcTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${subServiceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} ${unit}`;
     } else {
-        document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${val.toLocaleString()} ${unit}</div></div>`;
-        document.getElementById(`range_${subServiceId}`).textContent = 'Please contact office for custom pricing';
+        const maxCovered = Math.max(...tiers.map(t => t.sqftMax));
+        const msg = val > maxCovered
+            ? `Please contact the home office for pricing on ${val.toLocaleString()} ${unit}`
+            : `No pricing available for ${val.toLocaleString()} ${unit}`;
+        document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">${msg}</div></div>`;
+        document.getElementById(`range_${subServiceId}`).textContent = val > maxCovered ? `Our pricing covers up to ${maxCovered.toLocaleString()} ${unit}` : '';
     }
     resultEl.classList.add('show');
 }
