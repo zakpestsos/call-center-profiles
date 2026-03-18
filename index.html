@@ -1,4 +1,3 @@
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,9 +86,95 @@
     --tool-btn-bg:    linear-gradient(135deg, #DD1E33, #b01828);
 }
  
-/* ══════════════════════════════════════════════════════════════════
-   RESET & BASE
-   ══════════════════════════════════════════════════════════════════ */
+/* ── Bundle tabs — distinct look from service tabs ── */
+.svc-tab-btn.bundle-tab {
+    border-style: dashed;
+    border-color: var(--water);
+    color: var(--water);
+    background: rgba(12, 143, 203, 0.06);
+}
+.svc-tab-btn.bundle-tab:hover {
+    background: rgba(12, 143, 203, 0.15);
+    border-color: var(--water);
+    color: var(--water);
+}
+.svc-tab-btn.bundle-tab.active {
+    background: rgba(12, 143, 203, 0.2);
+    border-color: var(--water);
+    border-style: solid;
+    color: var(--white);
+}
+.bundle-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+}
+.bundle-panel-name {
+    font-family: 'Alegreya', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-heading);
+}
+.bundle-panel-badge {
+    background: rgba(12, 143, 203, 0.12);
+    border: 1px solid rgba(12, 143, 203, 0.35);
+    border-radius: 0.4rem;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--water);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.bundle-sub-services-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.75rem 0;
+}
+.bundle-sub-chip {
+    background: rgba(12, 143, 203, 0.08);
+    border: 1px solid rgba(12, 143, 203, 0.25);
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--water);
+}
+.bundle-pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.65rem;
+    margin-top: 0.5rem;
+}
+.bundle-price-card {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+}
+.bundle-price-card-name {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--water);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.4rem;
+}
+.bundle-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.2rem;
+}
+.bundle-price-label { font-size: 0.72rem; color: var(--text-muted); }
+.bundle-price-value { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
  
 body {
@@ -1472,9 +1557,9 @@ body {
     margin-bottom: 0;
     display: none;
 }
- 
+
 .discount-policy-block.show { display: block; }
- 
+
 .discount-policy-title {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 0.75rem;
@@ -1482,18 +1567,36 @@ body {
     color: var(--water);
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    justify-content: space-between;
 }
- 
+
+.discount-policy-title:hover { opacity: 0.8; }
+
+.discount-policy-chevron {
+    font-size: 0.65rem;
+    transition: transform 0.25s ease;
+    margin-left: auto;
+}
+
+.discount-policy-block.expanded .discount-policy-chevron { transform: rotate(180deg); }
+
 .discount-policy-content {
     color: var(--text-secondary);
     font-size: 0.9rem;
     line-height: 1.6;
     white-space: pre-line;
+    display: none;
+    margin-top: 0.5rem;
 }
+
+.discount-policy-block.expanded .discount-policy-content { display: block; }
+
  
 /* ── Policy inner tabs ───────────────────────────────────────────── */
 .policy-inner-tabs-bar {
@@ -1630,7 +1733,10 @@ body {
                     </div>
                     <!-- Discount Policy Block (between tab bar and panels) -->
                     <div class="discount-policy-block" id="discountPolicyBlock">
-                        <div class="discount-policy-title">🏷️ Discount Policy</div>
+                        <div class="discount-policy-title" onclick="toggleDiscountPolicy()">
+                            <span>🏷️ Discount Policy</span>
+                            <span class="discount-policy-chevron">▼</span>
+                        </div>
                         <div class="discount-policy-content" id="discountPolicyContent"></div>
                     </div>
                     <div class="service-tab-panels" id="serviceTabPanels">
@@ -2000,6 +2106,7 @@ function showError(message) {
             poisonProcedure: "1. Confirm pest type and severity before recommending any rodenticide or bait station treatment.\n2. Always ask if children or pets are present in the home.\n3. Tamper-resistant bait stations are required in all residential settings.\n4. Document product name, EPA registration number, and placement locations in the service report.\n5. Advise customer to keep children and pets away from treated areas for minimum 24 hours.\n6. If accidental ingestion is suspected, direct customer to call Poison Control immediately: 1-800-222-1222.",
             services: [{
                 name: "General Pest Control",
+                serviceIdentifier: "GPC",
                 description: "Comprehensive pest control service with multiple frequency options to meet your specific needs",
                 serviceType: "General Pest Control",
                 queueExt: "6884",
@@ -2058,6 +2165,7 @@ function showError(message) {
                 ]
             }, {
                 name: "Monthly Mosquito Service",
+                serviceIdentifier: "Mosquito, Tick and Flea",
                 description: "Monthly mosquito, flea, and tick control",
                 contract: "Seasonal", guarantee: "30-day guarantee", duration: "30 minutes",
                 pests: "Mosquitoes, Fleas, Ticks",
@@ -2071,6 +2179,64 @@ function showError(message) {
                     { sqftMin: 21781, sqftMax: 32680,  firstPrice: "$132.00", recurringPrice: "$128.00", serviceType: "Monthly Mosquito" },
                     { sqftMin: 32681, sqftMax: 43560,  firstPrice: "$144.00", recurringPrice: "$138.00", serviceType: "Monthly Mosquito" },
                     { sqftMin: 43561, sqftMax: 999999, firstPrice: "Requires Client Follow-Up", recurringPrice: "", serviceType: "Monthly Mosquito" }
+                ]
+            }, {
+                name: "Subterranean Termite Treatment",
+                serviceIdentifier: "Termite",
+                description: "Full perimeter liquid termite treatment using Termidor. Protects the entire structure from subterranean termite activity.",
+                contract: "1 Year Warranty", guarantee: "1-year retreatment guarantee", duration: "2-4 hours",
+                pests: "Subterranean Termites",
+                serviceType: "One Time", frequency: "One Time",
+                productType: "Termite",
+                billingFrequency: "Due at time of service",
+                agentNote: "Requires a free inspection before quoting. Do not quote pricing over the phone — inspection required.",
+                pricingTiers: [
+                    { sqftMin: 0, sqftMax: 999999, firstPrice: "Inspection Required", recurringPrice: "N/A", serviceType: "Termite Treatment" }
+                ]
+            }, {
+                name: "Rodent Exclusion",
+                serviceIdentifier: "Rodent/Wildlife",
+                description: "Full home exclusion service to seal entry points and prevent rodent re-entry. Includes snap trap setup and follow-up visit.",
+                contract: "None", guarantee: "90-day exclusion warranty", duration: "1-3 hours",
+                pests: "Mice, Rats",
+                serviceType: "One Time", frequency: "One Time",
+                productType: "Rodent Control",
+                billingFrequency: "Due at time of service",
+                agentNote: "Always ask if customer has seen droppings, chew marks, or heard noises at night. Schedule inspection first for larger homes.",
+                pricingTiers: [
+                    { sqftMin: 0,    sqftMax: 2500,  firstPrice: "$350.00", recurringPrice: "N/A", serviceType: "Rodent Exclusion" },
+                    { sqftMin: 2501, sqftMax: 4000,  firstPrice: "$450.00", recurringPrice: "N/A", serviceType: "Rodent Exclusion" },
+                    { sqftMin: 4001, sqftMax: 999999, firstPrice: "Requires Client Follow-Up", recurringPrice: "N/A", serviceType: "Rodent Exclusion" }
+                ]
+            }, {
+                name: "Bed Bug Treatment",
+                serviceIdentifier: "Specialty",
+                description: "Heat and chemical combination treatment for bed bug elimination. Covers all life stages including eggs.",
+                contract: "None", guarantee: "30-day retreatment guarantee", duration: "4-6 hours",
+                pests: "Bed Bugs",
+                serviceType: "One Time", frequency: "One Time",
+                productType: "Specialty",
+                billingFrequency: "50% deposit, remainder due at service",
+                agentNote: "Customer must complete prep checklist before service or treatment cannot proceed. Send prep sheet via email at time of booking.",
+                pricingTiers: [
+                    { sqftMin: 0,    sqftMax: 1000,  firstPrice: "$695.00", recurringPrice: "N/A", serviceType: "Bed Bug" },
+                    { sqftMin: 1001, sqftMax: 2500,  firstPrice: "$895.00", recurringPrice: "N/A", serviceType: "Bed Bug" },
+                    { sqftMin: 2501, sqftMax: 999999, firstPrice: "Requires Client Follow-Up", recurringPrice: "N/A", serviceType: "Bed Bug" }
+                ]
+            }, {
+                name: "Lawn Care Add-On",
+                serviceIdentifier: "Non-pest Services",
+                description: "Seasonal lawn fertilization and weed control program. Can be added to any existing pest control plan.",
+                contract: "None", guarantee: "Satisfaction guarantee", duration: "30-45 minutes",
+                pests: "N/A",
+                serviceType: "Recurring", frequency: "Quarterly",
+                productType: "Lawn Care",
+                billingFrequency: "After service completion",
+                agentNote: "Available as a standalone or bundled add-on. Not available in all service areas — confirm with office before scheduling.",
+                pricingTiers: [
+                    { sqftMin: 0,    sqftMax: 5000,  firstPrice: "$89.00", recurringPrice: "$79.00", serviceType: "Lawn Care" },
+                    { sqftMin: 5001, sqftMax: 10000, firstPrice: "$119.00", recurringPrice: "$109.00", serviceType: "Lawn Care" },
+                    { sqftMin: 10001, sqftMax: 999999, firstPrice: "Requires Client Follow-Up", recurringPrice: "", serviceType: "Lawn Care" }
                 ]
             }],
             technicians: [
@@ -2116,7 +2282,53 @@ function showError(message) {
                     { type: "satisfaction",  title: "Customer Satisfaction Policy", description: "Customer satisfaction is our priority. Any service concerns should be reported within 24 hours for prompt resolution.",                          options: ["24-hour reporting","48-hour reporting","Weekly follow-up"],    default: "24-hour reporting" }
                 ]
             },
-            serviceAreas: [{ zip: "75001", city: "Dallas", state: "TX", branch: "Dallas North Branch", territory: "North Dallas", inService: true }]
+            serviceAreas: [{ zip: "75001", city: "Dallas", state: "TX", branch: "Dallas North Branch", territory: "North Dallas", inService: true }],
+            bundles: [{
+                bundleId: "bundle_demo_1",
+                name: "Home Protection Bundle",
+                primaryService: "General Pest Control",
+                subServices: ["Monthly Mosquito Service"],
+                description: "Combine General Pest Control with Mosquito service for complete home protection year-round.",
+                noteToAgent: "Discount applies when both services are set up on the same account. Confirm both services are available in the customer's zip code.",
+                servicePricing: {
+                    "General Pest Control": { pricingMode: "sqft", firstPrice: "$120.00", recurringPrice: "$115.00", sqftMin: 0, sqftMax: 2500 },
+                    "Monthly Mosquito Service": { pricingMode: "sqft", firstPrice: "$95.00", recurringPrice: "$95.00", sqftMin: 0, sqftMax: 10890 }
+                }
+            }, {
+                bundleId: "bundle_demo_2",
+                name: "Termite + Pest Bundle",
+                primaryService: "Subterranean Termite Treatment",
+                subServices: ["General Pest Control"],
+                description: "Pair a termite treatment with ongoing general pest control for full-structure coverage.",
+                noteToAgent: "Termite treatment must be scheduled first. GPC can begin at the same time or after the termite service is complete.",
+                servicePricing: {
+                    "Subterranean Termite Treatment": { pricingMode: "flat", flatPrice: "Inspection Required" },
+                    "General Pest Control": { pricingMode: "sqft", firstPrice: "$110.00", recurringPrice: "$105.00", sqftMin: 0, sqftMax: 2500 }
+                }
+            }, {
+                bundleId: "bundle_demo_3",
+                name: "Mosquito + Yard Treatment Bundle",
+                primaryService: "Monthly Mosquito Service",
+                subServices: ["Lawn Care Add-On"],
+                description: "Combine mosquito control with flat-rate lawn treatment for complete outdoor coverage.",
+                noteToAgent: "Confirm acreage before quoting mosquito service. Lawn add-on is a flat rate regardless of size.",
+                servicePricing: {
+                    "Monthly Mosquito Service": { pricingMode: "acreage", firstPrice: "$108.00", recurringPrice: "$108.00", sqftMin: 0, sqftMax: 999 },
+                    "Lawn Care Add-On": { pricingMode: "flat", flatPrice: "$50.00" }
+                }
+            }, {
+                bundleId: "bundle_demo_4",
+                name: "Full Property Protection Bundle",
+                primaryService: "General Pest Control",
+                subServices: ["Monthly Mosquito Service", "Lawn Care Add-On"],
+                description: "Complete coverage for your home — interior pest control by square footage, mosquito by acreage, plus a flat-rate lawn treatment.",
+                noteToAgent: "Confirm both sq footage and acreage before quoting. All three services must be set up on the same account to receive bundle pricing.",
+                servicePricing: {
+                    "General Pest Control":      { pricingMode: "sqft",    firstPrice: "$120.00", recurringPrice: "$115.00", sqftMin: 0, sqftMax: 2500 },
+                    "Monthly Mosquito Service":  { pricingMode: "acreage", firstPrice: "$108.00", recurringPrice: "$108.00", sqftMin: 0, sqftMax: 999 },
+                    "Lawn Care Add-On":          { pricingMode: "flat",    flatPrice: "$50.00" }
+                }
+            }]
         };
         populateClientData();
     }
@@ -2197,6 +2409,10 @@ function populateClientData() {
     showSection('services');
 }
  
+function toggleDiscountPolicy() {
+    document.getElementById('discountPolicyBlock').classList.toggle('expanded');
+}
+
 // ─── Alert Banner ─────────────────────────────────────────────────────────────
 function showAlertBanner() {
     const banner   = document.getElementById('alertBanner');
@@ -2248,58 +2464,158 @@ function getWeatherIcon(code) {
 }
  
 // ─── Services ─────────────────────────────────────────────────────────────────
+const IDENTIFIER_ORDER = ['GPC', 'Specialty', 'Termite', 'Rodent/Wildlife', 'Mosquito, Tick and Flea', 'Non-pest Services'];
+
 function populateServices() {
     const tabsBar   = document.getElementById('serviceTabsBar');
     const tabPanels = document.getElementById('serviceTabPanels');
     if (!tabsBar || !tabPanels) return;
- 
+
     if (!clientData.services?.length) {
         tabPanels.innerHTML = '<div class="info-section"><div class="info-content">No services available.</div></div>';
         return;
     }
- 
+
     tabsBar.innerHTML   = '';
     tabPanels.innerHTML = '';
- 
+
+    // Build a lookup: service name → serviceIdentifier
+    const serviceIdentifierMap = {};
+    clientData.services.forEach(service => {
+        if (service.name && service.serviceIdentifier?.trim()) {
+            serviceIdentifierMap[service.name] = service.serviceIdentifier.trim();
+        }
+    });
+
+    // Group services by serviceIdentifier — skip those with none set
+    const groupedServices = {};
     clientData.services.forEach((service, idx) => {
-        const tabId    = `svc-tab-${idx}`;
-        const panelId  = `svc-panel-${idx}`;
-        const freqLabel = service.subServices?.length ? 'Multi' : (service.frequency || '');
- 
-        // Tab button
+        const id = service.serviceIdentifier?.trim();
+        if (!id) return;
+        if (!groupedServices[id]) groupedServices[id] = [];
+        groupedServices[id].push({ service, idx });
+    });
+
+    // Group bundles by their primary service's identifier — skip if no match
+    const groupedBundles = {};
+    (clientData.bundles || []).forEach((bundle, idx) => {
+        const id = serviceIdentifierMap[bundle.primaryService];
+        if (!id) return;
+        if (!groupedBundles[id]) groupedBundles[id] = [];
+        groupedBundles[id].push({ bundle, idx });
+    });
+
+    // Render in fixed order — only categories that have services or bundles
+    IDENTIFIER_ORDER.forEach(category => {
+        const svcMembers = groupedServices[category] || [];
+        const bndMembers = groupedBundles[category]  || [];
+        if (!svcMembers.length && !bndMembers.length) return;
+
+        const catTabId   = `cat-tab-${category.replace(/[^a-zA-Z0-9]/g, '-')}`;
+        const catPanelId = `cat-panel-${category.replace(/[^a-zA-Z0-9]/g, '-')}`;
+
+        // Category tab button — badge shows total services + bundles
+        const totalCount = svcMembers.length + bndMembers.length;
         const btn = document.createElement('button');
-        btn.className   = 'svc-tab-btn';
-        btn.id          = tabId;
-        btn.setAttribute('data-panel', panelId);
-        btn.innerHTML   = `${service.name || 'Service'}${freqLabel ? `<span class="tab-freq-badge">${freqLabel}</span>` : ''}`;
-        btn.addEventListener('click', () => activateServiceTab(tabId, panelId));
+        btn.className = 'svc-tab-btn';
+        btn.id        = catTabId;
+        btn.setAttribute('data-panel', catPanelId);
+        btn.innerHTML = `${category}<span class="tab-freq-badge">${totalCount}</span>`;
+        btn.addEventListener('click', () => activateCategoryTab(catTabId, catPanelId));
         tabsBar.appendChild(btn);
- 
-        // Panel
+
+        // Category panel
         const panel = document.createElement('div');
         panel.className = 'svc-tab-panel';
-        panel.id        = panelId;
-        panel.appendChild(buildServicePanel(service, idx));
+        panel.id        = catPanelId;
+
+        const innerTabsBar = document.createElement('div');
+        innerTabsBar.className = 'service-tabs-bar';
+        innerTabsBar.style.cssText = 'margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;';
+
+        const innerPanels = document.createElement('div');
+        innerPanels.className = 'service-tab-panels';
+
+        // Service tabs first
+        svcMembers.forEach(({ service, idx }) => {
+            const svcTabId   = `svc-tab-${idx}`;
+            const svcPanelId = `svc-panel-${idx}`;
+            const freqLabel  = service.subServices?.length ? 'Multi' : (service.frequency || '');
+
+            const svcBtn = document.createElement('button');
+            svcBtn.className = 'svc-tab-btn';
+            svcBtn.id        = svcTabId;
+            svcBtn.setAttribute('data-panel', svcPanelId);
+            svcBtn.innerHTML = `${service.name || 'Service'}${freqLabel ? `<span class="tab-freq-badge">${freqLabel}</span>` : ''}`;
+            svcBtn.addEventListener('click', () => activateServiceTab(svcTabId, svcPanelId, catPanelId));
+            innerTabsBar.appendChild(svcBtn);
+
+            const svcPanel = document.createElement('div');
+            svcPanel.className = 'svc-tab-panel';
+            svcPanel.id        = svcPanelId;
+            svcPanel.appendChild(buildServicePanel(service, idx));
+            innerPanels.appendChild(svcPanel);
+        });
+
+        // Bundle tabs after services
+        bndMembers.forEach(({ bundle, idx }) => {
+            const bndTabId   = `bnd-tab-${idx}`;
+            const bndPanelId = `bnd-panel-${idx}`;
+
+            const bndBtn = document.createElement('button');
+            bndBtn.className = 'svc-tab-btn bundle-tab';
+            bndBtn.id        = bndTabId;
+            bndBtn.setAttribute('data-panel', bndPanelId);
+            bndBtn.innerHTML = `${bundle.name || 'Bundle'}<span class="tab-freq-badge">Bundle</span>`;
+            bndBtn.addEventListener('click', () => activateServiceTab(bndTabId, bndPanelId, catPanelId));
+            innerTabsBar.appendChild(bndBtn);
+
+            const bndPanel = document.createElement('div');
+            bndPanel.className = 'svc-tab-panel';
+            bndPanel.id        = bndPanelId;
+            bndPanel.appendChild(buildBundlePanel(bundle));
+            innerPanels.appendChild(bndPanel);
+        });
+
+        panel.appendChild(innerTabsBar);
+        panel.appendChild(innerPanels);
         tabPanels.appendChild(panel);
     });
-    // All collapsed by default — no tab activated on load
 }
- 
-function activateServiceTab(tabId, panelId) {
-    // Deactivate all tabs and panels
-    document.querySelectorAll('.svc-tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.svc-tab-panel').forEach(p => p.classList.remove('active'));
- 
+
+function activateCategoryTab(tabId, panelId) {
     const btn   = document.getElementById(tabId);
     const panel = document.getElementById(panelId);
+
+    // Clicking the active category tab collapses it
+    if (btn?.classList.contains('active')) {
+        btn.classList.remove('active');
+        panel?.classList.remove('active');
+        return;
+    }
+
+    document.querySelectorAll('.svc-tab-btn[id^="cat-tab-"]').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.svc-tab-panel[id^="cat-panel-"]').forEach(p => p.classList.remove('active'));
+
+    btn?.classList.add('active');
+    panel?.classList.add('active');
+}
  
+function activateServiceTab(tabId, panelId, catPanelId) {
+    // Scope deactivation to the current category panel
+    const scope = catPanelId ? document.getElementById(catPanelId) : document;
+    scope?.querySelectorAll('.svc-tab-btn').forEach(b => b.classList.remove('active', 'was-active'));
+    scope?.querySelectorAll('.svc-tab-panel').forEach(p => p.classList.remove('active'));
+
+    const btn   = document.getElementById(tabId);
+    const panel = document.getElementById(panelId);
+
     // If already active (same tab clicked), collapse it
-    if (btn && btn.classList.contains('was-active')) {
+    if (btn?.classList.contains('was-active')) {
         btn.classList.remove('was-active');
         return;
     }
- 
-    document.querySelectorAll('.svc-tab-btn').forEach(b => b.classList.remove('was-active'));
+
     btn?.classList.add('active', 'was-active');
     panel?.classList.add('active');
 }
@@ -2384,10 +2700,7 @@ function buildServicePanel(service, svcIdx) {
                 <div class="service-info-summary">
                     ${service.productType || service.name} • ${service.serviceFrequencyCustom || service.frequency} service • Billed ${service.billingFrequencyCustom || service.billingFrequency}
                 </div>
-                <div class="sqft-input-container">
-                    <input type="number" class="sqft-input" id="sqft_${serviceId}" placeholder="Enter square footage" min="0" step="1">
-                    <button class="calculate-btn" onclick="calculatePricing('${serviceId}')">Calculate</button>
-                </div>
+                ${pricingInputHTML(serviceId, service.pricingTiers)}
                 <div class="pricing-result" id="result_${serviceId}">
                     <div class="pricing-display" id="pricing_${serviceId}"></div>
                     <div class="sqft-range-info" id="range_${serviceId}"></div>
@@ -2395,6 +2708,11 @@ function buildServicePanel(service, svcIdx) {
             </div>`;
         wrapper._pricingData = service.pricingTiers || [];
         wrapper._serviceData = service;
+
+        // Auto-show flat pricing immediately — no input needed
+        if (service.pricingTiers?.[0]?.pricingMode === 'flat') {
+            setTimeout(() => calculatePricing(serviceId), 0);
+        }
     }
     return wrapper;
 }
@@ -2421,6 +2739,165 @@ function createServiceCard(service) {
     return panel;
 }
  
+// Build the content panel for one bundle
+function buildBundlePanel(bundle) {
+    const wrapper = document.createElement('div');
+    const bundleId = bundle.bundleId || `bundle_${Math.random().toString(36).substr(2,6)}`;
+
+    const subChips = (bundle.subServices || [])
+        .map(s => `<span class="bundle-sub-chip">${s}</span>`)
+        .join('');
+
+    const sp = bundle.servicePricing || {};
+    const spEntries = Object.entries(sp);
+
+    // Determine which input modes are needed
+    const inputModes = [...new Set(
+        spEntries.filter(([, p]) => p.pricingMode !== 'flat').map(([, p]) => p.pricingMode || 'sqft')
+    )];
+
+    let calcHTML = '';
+    if (spEntries.length) {
+        // Build one input per unique non-flat mode
+        const inputsHTML = inputModes.map(mode => {
+            const label      = mode === 'acreage' ? 'Enter acreage' : 'Enter square footage';
+            const step       = mode === 'acreage' ? '0.01' : '1';
+            return `<div class="sqft-input-container">
+                <input type="number" class="sqft-input" id="bnd-input-${bundleId}-${mode}"
+                    placeholder="${label}" min="0" step="${step}">
+                <button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Calculate</button>
+            </div>`;
+        }).join('');
+
+        // If all services are flat, just show calculate button once
+        const flatOnly = inputModes.length === 0;
+        const triggerHTML = flatOnly
+            ? `<div class="sqft-input-container"><button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Show Pricing</button></div>`
+            : inputsHTML;
+
+        calcHTML = `
+            <div class="pricing-calculator" style="margin-top:1rem;">
+                <div class="calculator-title">🎁 Bundle Pricing Calculator</div>
+                ${triggerHTML}
+                <div class="pricing-result" id="bnd-result-${bundleId}">
+                    <div class="bundle-pricing-grid" id="bnd-breakdown-${bundleId}"></div>
+                    <div id="bnd-total-${bundleId}" style="margin-top:0.75rem;"></div>
+                </div>
+            </div>`;
+    }
+
+    wrapper.innerHTML = `
+        <div class="bundle-panel-header">
+            <div>
+                <div class="bundle-panel-name">${bundle.name || 'Unnamed Bundle'}</div>
+                ${bundle.description ? `<div class="svc-panel-desc" style="margin-top:0.4rem">${bundle.description}</div>` : ''}
+            </div>
+            <div class="bundle-panel-badge">Bundle</div>
+        </div>
+        <div style="margin-bottom:0.5rem;font-size:0.75rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Includes</div>
+        <div class="bundle-sub-services-list">
+            <span class="bundle-sub-chip" style="background:rgba(221,30,51,0.1);border-color:rgba(221,30,51,0.3);color:var(--accent);">${bundle.primaryService}</span>
+            ${subChips}
+        </div>
+        ${bundle.noteToAgent ? `<div class="agent-note"><div class="agent-note-title">Agent Note</div><div class="agent-note-content">${bundle.noteToAgent}</div></div>` : ''}
+        ${calcHTML}`;
+
+    // Store pricing data on the element for the calculator
+    wrapper._bundlePricingData = sp;
+    wrapper.id = `bnd-wrapper-${bundleId}`;
+    return wrapper;
+}
+
+function calculateBundlePricing(bundleId) {
+    const wrapper     = document.getElementById(`bnd-wrapper-${bundleId}`);
+    const resultEl    = document.getElementById(`bnd-result-${bundleId}`);
+    const breakdownEl = document.getElementById(`bnd-breakdown-${bundleId}`);
+    const totalEl     = document.getElementById(`bnd-total-${bundleId}`);
+    if (!wrapper || !resultEl) return;
+
+    const sp = wrapper._bundlePricingData || {};
+    const cards = [];
+    let totalFirst = 0, totalRecurring = 0;
+    let totalFirstUnknown = false, totalRecurringUnknown = false;
+
+    Object.entries(sp).forEach(([svcName, pricing]) => {
+        const mode = pricing.pricingMode || 'sqft';
+
+        if (mode === 'flat') {
+            const flat = pricing.flatPrice || '—';
+            cards.push(`<div class="bundle-price-card">
+                <div class="bundle-price-card-name">${svcName}</div>
+                <div class="bundle-price-row"><span class="bundle-price-label">Price</span><span class="bundle-price-value">${flat}</span></div>
+            </div>`);
+            // Try to parse flat price as a dollar amount for totalling
+            const flatN = parseFloat(String(flat).replace(/[^0-9.]/g, ''));
+            if (!isNaN(flatN)) {
+                totalFirst     += flatN;
+                totalRecurring += flatN;
+            } else {
+                totalFirstUnknown     = true;
+                totalRecurringUnknown = true;
+            }
+            return;
+        }
+
+        const inputEl = document.getElementById(`bnd-input-${bundleId}-${mode}`);
+        const val     = mode === 'acreage' ? parseFloat(inputEl?.value) : parseInt(inputEl?.value);
+        const unit    = pricingUnitLabel(mode);
+
+        if (!val || val <= 0) {
+            cards.push(`<div class="bundle-price-card">
+                <div class="bundle-price-card-name">${svcName}</div>
+                <div class="bundle-price-row"><span class="bundle-price-label" style="color:var(--text-muted);font-style:italic;">Enter ${unit} above</span></div>
+            </div>`);
+            totalFirstUnknown = true;
+            totalRecurringUnknown = true;
+            return;
+        }
+
+        // Single-tier pricing stored directly on the servicePricing entry
+        const firstRaw     = pricing.firstPrice     || '—';
+        const recurringRaw = pricing.recurringPrice || '—';
+
+        // Try to parse dollar amounts for totalling
+        const parsePrice = str => {
+            const n = parseFloat(String(str).replace(/[^0-9.]/g, ''));
+            return isNaN(n) ? null : n;
+        };
+        const fp = parsePrice(firstRaw);
+        const rp = parsePrice(recurringRaw);
+        if (fp !== null) totalFirst     += fp; else totalFirstUnknown     = true;
+        if (rp !== null) totalRecurring += rp; else totalRecurringUnknown = true;
+
+        cards.push(`<div class="bundle-price-card">
+            <div class="bundle-price-card-name">${svcName}</div>
+            ${firstRaw !== '—'     ? `<div class="bundle-price-row"><span class="bundle-price-label">First</span><span class="bundle-price-value">${firstRaw}</span></div>` : ''}
+            ${recurringRaw !== '—' ? `<div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value">${recurringRaw}</span></div>` : ''}
+        </div>`);
+    });
+
+    breakdownEl.innerHTML = cards.join('');
+
+    // Total row
+    const fmtTotal = (n, unknown) => unknown ? 'Contact office' : `$${n.toFixed(2)}`;
+    totalEl.innerHTML = `
+        <div style="background:rgba(16,185,129,0.1);border:2px solid rgba(16,185,129,0.35);border-radius:0.6rem;padding:0.75rem 1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+            <span style="font-weight:800;color:var(--text-heading);font-size:0.95rem;">Bundle Total</span>
+            <div style="display:flex;gap:1.5rem;">
+                <div style="text-align:center;">
+                    <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem;">First</div>
+                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalFirst, totalFirstUnknown)}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem;">Recurring</div>
+                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalRecurring, totalRecurringUnknown)}</div>
+                </div>
+            </div>
+        </div>`;
+
+    resultEl.classList.add('show');
+}
+
 function detailItem(label, value) {
     return `<div class="detail-item"><div class="detail-label">${label}</div><div class="detail-value">${value || 'N/A'}</div></div>`;
 }
@@ -2450,10 +2927,7 @@ function buildSubServiceHTML(subServiceId, sub) {
             </div>
             <div class="pricing-calculator">
                 <div class="calculator-title">🧮 ${sub.name} Pricing Calculator</div>
-                <div class="sqft-input-container">
-                    <input type="number" class="sqft-input" id="sqft_${subServiceId}" placeholder="Enter square footage" min="0" step="1">
-                    <button class="calculate-btn" onclick="calculateSubServicePricing('${subServiceId}', ${parseInt(subServiceId.split('_sub_')[1])})">Calculate</button>
-                </div>
+                ${pricingInputHTML(subServiceId, sub.pricingTiers, `calculateSubServicePricing('${subServiceId}', ${parseInt(subServiceId.split('_sub_')[1])})`)}
                 <div class="pricing-result" id="result_${subServiceId}">
                     <div class="pricing-display" id="pricing_${subServiceId}"></div>
                     <div class="sqft-range-info" id="range_${subServiceId}"></div>
@@ -3134,7 +3608,7 @@ function filterServicesByPest(term) {
         btn.className = 'svc-tab-btn active';
         btn.id = tabId;
         btn.innerHTML = `${service.name || 'Service'}${freqLabel ? `<span class="tab-freq-badge">${freqLabel}</span>` : ''}`;
-        btn.addEventListener('click', () => activateServiceTab(tabId, panelId));
+        btn.addEventListener('click', () => activateServiceTab(tabId, panelId, null));
         tabsBar.appendChild(btn);
  
         const panel = document.createElement('div');
@@ -3155,23 +3629,58 @@ function filterServicesByPest(term) {
 }
  
 // ─── Pricing Calculators ──────────────────────────────────────────────────────
+
+// Returns the correct input UI based on pricingMode of the first tier
+function pricingInputHTML(id, tiers, onclickOverride) {
+    const mode = tiers?.[0]?.pricingMode || 'sqft';
+    const onclick = onclickOverride || `calculatePricing('${id}')`;
+    if (mode === 'flat') {
+        return ''; // flat pricing — no input needed, shown directly in results
+    }
+    const isAcreage   = mode === 'acreage';
+    const placeholder = isAcreage ? 'Enter acreage' : 'Enter square footage';
+    const step        = isAcreage ? '0.01' : '1';
+    return `<div class="sqft-input-container">
+        <input type="number" class="sqft-input" id="sqft_${id}" placeholder="${placeholder}" min="0" step="${step}">
+        <button class="calculate-btn" onclick="${onclick}">Calculate</button>
+    </div>`;
+}
+
+// Returns the unit label string for range display
+function pricingUnitLabel(mode) {
+    return mode === 'acreage' ? 'acres' : 'sq ft';
+}
+
 function calculatePricing(serviceId) {
-    const sqft    = parseInt(document.getElementById(`sqft_${serviceId}`).value);
+    const inputEl  = document.getElementById(`sqft_${serviceId}`);
     const resultEl = document.getElementById(`result_${serviceId}`);
-    if (!sqft || sqft <= 0) { resultEl.classList.remove('show'); return; }
- 
-    const card    = document.querySelector(`[data-service-id="${serviceId}"]`);
-    const tiers   = card?._pricingData;
+    const card     = document.querySelector(`[data-service-id="${serviceId}"]`);
+    const tiers    = card?._pricingData;
     if (!tiers) { document.getElementById(`pricing_${serviceId}`).innerHTML = '<div class="price-display-item"><div class="price-display-value">No pricing tiers available</div></div>'; resultEl.classList.add('show'); return; }
- 
-    const tier = tiers.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
+
+    const mode = tiers[0]?.pricingMode || 'sqft';
+    const unit = pricingUnitLabel(mode);
+
+    // Flat pricing — show directly without needing input
+    if (mode === 'flat') {
+        const flat = tiers[0]?.flatPrice || '—';
+        document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>`;
+        document.getElementById(`range_${serviceId}`).textContent = '';
+        resultEl.classList.add('show');
+        return;
+    }
+
+    const val = mode === 'acreage' ? parseFloat(inputEl?.value) : parseInt(inputEl?.value);
+    if (!val || val <= 0) { resultEl.classList.remove('show'); return; }
+
+    const tier = tiers.find(t => val >= t.sqftMin && val <= t.sqftMax);
     if (!tier) {
-        document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div></div>`;
+        document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${val.toLocaleString()} ${unit}</div></div>`;
         document.getElementById(`range_${serviceId}`).textContent = 'Please contact office for custom pricing';
         resultEl.classList.add('show');
         return;
     }
- 
+
     // Additive bundle format
     if (tier.components?.length) {
         let html = '<div class="sqft-bundle-breakdown additive">';
@@ -3198,38 +3707,50 @@ function calculatePricing(serviceId) {
                      </div>
                  </div></div>`;
         document.getElementById(`pricing_${serviceId}`).innerHTML = html;
-        document.getElementById(`range_${serviceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft${tier.acreage ? ` (${tier.acreage})` : ''}`;
+        document.getElementById(`range_${serviceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} ${unit}${tier.acreage ? ` (${tier.acreage})` : ''}`;
     } else {
-        // Standard pricing
         const svcTypeLabel = tier.serviceType || tier.serviceFrequency || tier.soldAsName || tier.serviceTypeDesc || '';
         document.getElementById(`pricing_${serviceId}`).innerHTML = `
             <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice || '—'}</div></div>
             <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice || '—'}</div></div>
             ${svcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${svcTypeLabel}</div></div>` : ''}`;
-        document.getElementById(`range_${serviceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+        document.getElementById(`range_${serviceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} ${unit}`;
     }
     resultEl.classList.add('show');
 }
- 
+
 function calculateSubServicePricing(subServiceId, subServiceIndex) {
-    const sqft    = parseInt(document.getElementById(`sqft_${subServiceId}`).value);
+    const inputEl  = document.getElementById(`sqft_${subServiceId}`);
     const resultEl = document.getElementById(`result_${subServiceId}`);
-    if (!sqft || sqft <= 0) { resultEl.classList.remove('show'); return; }
- 
     const parentId = subServiceId.split('_sub_')[0];
     const card     = document.querySelector(`[data-service-id="${parentId}"]`);
     const sub      = card?._subServicesData?.[subServiceIndex];
-    const tier     = sub?.pricingTiers?.find(t => sqft >= t.sqftMin && sqft <= t.sqftMax);
- 
+    const tiers    = sub?.pricingTiers;
+
+    const mode = tiers?.[0]?.pricingMode || 'sqft';
+    const unit = pricingUnitLabel(mode);
+
+    if (mode === 'flat') {
+        const flat = tiers[0]?.flatPrice || '—';
+        document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>`;
+        document.getElementById(`range_${subServiceId}`).textContent = '';
+        resultEl.classList.add('show');
+        return;
+    }
+
+    const val  = mode === 'acreage' ? parseFloat(inputEl?.value) : parseInt(inputEl?.value);
+    if (!val || val <= 0) { resultEl.classList.remove('show'); return; }
+
+    const tier = tiers?.find(t => val >= t.sqftMin && val <= t.sqftMax);
     if (tier) {
         const subSvcTypeLabel = tier.serviceType || tier.serviceFrequency || tier.soldAsName || tier.serviceTypeDesc || '';
         document.getElementById(`pricing_${subServiceId}`).innerHTML = `
             <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice || '—'}</div></div>
             <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice || '—'}</div></div>
             ${subSvcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${subSvcTypeLabel}</div></div>` : ''}`;
-        document.getElementById(`range_${subServiceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} sq ft`;
+        document.getElementById(`range_${subServiceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} ${unit}`;
     } else {
-        document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${sqft.toLocaleString()} sq ft</div></div>`;
+        document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-value">No pricing available for ${val.toLocaleString()} ${unit}</div></div>`;
         document.getElementById(`range_${subServiceId}`).textContent = 'Please contact office for custom pricing';
     }
     resultEl.classList.add('show');
