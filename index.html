@@ -1207,16 +1207,7 @@ body {
     flex-shrink: 0;
 }
  
-.policy-value-inline {
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 0.85rem;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
-    max-width: 100%;
-    line-height: 1.5;
-}
+.policy-value-inline { display: none; }
  
 .policy-chevron { display: none; }
  
@@ -1225,7 +1216,15 @@ body {
     padding: 0;
 }
  
-.policy-value-full { display: block; padding-top: 0.25rem; }
+.policy-value-full {
+    display: block;
+    padding-top: 0.25rem;
+    padding-left: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
  
 #defaultSchedulingTimes { line-height: 1.6; white-space: pre-wrap; }
 #defaultSchedulingTimes strong { color: var(--water); font-weight: 700; }
@@ -3070,14 +3069,10 @@ function populateSchedulingPolicies() {
                 .join('');
         }
  
-        // Inline: show first line only if multiline
-        const inlineText = text.includes('\n') ? text.split('\n')[0].trim() : text;
-        if (inlineEl) inlineEl.textContent = inlineText;
         if (fullEl) {
             if (fullHTML) fullEl.innerHTML = fullHTML;
             else fullEl.innerHTML = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
         }
- 
     }
  
     // Find the scheduling group dynamically — handle "Scheduling", "Scheduling and Operations", etc.
@@ -3114,18 +3109,17 @@ function populateSchedulingPolicies() {
     const extras = schedGroup.filter(p => !matchedPolicies.has(p));
     if (quickRef && extras.length) {
         extras.forEach(p => {
-            const inlineText = val(p);
+            const fullText = val(p);
             const item = document.createElement('div');
             item.className = 'policy-item-compact extra';
             item.innerHTML = `
                 <div class="policy-item-header">
                     <div class="policy-header-left">
                         <span class="policy-label">${p.title || p.type}</span>
-                        <span class="policy-value-inline">${inlineText.includes('\n') ? inlineText.split('\n')[0].trim() : inlineText}</span>
                     </div>
                 </div>
                 <div class="policy-item-body">
-                    <div class="policy-value-full">${inlineText.replace(/\n/g, '<br>')}</div>
+                    <div class="policy-value-full">${fullText.replace(/\n/g, '<br>')}</div>
                 </div>`;
             quickRef.appendChild(item);
         });
