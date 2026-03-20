@@ -3828,7 +3828,7 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
 
     const tier = tiers?.find(t => val >= t.sqftMin && val <= t.sqftMax);
     if (tier) {
-        const subSvcTypeLabel = sub?.serviceTypeDesc || sub?.serviceType || '';
+        const subSvcTypeLabel = tiers[0]?.serviceTypeDesc || tiers[0]?.serviceType || '';
         document.getElementById(`pricing_${subServiceId}`).innerHTML = `
             <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice || '—'}</div></div>
             <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice || '—'}</div></div>
