@@ -1230,7 +1230,7 @@ body {
 /* Keep open class harmless */
 .policy-item-compact.open .policy-chevron { transform: none; }
  
-#defaultSchedulingTimes { line-height: 1.6; }
+#defaultSchedulingTimes { line-height: 1.6; white-space: pre-wrap; }
 #defaultSchedulingTimes strong { color: var(--water); font-weight: 700; }
  
 /* ══════════════════════════════════════════════════════════════════
@@ -3086,7 +3086,7 @@ function populateSchedulingPolicies() {
         if (inlineEl) inlineEl.textContent = inlineText;
         if (fullEl) {
             if (fullHTML) fullEl.innerHTML = fullHTML;
-            else fullEl.textContent = text;
+            else fullEl.innerHTML = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
         }
  
         const isExpandable = !!(fullHTML || text.length > 40);
