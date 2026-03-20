@@ -3736,7 +3736,8 @@ function calculatePricing(serviceId) {
     // Flat pricing — show directly without needing input
     if (mode === 'flat') {
         const flat = tiers[0]?.flatPrice || '—';
-        document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>`;
+        const svcTypeLabel = svcData?.serviceTypeDesc || tiers[0]?.serviceTypeDesc || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || tiers[0]?.serviceType || '';
+        document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>${svcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${svcTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${serviceId}`).textContent = '';
         resultEl.classList.add('show');
         return;
@@ -3817,7 +3818,8 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
 
     if (mode === 'flat') {
         const flat = tiers[0]?.flatPrice || '—';
-        document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>`;
+        const subFlatTypeLabel = tiers[0]?.serviceTypeDesc || tiers[0]?.serviceType || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || '';
+        document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>${subFlatTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${subFlatTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${subServiceId}`).textContent = '';
         resultEl.classList.add('show');
         return;
