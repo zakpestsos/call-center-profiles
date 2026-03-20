@@ -1820,30 +1820,7 @@ body {
                                     <div class="policy-value-full" id="confirmationPolicyFull"></div>
                                 </div>
                             </div>
-                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
-                                <div class="policy-item-header">
-                                    <div class="policy-header-left">
-                                        <span class="policy-label">Call Ahead</span>
-                                        <span class="policy-value-inline" id="callAheadPolicy">Loading...</span>
-                                    </div>
-                                    <span class="policy-chevron">▼</span>
-                                </div>
-                                <div class="policy-item-body">
-                                    <div class="policy-value-full" id="callAheadPolicyFull"></div>
-                                </div>
-                            </div>
-                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
-                                <div class="policy-item-header">
-                                    <div class="policy-header-left">
-                                        <span class="policy-label">Tech Skilling</span>
-                                        <span class="policy-value-inline" id="techSkillingPolicy">Loading...</span>
-                                    </div>
-                                    <span class="policy-chevron">▼</span>
-                                </div>
-                                <div class="policy-item-body">
-                                    <div class="policy-value-full" id="techSkillingPolicyFull"></div>
-                                </div>
-                            </div>
+
                             <div class="policy-item-compact" onclick="togglePolicyItem(this)">
                                 <div class="policy-item-header">
                                     <div class="policy-header-left">
@@ -2281,13 +2258,11 @@ function loadDummyData() {
                     { type: "contract",          title: "Signed Contract",              description: "Requirements for signed service agreements before beginning pest control services.",                         options: ["Required","Not Required","Verbal Agreement OK"],        default: "Required" },
                     { type: "returning",         title: "Returning Customers",          description: "Special policies and procedures for customers returning after service cancellation.",                       options: ["Standard Pricing","Welcome Back Discount","Re-inspection Required"], default: "Standard Pricing" },
                     { type: "confirmations",     title: "Appointment Confirmations",    description: "How and when appointment confirmations are sent to customers.",                                            options: ["24 hours prior","48 hours prior","Day of service"],     default: "24 hours prior" },
-                    { type: "callahead",         title: "Call Ahead",                   description: "Policy for technicians calling customers before arriving for service.",                                    options: ["Always call","Call if requested","No call policy"],     default: "Always call" },
                     { type: "distance",          title: "Max Distance",                 description: "Maximum service distance from branch location for regular service calls.",                                 options: ["25 miles","50 miles","75 miles","No limit"],            default: "50 miles" },
                     { type: "scheduling_times",  title: "Scheduling Policy Times",      description: "Standard time windows and scheduling policies for different service types.",
                       schedulingLayout: { "Inspection": "8:00 AM - 5:00 PM", "Initial/Interior": "8:00 AM - 4:00 PM", "Regular": "8:00 AM - 5:00 PM" },
                       options: ["Standard Hours","Extended Hours","Flexible Schedule"],  default: "Standard Hours" },
                     { type: "sameday",           title: "Same Day Services",            description: "Availability and policies for same-day pest control services.",                                            options: ["Available","Emergency Only","Not Available"],           default: "Emergency Only" },
-                    { type: "techskilling",      title: "Tech Skilling",                description: "Technician skill level requirements and specialization policies.",                                          options: ["All Techs","Specialized Techs Only","Senior Techs Preferred"], default: "All Techs" },
                     { type: "emergency",         title: "After Hours Emergency",        description: "Emergency pest control services outside of normal business hours.",                                        options: ["Available","Limited Availability","Not Available"],     default: "Limited Availability" }
                 ],
                 "Service Policies": [
@@ -3132,8 +3107,7 @@ function populateSchedulingPolicies() {
         { titles: ['max distance'],                                 inlineId: 'maxDistance',                 fullId: 'maxDistanceFull' },
         { titles: ['same day'],                                     inlineId: 'sameDayPolicy',               fullId: 'sameDayPolicyFull' },
         { titles: ['appointment confirmation'],                     inlineId: 'confirmationPolicy',          fullId: 'confirmationPolicyFull' },
-        { titles: ['call ahead'],                                   inlineId: 'callAheadPolicy',             fullId: 'callAheadPolicyFull' },
-        { titles: ['tech skilling', 'technician skill'],            inlineId: 'techSkillingPolicy',          fullId: 'techSkillingPolicyFull' },
+
         { titles: ['after hours', 'emergency'],                     inlineId: 'afterHoursPolicy',            fullId: 'afterHoursPolicyFull' },
     ];
  
@@ -3357,9 +3331,9 @@ function getAgentLabel(type) {
         vehicles: 'We Service Vehicles', commercial: 'Commercial Service Available',
         multifamily: 'Multi-Family Properties', mobile: 'Mobile Homes/Trailers',
         contract: 'Contract Required', returning: 'Returning Customer Policy',
-        confirmations: 'Appointment Confirmation', callahead: 'Technician Call Ahead Policy',
+        confirmations: 'Appointment Confirmation',
         distance: 'Maximum Service Distance', sameday: 'Same Day Service',
-        techskilling: 'Technician Assignment', emergency: 'After Hours Emergency',
+        emergency: 'After Hours Emergency',
         reservices: 'Callback Service Period', servicetype: 'Standard Service Type',
         subscription: 'Billing Structure', plans: 'Payment Plan Options',
         types: 'Accepted Payment Methods', pastdue: 'Payment Grace Period',
