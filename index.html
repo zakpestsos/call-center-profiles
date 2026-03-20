@@ -3794,7 +3794,7 @@ function calculatePricing(serviceId) {
         document.getElementById(`pricing_${serviceId}`).innerHTML = html;
         document.getElementById(`range_${serviceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} ${unit}${tier.acreage ? ` (${tier.acreage})` : ''}`;
     } else {
-        const svcTypeLabel = svcData?.serviceTypeDesc || tiers[0]?.serviceTypeDesc || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || '';
+        const svcTypeLabel = svcData?.serviceTypeDesc || tiers[0]?.serviceTypeDesc || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || tiers[0]?.serviceType || '';
         document.getElementById(`pricing_${serviceId}`).innerHTML = `
             <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice || '—'}</div></div>
             <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice || '—'}</div></div>
