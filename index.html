@@ -2896,9 +2896,11 @@ function calculateBundlePricing(bundleId) {
         const rangeLabel   = `${tier.sqftMin.toLocaleString()}–${tier.sqftMax.toLocaleString()} ${unit}`;
 
         const fp = parsePrice(firstRaw);
-        const rp = parsePrice(recurringRaw);
+        const rp = recurringRaw !== '—' ? parsePrice(recurringRaw) : null;
+        const recurringAbsent = !tier.recurringPrice;
+
         if (fp !== null) totalFirst     += fp; else totalFirstUnknown     = true;
-        if (rp !== null) totalRecurring += rp; else totalRecurringUnknown = true;
+        if (rp !== null) totalRecurring += rp; else if (!recurringAbsent) totalRecurringUnknown = true;
 
         cards.push(`<div class="bundle-price-card">
             <div class="bundle-price-card-name">${svcName}</div>
@@ -2911,22 +2913,25 @@ function calculateBundlePricing(bundleId) {
     breakdownEl.innerHTML = cards.join('');
 
     // ── Total row ─────────────────────────────────────────────────────────────
-    const fmtTotal = (n, unknown, missingInput) => {
+    const fmtTotal = (n, unknown, missingInput, absent) => {
+        if (absent) return '—';
         if (!unknown) return `$${n.toFixed(2)}`;
         if (missingInput) return 'Enter sq ft / acreage above';
         return 'Contact home office';
     };
+    // Track if all services simply have no recurring price
+    const allRecurringAbsent = !totalRecurringUnknown && totalRecurring === 0;
     totalEl.innerHTML = `
         <div style="background:rgba(16,185,129,0.1);border:2px solid rgba(16,185,129,0.35);border-radius:0.6rem;padding:0.75rem 1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
             <span style="font-weight:800;color:var(--text-heading);font-size:0.95rem;">Bundle Total</span>
             <div style="display:flex;gap:1.5rem;">
                 <div style="text-align:center;">
                     <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem;">First</div>
-                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalFirst, totalFirstUnknown, totalFirstMissingInput)}</div>
+                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalFirst, totalFirstUnknown, totalFirstMissingInput, false)}</div>
                 </div>
                 <div style="text-align:center;">
                     <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem;">Recurring</div>
-                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalRecurring, totalRecurringUnknown, totalRecurringMissingInput)}</div>
+                    <div style="font-size:1rem;font-weight:800;color:#10b981;">${fmtTotal(totalRecurring, totalRecurringUnknown, totalRecurringMissingInput, allRecurringAbsent)}</div>
                 </div>
             </div>
         </div>`;
