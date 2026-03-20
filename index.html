@@ -3444,6 +3444,7 @@ function updateCurrentTime(timezone) {
         EST: 'America/New_York', EDT: 'America/New_York',
         CST: 'America/Chicago',  CDT: 'America/Chicago',
         MST: 'America/Denver',   MDT: 'America/Denver',
+        'America/Phoenix': 'America/Phoenix',
         PST: 'America/Los_Angeles', PDT: 'America/Los_Angeles',
         AKST: 'America/Anchorage', AKDT: 'America/Anchorage',
         HST: 'Pacific/Honolulu',
@@ -3451,7 +3452,9 @@ function updateCurrentTime(timezone) {
         Eastern: 'America/New_York', Central: 'America/Chicago',
         Mountain: 'America/Denver',  Pacific: 'America/Los_Angeles'
     };
-    const tz = tzMap[timezone] || timezone || 'America/Chicago';
+    // If timezone is blank, "Custom", or unrecognized, pass it through directly
+    // (it may be a raw IANA string from the custom field e.g. "America/Phoenix")
+    const tz = tzMap[timezone] || (timezone && timezone !== 'Custom' ? timezone : 'America/Chicago');
  
     function tick() {
         const t = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: tz });
