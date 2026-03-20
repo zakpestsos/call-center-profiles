@@ -2766,22 +2766,20 @@ function buildBundlePanel(bundle) {
 
     let calcHTML = '';
     if (spEntries.length) {
-        // Build one input per unique non-flat mode
+        // Build one input per unique non-flat mode, all sharing one Calculate button
         const inputsHTML = inputModes.map(mode => {
-            const label      = mode === 'acreage' ? 'Enter acreage' : 'Enter square footage';
-            const step       = mode === 'acreage' ? '0.01' : '1';
-            return `<div class="sqft-input-container">
-                <input type="number" class="sqft-input" id="bnd-input-${bundleId}-${mode}"
-                    placeholder="${label}" min="0" step="${step}">
-                <button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Calculate</button>
-            </div>`;
+            const label = mode === 'acreage' ? 'Enter acreage' : 'Enter square footage';
+            const step  = mode === 'acreage' ? '0.01' : '1';
+            return `<input type="number" class="sqft-input bundle-calc-input" id="bnd-input-${bundleId}-${mode}"
+                placeholder="${label}" min="0" step="${step}"
+                onkeypress="if(event.key==='Enter') calculateBundlePricing('${bundleId}')">`;
         }).join('');
 
         // If all services are flat, just show calculate button once
         const flatOnly = inputModes.length === 0;
         const triggerHTML = flatOnly
             ? `<div class="sqft-input-container"><button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Show Pricing</button></div>`
-            : inputsHTML;
+            : `<div class="sqft-input-container">${inputsHTML}<button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Calculate</button></div>`;
 
         calcHTML = `
             <div class="pricing-calculator" style="margin-top:1rem;">
@@ -3846,6 +3844,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter' && e.target.classList.contains('sqft-input')) {
             const id = e.target.id.replace('sqft_', '');
             calculatePricing(id);
+        }
+        if (e.key === 'Enter' && e.target.classList.contains('bundle-calc-input')) {
+            const bundleId = e.target.id.replace(/^bnd-input-/, '').replace(/-(?:sqft|acreage)$/, '');
+            calculateBundlePricing(bundleId);
         }
     });
 });
