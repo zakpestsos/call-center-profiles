@@ -3439,8 +3439,19 @@ window.addEventListener('click', e => {
  
 // ─── Time ─────────────────────────────────────────────────────────────────────
 function updateCurrentTime(timezone) {
-    const tzMap = { Pacific: 'America/Los_Angeles', Mountain: 'America/Denver', Central: 'America/Chicago', Eastern: 'America/New_York' };
-    const tz    = tzMap[timezone] || 'America/Chicago';
+    const tzMap = {
+        // Abbreviations (saved by intake form)
+        EST: 'America/New_York', EDT: 'America/New_York',
+        CST: 'America/Chicago',  CDT: 'America/Chicago',
+        MST: 'America/Denver',   MDT: 'America/Denver',
+        PST: 'America/Los_Angeles', PDT: 'America/Los_Angeles',
+        AKST: 'America/Anchorage', AKDT: 'America/Anchorage',
+        HST: 'Pacific/Honolulu',
+        // Full names (legacy)
+        Eastern: 'America/New_York', Central: 'America/Chicago',
+        Mountain: 'America/Denver',  Pacific: 'America/Los_Angeles'
+    };
+    const tz = tzMap[timezone] || timezone || 'America/Chicago';
  
     function tick() {
         const t = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: tz });
