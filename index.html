@@ -3727,6 +3727,7 @@ function calculatePricing(serviceId) {
     const resultEl = document.getElementById(`result_${serviceId}`);
     const card     = document.querySelector(`[data-service-id="${serviceId}"]`);
     const tiers    = card?._pricingData;
+    const svcData  = card?._serviceData;
     if (!tiers) { document.getElementById(`pricing_${serviceId}`).innerHTML = '<div class="price-display-item"><div class="price-display-value">No pricing tiers available</div></div>'; resultEl.classList.add('show'); return; }
 
     const mode = tiers[0]?.pricingMode || 'sqft';
@@ -3793,7 +3794,7 @@ function calculatePricing(serviceId) {
         document.getElementById(`pricing_${serviceId}`).innerHTML = html;
         document.getElementById(`range_${serviceId}`).textContent = `Valid for ${tier.sqftMin.toLocaleString()} - ${tier.sqftMax.toLocaleString()} ${unit}${tier.acreage ? ` (${tier.acreage})` : ''}`;
     } else {
-        const svcTypeLabel = tier.serviceType || tier.serviceFrequency || tier.soldAsName || tier.serviceTypeDesc || '';
+        const svcTypeLabel = svcData?.serviceTypeDesc || tiers[0]?.serviceTypeDesc || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || '';
         document.getElementById(`pricing_${serviceId}`).innerHTML = `
             <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice || '—'}</div></div>
             <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice || '—'}</div></div>
@@ -3827,7 +3828,7 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
 
     const tier = tiers?.find(t => val >= t.sqftMin && val <= t.sqftMax);
     if (tier) {
-        const subSvcTypeLabel = tier.serviceType || tier.serviceFrequency || tier.soldAsName || tier.serviceTypeDesc || '';
+        const subSvcTypeLabel = tiers[0]?.serviceTypeDesc || tiers[0]?.serviceType || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || '';
         document.getElementById(`pricing_${subServiceId}`).innerHTML = `
             <div class="price-display-item"><div class="price-display-label">First Service</div><div class="price-display-value">${tier.firstPrice || '—'}</div></div>
             <div class="price-display-item"><div class="price-display-label">Recurring</div><div class="price-display-value">${tier.recurringPrice || '—'}</div></div>
