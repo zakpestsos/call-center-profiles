@@ -1225,10 +1225,7 @@ body {
     padding: 0;
 }
  
-.policy-value-full { display: none; }
- 
-/* Keep open class harmless */
-.policy-item-compact.open .policy-chevron { transform: none; }
+.policy-value-full { display: block; padding-top: 0.25rem; }
  
 #defaultSchedulingTimes { line-height: 1.6; white-space: pre-wrap; }
 #defaultSchedulingTimes strong { color: var(--water); font-weight: 700; }
@@ -1772,62 +1769,56 @@ body {
                     <!-- Scheduling Policies Quick Reference -->
                     <div class="scheduling-policies">
                         <div class="policy-quick-ref">
-                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                            <div class="policy-item-compact">
                                 <div class="policy-item-header">
                                     <div class="policy-header-left">
                                         <span class="policy-label">Default Scheduling Windows</span>
                                         <span class="policy-value-inline" id="defaultSchedulingTimesInline">Loading...</span>
                                     </div>
-                                    <span class="policy-chevron">▼</span>
                                 </div>
                                 <div class="policy-item-body">
                                     <div class="policy-value-full" id="defaultSchedulingTimes"></div>
                                 </div>
                             </div>
-                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                            <div class="policy-item-compact">
                                 <div class="policy-item-header">
                                     <div class="policy-header-left">
                                         <span class="policy-label">Max Distance</span>
                                         <span class="policy-value-inline" id="maxDistance">Loading...</span>
                                     </div>
-                                    <span class="policy-chevron">▼</span>
                                 </div>
                                 <div class="policy-item-body">
                                     <div class="policy-value-full" id="maxDistanceFull"></div>
                                 </div>
                             </div>
-                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                            <div class="policy-item-compact">
                                 <div class="policy-item-header">
                                     <div class="policy-header-left">
                                         <span class="policy-label">Same Day Services</span>
                                         <span class="policy-value-inline" id="sameDayPolicy">Loading...</span>
                                     </div>
-                                    <span class="policy-chevron">▼</span>
                                 </div>
                                 <div class="policy-item-body">
                                     <div class="policy-value-full" id="sameDayPolicyFull"></div>
                                 </div>
                             </div>
-                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                            <div class="policy-item-compact">
                                 <div class="policy-item-header">
                                     <div class="policy-header-left">
                                         <span class="policy-label">Appointment Confirmations</span>
                                         <span class="policy-value-inline" id="confirmationPolicy">Loading...</span>
                                     </div>
-                                    <span class="policy-chevron">▼</span>
                                 </div>
                                 <div class="policy-item-body">
                                     <div class="policy-value-full" id="confirmationPolicyFull"></div>
                                 </div>
                             </div>
-
-                            <div class="policy-item-compact" onclick="togglePolicyItem(this)">
+                            <div class="policy-item-compact">
                                 <div class="policy-item-header">
                                     <div class="policy-header-left">
                                         <span class="policy-label">After Hours Emergency</span>
                                         <span class="policy-value-inline" id="afterHoursPolicy">Loading...</span>
                                     </div>
-                                    <span class="policy-chevron">▼</span>
                                 </div>
                                 <div class="policy-item-body">
                                     <div class="policy-value-full" id="afterHoursPolicyFull"></div>
@@ -3054,13 +3045,11 @@ function populateSchedulingPolicies() {
         return selected || 'Not specified';
     }
  
-    // Populate a hardcoded card: set inline text, full body, and manage chevron visibility
+    // Populate a hardcoded card: set inline text and full body
     function setField(inlineId, fullId, p) {
         const inlineEl = document.getElementById(inlineId);
         const fullEl   = document.getElementById(fullId);
-        const card     = inlineEl?.closest('.policy-item-compact');
-        const chevron  = card?.querySelector('.policy-chevron');
- 
+
         const text = val(p);
  
         // For scheduling times: the value may be newline-separated "Key: value" lines — render as structured HTML
@@ -3089,12 +3078,6 @@ function populateSchedulingPolicies() {
             else fullEl.innerHTML = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
         }
  
-        const isExpandable = !!(fullHTML || text.length > 40);
-        if (chevron) chevron.style.display = isExpandable ? '' : 'none';
-        if (card) {
-            card.style.cursor = isExpandable ? 'pointer' : 'default';
-            card.onclick = isExpandable ? function() { togglePolicyItem(this); } : null;
-        }
     }
  
     // Find the scheduling group dynamically — handle "Scheduling", "Scheduling and Operations", etc.
@@ -3132,20 +3115,14 @@ function populateSchedulingPolicies() {
     if (quickRef && extras.length) {
         extras.forEach(p => {
             const inlineText = val(p);
-            const isExpandable = inlineText.length > 40;
- 
             const item = document.createElement('div');
             item.className = 'policy-item-compact extra';
-            if (isExpandable) item.onclick = function() { togglePolicyItem(this); };
-            else item.style.cursor = 'default';
- 
             item.innerHTML = `
                 <div class="policy-item-header">
                     <div class="policy-header-left">
                         <span class="policy-label">${p.title || p.type}</span>
                         <span class="policy-value-inline">${inlineText.includes('\n') ? inlineText.split('\n')[0].trim() : inlineText}</span>
                     </div>
-                    <span class="policy-chevron" style="${isExpandable ? '' : 'display:none'}">▼</span>
                 </div>
                 <div class="policy-item-body">
                     <div class="policy-value-full">${inlineText.replace(/\n/g, '<br>')}</div>
@@ -3154,11 +3131,7 @@ function populateSchedulingPolicies() {
         });
     }
 }
- 
-function togglePolicyItem(el) {
-    el.classList.toggle('open');
-}
- 
+
 function toggleReservicePolicies() {
     const details    = document.getElementById('reservicesDetails');
     const toggleText = document.getElementById('toggleText');
