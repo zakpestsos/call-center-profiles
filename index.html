@@ -2404,12 +2404,21 @@ function toggleDiscountPolicy() {
     document.getElementById('discountPolicyBlock').classList.toggle('expanded');
 }
 
+// ─── Linkify helper — turns URLs in plain text into clickable <a> tags ────────
+function linkify(text) {
+    const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return escaped.replace(
+        /(https?:\/\/[^\s<>"']+)/g,
+        '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;opacity:0.9;">$1</a>'
+    );
+}
+
 // ─── Alert Banner ─────────────────────────────────────────────────────────────
 function showAlertBanner() {
     const banner   = document.getElementById('alertBanner');
     const alertTxt = document.getElementById('alertText');
     if (clientData.alerts?.trim()) {
-        alertTxt.textContent  = clientData.alerts;
+        alertTxt.innerHTML    = linkify(clientData.alerts);
         banner.style.display  = 'block';
     } else {
         banner.style.display  = 'none';
