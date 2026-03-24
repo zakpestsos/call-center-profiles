@@ -2498,9 +2498,16 @@ function populateServices() {
     });
 
     // Group bundles by their primary service's identifier — skip if no match
+    // Also add custom primary service names to the map using primaryServiceIdentifier
     const groupedBundles = {};
     (clientData.bundles || []).forEach((bundle, idx) => {
-        const id = serviceIdentifierMap[bundle.primaryService];
+        let id = serviceIdentifierMap[bundle.primaryService];
+        // Fallback: if primary service isn't a real service, use the stored identifier directly
+        if (!id && bundle.primaryServiceIdentifier) {
+            id = bundle.primaryServiceIdentifier;
+            // Register this custom name so it resolves correctly
+            if (bundle.primaryService) serviceIdentifierMap[bundle.primaryService] = id;
+        }
         if (!id) return;
         if (!groupedBundles[id]) groupedBundles[id] = [];
         groupedBundles[id].push({ bundle, idx });
