@@ -3074,10 +3074,12 @@ function populateSchedulingPolicies() {
 
         const text = val(p);
  
-        // For scheduling times: the value may be newline-separated "Key: value" lines — render as structured HTML
+        // For scheduling times: the value may be newline-separated or semicolon-separated "Key: value" lines — render as structured HTML
         let fullHTML = null;
-        if (fullId === 'defaultSchedulingTimes' && text && text.includes('\n')) {
-            fullHTML = text.split('\n')
+        if (fullId === 'defaultSchedulingTimes' && text && text !== 'Not specified') {
+            // Support both \n (new textarea entries) and ; (legacy single-line entries)
+            const separator = text.includes('\n') ? '\n' : ';';
+            fullHTML = text.split(separator)
                 .map(line => line.trim()).filter(Boolean)
                 .map(line => {
                     const colonIdx = line.indexOf(':');
