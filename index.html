@@ -1224,6 +1224,7 @@ body {
     font-weight: 600;
     color: var(--text-primary);
     line-height: 1.5;
+    white-space: pre-wrap;
 }
  
 #defaultSchedulingTimes { line-height: 1.6; white-space: pre-wrap; }
@@ -2670,7 +2671,8 @@ function buildServicePanel(service, svcIdx) {
         wrapper._subServicesData = service.subServices;
     } else {
         // ── Regular service ──
-        const isInspection = (service.serviceType || '').toLowerCase().includes('inspection');
+        const isInspection   = (service.serviceType || '').toLowerCase().includes('inspection');
+        const isReferOffice  = (service.serviceType || '').toLowerCase().includes('refer-office');
         const flatPrice = service.pricingTiers?.[0]?.flatPrice;
         let calculatorHTML;
         if (isInspection) {
@@ -2681,6 +2683,15 @@ function buildServicePanel(service, svcIdx) {
                         <div class="price-display-item">
                             <div class="price-display-label">Price</div>
                             <div class="price-display-value">${priceDisplay}</div>
+                        </div>
+                    </div>
+                </div>`;
+        } else if (isReferOffice) {
+            calculatorHTML = `<div class="calculator-title">📞 Pricing</div>
+                <div class="pricing-result show">
+                    <div class="pricing-display">
+                        <div class="price-display-item">
+                            <div class="price-display-value">Please refer to home office for pricing</div>
                         </div>
                     </div>
                 </div>`;
@@ -2726,8 +2737,8 @@ function buildServicePanel(service, svcIdx) {
         wrapper._pricingData = service.pricingTiers || [];
         wrapper._serviceData = service;
 
-        // Auto-show flat pricing immediately — no input needed (skip inspections, they render inline)
-        if (!isInspection && service.pricingTiers?.[0]?.pricingMode === 'flat') {
+        // Auto-show flat pricing immediately — no input needed (skip inspections/referrals, they render inline)
+        if (!isInspection && !isReferOffice && service.pricingTiers?.[0]?.pricingMode === 'flat') {
             setTimeout(() => calculatePricing(serviceId), 0);
         }
     }
