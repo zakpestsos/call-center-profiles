@@ -3050,7 +3050,7 @@ function populateSchedulingPolicies() {
  
     function val(p) {
         if (!p) return 'Not specified';
-        const selected = p.value || p.default || '';
+        const selected = String(p.value ?? p.default ?? '');
         // If the stored value is literally "Custom" with no fallback text, show nothing useful
         if (selected.toLowerCase() === 'custom') return 'Contact office for details';
         return selected || 'Not specified';
