@@ -2525,6 +2525,42 @@ function populateServices() {
         groupedBundles[id].push({ bundle, idx });
     });
 
+    // Sort services within each group: frequency hierarchy first, then alphabetical
+    const FREQ_RANK = {
+        'weekly':        1,
+        'every 14 days': 2,
+        'every 10-14 days': 2,
+        'bi-weekly':     2,
+        'every 21 days': 3,
+        'monthly':       4,
+        'bi-monthly':    5,
+        'quarterly':     6,
+        'annual':        7,
+        'annually':      7,
+        'yearly':        7,
+        'one time':      8,
+        'one-time':      8,
+        'seasonal':      9,
+        'paid inspection': 10,
+        'free inspection': 11,
+        'inspection':    11,
+    };
+    function freqRank(service) {
+        const f = (service.frequency || service.serviceType || '').toLowerCase().trim();
+        // Check each key — use startsWith so "monthly gpc" still matches "monthly"
+        for (const [key, rank] of Object.entries(FREQ_RANK)) {
+            if (f.startsWith(key) || f === key) return rank;
+        }
+        return 6; // unknown — treat like quarterly (mid-range)
+    }
+    Object.keys(groupedServices).forEach(cat => {
+        groupedServices[cat].sort((a, b) => {
+            const rankDiff = freqRank(a.service) - freqRank(b.service);
+            if (rankDiff !== 0) return rankDiff;
+            return (a.service.name || '').localeCompare(b.service.name || '');
+        });
+    });
+
     // Render in fixed order — only categories that have services or bundles
     IDENTIFIER_ORDER.forEach(category => {
         const svcMembers = groupedServices[category] || [];
