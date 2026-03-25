@@ -1229,6 +1229,8 @@ body {
  
 #defaultSchedulingTimes { line-height: 1.6; white-space: pre-wrap; }
 #defaultSchedulingTimes strong { color: var(--water); font-weight: 700; }
+
+
  
 /* ══════════════════════════════════════════════════════════════════
    SERVICE POLICIES SECTION
@@ -1822,6 +1824,16 @@ body {
                                 </div>
                                 <div class="policy-item-body">
                                     <div class="policy-value-full" id="afterHoursPolicyFull"></div>
+                                </div>
+                            </div>
+                            <div class="policy-item-compact" id="schedulingGeneralNotesCard" style="display:none;">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">📝 General Notes</span>
+                                    </div>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="schedulingGeneralNotesFull" style="white-space:pre-wrap;"></div>
                                 </div>
                             </div>
                         </div>
@@ -3134,6 +3146,19 @@ function populateSchedulingPolicies() {
     const reservicesPolicyEl = document.getElementById('reservicesPolicy');
     if (reservicesPolicyEl) reservicesPolicyEl.textContent = val(reservices);
  
+    // General Notes — shown as a highlighted card when present
+    const generalNotes = findByTitle('scheduling general notes');
+    const gnCard = document.getElementById('schedulingGeneralNotesCard');
+    const gnFull  = document.getElementById('schedulingGeneralNotesFull');
+    if (generalNotes) {
+        matchedPolicies.add(generalNotes);
+        const gnText = val(generalNotes);
+        if (gnFull && gnText && gnText !== 'Not specified') {
+            gnFull.textContent = gnText;
+            if (gnCard) gnCard.style.display = '';
+        }
+    }
+
     // Render any remaining scheduling items not already shown in a hardcoded card
     const quickRef = document.querySelector('.policy-quick-ref');
     quickRef?.querySelectorAll('.policy-item-compact.extra').forEach(el => el.remove());
