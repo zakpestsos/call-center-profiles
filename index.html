@@ -1750,9 +1750,13 @@ body {
                     <div class="scheduling-header">
                         <h2 class="scheduling-title">📋 Scheduling & Technician Management</h2>
                         <div class="scheduling-quick-tools">
-                            <div class="scheduling-tool">
+                            <div class="scheduling-tool" id="zipSearchTool" style="display:none;">
                                 <input type="text" class="scheduling-input" id="zipLookup" placeholder="Enter ZIP code" maxlength="5">
                                 <button class="scheduling-btn" onclick="findTechByZip()">Find Tech by ZIP</button>
+                            </div>
+                            <div class="scheduling-tool" id="branchSearchTool" style="display:none;">
+                                <input type="text" class="scheduling-input" id="branchLookup" placeholder="Enter branch name">
+                                <button class="scheduling-btn" onclick="findTechByBranch()">Find Tech by Branch</button>
                             </div>
                             <div class="scheduling-tool">
                                 <select class="scheduling-select" id="serviceTypeLookup" onchange="filterByServiceType()">
@@ -3057,6 +3061,7 @@ function subDetailItem(label, value) {
 // ─── Technicians ──────────────────────────────────────────────────────────────
 function populateTechnicians() {
     const grid = document.getElementById('techniciansGrid');
+    detectSearchTools();
     populateSchedulingPolicies();
     if (!clientData.technicians?.length) {
         grid.innerHTML = '<div class="info-section"><div class="info-content">No technician information available.</div></div>';
@@ -3230,11 +3235,44 @@ function toggleReservicePolicies() {
 }
  
 // ─── Tech Search / Filter ─────────────────────────────────────────────────────
+function detectSearchTools() {
+    const techs = clientData.technicians || [];
+    let hasZips = false;
+    let hasBranches = false;
+
+    techs.forEach(t => {
+        if (t.zipCodes && t.zipCodes.length) hasZips = true;
+        if (t.zipCodeOrBranch) {
+            const tokens = t.zipCodeOrBranch.split(',').map(s => s.trim()).filter(Boolean);
+            tokens.forEach(token => {
+                if (/^\d{5}$/.test(token)) hasZips = true;
+                else hasBranches = true;
+            });
+        }
+    });
+
+    const zipTool    = document.getElementById('zipSearchTool');
+    const branchTool = document.getElementById('branchSearchTool');
+    if (zipTool)    zipTool.style.display    = hasZips    ? '' : 'none';
+    if (branchTool) branchTool.style.display = hasBranches ? '' : 'none';
+}
+
 function findTechByZip() {
     const zip = document.getElementById('zipLookup').value.trim();
     if (!/^\d{5}$/.test(zip)) { alert('Please enter a valid 5-digit ZIP code'); return; }
     const matches = clientData.technicians.filter(t => t.zipCodes?.includes(zip));
     showSearchResults(`Technicians servicing ZIP ${zip}`, matches);
+}
+
+function findTechByBranch() {
+    const query = document.getElementById('branchLookup').value.trim();
+    if (!query) { alert('Please enter a branch name to search'); return; }
+    const q = query.toLowerCase();
+    const matches = clientData.technicians.filter(t => {
+        const raw = (t.zipCodeOrBranch || '').toLowerCase();
+        return raw.includes(q);
+    });
+    showSearchResults(`Technicians for branch "${query}"`, matches);
 }
  
 function filterByServiceType() {
@@ -3267,6 +3305,7 @@ function clearTechSearch() {
     document.getElementById('techSearchResults').style.display = 'none';
     document.getElementById('techniciansGrid').style.display   = 'grid';
     document.getElementById('zipLookup').value          = '';
+    document.getElementById('branchLookup').value       = '';
     document.getElementById('serviceTypeLookup').value  = '';
 }
  
