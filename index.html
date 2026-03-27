@@ -1459,6 +1459,16 @@ body {
     font-size: 0.72rem;
     font-weight: 700;
 }
+
+.branch-badge {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: #059669;
+    padding: 0.2rem 0.45rem;
+    border-radius: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
  
 /* ══════════════════════════════════════════════════════════════════
    ADDITIVE BUNDLE PRICING
@@ -3081,8 +3091,15 @@ function createTechnicianCard(tech) {
     const roleClass   = tech.role === 'Inspector' ? 'inspector' : tech.role === 'Both' ? 'both' : 'technician';
     const restrictions = tech.restrictions || tech.doesNotService || '';
     const notes        = tech.notes || tech.additionalNotes || '';
-    const zipBadges    = tech.zipCodes?.length
+
+    const zipBadges = tech.zipCodes?.length
         ? `<div class="zip-coverage-list">${tech.zipCodes.map(z => `<span class="zip-badge">${z}</span>`).join('')}</div>`
+        : '';
+
+    const branchTokens = (tech.zipCodeOrBranch || '')
+        .split(',').map(s => s.trim()).filter(s => s && !/^\d{5}$/.test(s));
+    const branchBadges = branchTokens.length
+        ? `<div class="zip-coverage-list">${branchTokens.map(b => `<span class="branch-badge">📍 ${b}</span>`).join('')}</div>`
         : '';
  
     card.innerHTML = `
@@ -3103,7 +3120,8 @@ function createTechnicianCard(tech) {
         </div>
         ${restrictions ? `<div class="tech-restrictions"><div class="tech-restrictions-title">🚫 Does NOT Service</div><div class="tech-restrictions-value">${restrictions}</div></div>` : ''}
         ${notes        ? `<div class="tech-notes"><div class="tech-notes-title">📝 Additional Notes</div><div class="tech-notes-value">${notes}</div></div>` : ''}
-        ${zipBadges}`;
+        ${zipBadges}
+        ${branchBadges}`;
     return card;
 }
  
