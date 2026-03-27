@@ -3097,7 +3097,7 @@ function createTechnicianCard(tech) {
         : '';
 
     const branchTokens = (tech.zipCodeOrBranch || '')
-        .split(',').map(s => s.trim()).filter(s => s && !/^\d{5}$/.test(s));
+        .split(',').map(s => s.trim()).filter(s => s && !/^\d{5}$/.test(s) && !(tech.zipCodes || []).includes(s));
     const branchBadges = branchTokens.length
         ? `<div class="zip-coverage-list">${branchTokens.map(b => `<span class="branch-badge">📍 ${b}</span>`).join('')}</div>`
         : '';
