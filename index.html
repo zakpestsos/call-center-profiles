@@ -1606,7 +1606,223 @@ body {
 
 .discount-policy-block.expanded .discount-policy-content { display: block; }
 
- 
+/* ══════════════════════════════════════════════════════════════════
+   ADD-ONS QUICK ACCESS BAR
+   ══════════════════════════════════════════════════════════════════ */
+.addon-quick-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(12, 143, 203, 0.05);
+    border: 1px solid rgba(12, 143, 203, 0.2);
+    border-radius: 0.6rem;
+    padding: 0.6rem 0.875rem;
+    margin-bottom: 0.875rem;
+}
+.addon-quick-bar-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--water);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+    margin-right: 0.25rem;
+}
+.addon-quick-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(12, 143, 203, 0.1);
+    border: 1px solid rgba(12, 143, 203, 0.3);
+    color: var(--water);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.addon-quick-btn:hover {
+    background: rgba(12, 143, 203, 0.2);
+    border-color: rgba(12, 143, 203, 0.55);
+    transform: translateY(-1px);
+}
+.addon-quick-btn.active {
+    background: rgba(12, 143, 203, 0.25);
+    border-color: var(--water);
+    color: var(--water);
+    font-weight: 800;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ADD-ONS
+   ══════════════════════════════════════════════════════════════════ */
+.addon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(12, 143, 203, 0.1);
+    border: 1px solid rgba(12, 143, 203, 0.35);
+    color: var(--water);
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.4rem;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.addon-btn:hover { background: rgba(12, 143, 203, 0.2); border-color: rgba(12, 143, 203, 0.6); }
+
+.addon-dropdown-wrap {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.addon-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 200;
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+    border-radius: 0.6rem;
+    box-shadow: var(--shadow), 0 0 16px rgba(12,143,203,0.12);
+    min-width: 220px;
+    max-height: 280px;
+    overflow-y: auto;
+    display: none;
+    animation: slideDown 0.15s ease-out;
+}
+.addon-dropdown.open { display: block; }
+.addon-dropdown.open-up {
+    top: auto;
+    bottom: calc(100% + 6px);
+    animation: slideUp 0.15s ease-out;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.addon-dropdown-header {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--water);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 0.6rem 0.75rem 0.4rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.addon-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+.addon-dropdown-item:last-child { border-bottom: none; }
+.addon-dropdown-item:hover { background: var(--accent-soft); }
+.addon-dropdown-item.selected { background: rgba(12,143,203,0.08); }
+.addon-dropdown-item-name { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+.addon-dropdown-item-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
+.addon-dropdown-item-check { color: var(--water); font-size: 0.85rem; font-weight: 800; opacity: 0; transition: opacity 0.15s; }
+.addon-dropdown-item.selected .addon-dropdown-item-check { opacity: 1; }
+
+.addon-dropdown-empty {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+}
+
+.addon-active-section {
+    background: rgba(12, 143, 203, 0.05);
+    border: 1px solid rgba(12, 143, 203, 0.2);
+    border-radius: 0.6rem;
+    padding: 0.75rem;
+    margin-top: 0.75rem;
+    display: none;
+}
+.addon-active-section.show { display: block; }
+
+.addon-active-header {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--water);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.6rem;
+}
+
+.addon-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.65rem;
+}
+
+.addon-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(12,143,203,0.12);
+    border: 1px solid rgba(12,143,203,0.3);
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem 0.2rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--water);
+}
+.addon-chip-remove {
+    background: none;
+    border: none;
+    color: var(--water);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+.addon-chip-remove:hover { opacity: 1; }
+
+.addon-pricing-breakdown {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+}
+.addon-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    font-size: 0.82rem;
+}
+.addon-price-row-label { color: var(--text-muted); }
+.addon-price-row-value { font-weight: 700; color: var(--text-primary); }
+.addon-price-row.total-row {
+    border-top: 1px solid var(--border);
+    margin-top: 0.3rem;
+    padding-top: 0.4rem;
+}
+.addon-price-row.total-row .addon-price-row-label { font-weight: 800; color: var(--text-heading); font-size: 0.85rem; }
+.addon-price-row.total-row .addon-price-row-value { color: #10b981; font-size: 0.95rem; }
+.addon-price-pending { font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-top: 0.3rem; }
+
+/* ══════════════════════════════════════════════════════════════════
+   END ADD-ONS
+   ══════════════════════════════════════════════════════════════════ */
+
 /* ── Policy inner tabs ───────────────────────────────────────────── */
 .policy-inner-tabs-bar {
     display: flex;
@@ -2346,7 +2562,36 @@ function loadDummyData() {
                     "Monthly Mosquito Service":  { pricingMode: "acreage", firstPrice: "$108.00", recurringPrice: "$108.00", sqftMin: 0, sqftMax: 999 },
                     "Lawn Care Add-On":          { pricingMode: "flat",    flatPrice: "$50.00" }
                 }
-            }]
+            }],
+            addOns: [
+                {
+                    addOnId: "addon_demo_1",
+                    name: "Indoor Flea Treatment",
+                    description: "Interior flea treatment added to any general pest service visit.",
+                    applicableServices: ["General Pest Control", "Monthly Mosquito Service"],
+                    pricingData: { pricingMode: "flat", flatPrice: "$45.00" },
+                    recurring: "false",
+                    agentNote: "One-time charge. Customer must vacuum before technician arrives."
+                },
+                {
+                    addOnId: "addon_demo_2",
+                    name: "Exterior Spider Web Removal",
+                    description: "Full exterior de-webbing added to any pest control visit.",
+                    applicableServices: ["General Pest Control"],
+                    pricingData: { pricingMode: "flat", flatPrice: "$25.00" },
+                    recurring: "true",
+                    agentNote: "Added each visit. Popular in summer months."
+                },
+                {
+                    addOnId: "addon_demo_3",
+                    name: "Tick Tube Treatment",
+                    description: "Biodegradable tick tubes placed around the property perimeter.",
+                    applicableServices: ["Monthly Mosquito Service"],
+                    pricingData: { pricingMode: "sqft", firstPrice: "$35.00", recurringPrice: "$30.00", sqftMin: 0, sqftMax: 999999 },
+                    recurring: "true",
+                    agentNote: "Place in wooded or brushy areas. Highly effective for tick reduction."
+                }
+            ]
         };
         populateClientData();
     }
@@ -2405,8 +2650,9 @@ function populateClientData() {
     populateServiceAreas();
  
     const bulletinText = clientData.bulletin || 'No bulletin information available.';
-    document.getElementById('bulletinContent').textContent      = bulletinText;
-    document.getElementById('topBulletinContent').textContent   = bulletinText;
+    const bulletinHTML = bulletinText.split(/\n\n+/).map(para => `<p style="margin-bottom:0.85rem;">${para.replace(/\n/g,'<br>')}</p>`).join('');
+    document.getElementById('bulletinContent').innerHTML      = bulletinHTML;
+    document.getElementById('topBulletinContent').innerHTML   = bulletinHTML;
  
     const pestsText = clientData.pestsNotCovered || 'No pest exclusions listed.';
     document.getElementById('pestsNotCoveredContent').textContent    = pestsText;
@@ -2429,6 +2675,11 @@ function populateClientData() {
  
 function toggleDiscountPolicy() {
     document.getElementById('discountPolicyBlock').classList.toggle('expanded');
+}
+
+// ─── escapeHtml — sanitize strings before inserting into innerHTML ────────────
+function escapeHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ─── Linkify helper — turns URLs in plain text into clickable <a> tags ────────
@@ -2712,6 +2963,19 @@ function buildServicePanel(service, svcIdx) {
         });
         subTabsHTML += '</div>';
  
+        const applicableAddOnsMulti = (clientData.addOns || []).filter(a =>
+            (a.applicableServices || []).includes(service.name)
+        );
+
+        const addonQuickBarMultiHTML = applicableAddOnsMulti.length ? `
+            <div class="addon-quick-bar">
+                <span class="addon-quick-bar-label">&#9889; Add-Ons</span>
+                ${applicableAddOnsMulti.map(a =>
+                    `<button class="addon-quick-btn" id="addonQuick_${serviceId}_${a.addOnId}"
+                        onclick="quickSelectAddon('${serviceId}','${a.addOnId}',this)">&#10133; ${escapeHtml(a.name)}</button>`
+                ).join('')}
+            </div>` : '';
+
         wrapper.innerHTML = `
             <div class="svc-panel-header">
                 <div>
@@ -2721,6 +2985,12 @@ function buildServicePanel(service, svcIdx) {
                 <div class="service-frequency" style="flex-shrink:0">Multiple Options</div>
             </div>
             ${service.agentNote ? `<div class="agent-note"><div class="agent-note-title">Agent Note</div><div class="agent-note-content">${service.agentNote}</div></div>` : ''}
+            ${addonQuickBarMultiHTML}
+            ${applicableAddOnsMulti.length ? `
+            <div class="addon-active-section" id="addonSection_${serviceId}">
+                <div class="addon-chip-list" id="addonChips_${serviceId}"></div>
+                <div class="addon-pricing-breakdown" id="addonBreakdown_${serviceId}"></div>
+            </div>` : ''}
             <div class="service-details">
                 <div class="service-details-grid">
                     ${detailItem('Contract', service.contract)}
@@ -2775,15 +3045,67 @@ function buildServicePanel(service, svcIdx) {
                     <div class="sqft-range-info" id="range_${serviceId}"></div>
                 </div>`;
         }
+        const applicableAddOns = (clientData.addOns || []).filter(a =>
+            (a.applicableServices || []).includes(service.name)
+        );
+
+        // Build the add-on dropdown + section that lives inside the pricing calculator
+        const addonDropdownItems = applicableAddOns.map(a => {
+            let pd = a.pricingData || {};
+            if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+            const modeLabel = pd.pricingMode && pd.pricingMode !== 'flat' ? ' \u2022 priced by ' + pd.pricingMode : '';
+            const recurLabel = a.recurring === 'false' ? 'One-time' : 'Recurring';
+            return `<div class="addon-dropdown-item" id="addonItem_${serviceId}_${a.addOnId}" onclick="toggleAddon('${serviceId}', '${a.addOnId}', event)">
+                        <div>
+                            <div class="addon-dropdown-item-name">${escapeHtml(a.name)}</div>
+                            <div class="addon-dropdown-item-sub">${recurLabel}${modeLabel}</div>
+                        </div>
+                        <span class="addon-dropdown-item-check">\u2713</span>
+                    </div>`;
+        }).join('');
+
+        const addonCalcHTML = applicableAddOns.length && !isInspection && !isReferOffice ? `
+            <div style="margin-top:0.75rem;border-top:1px solid var(--border);padding-top:0.75rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+                    <div style="font-size:0.72rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Add-Ons</div>
+                    <div class="addon-dropdown-wrap" id="addonWrap_${serviceId}">
+                        <button class="addon-btn" onclick="toggleAddonDropdown('${serviceId}', event)">&#10133; Add Add-On <span id="addonCount_${serviceId}" style="display:none;background:var(--water);color:#fff;border-radius:999px;padding:0 0.4rem;font-size:0.7rem;margin-left:0.2rem;">0</span></button>
+                        <div class="addon-dropdown" id="addonDropdown_${serviceId}">
+                            <div class="addon-dropdown-header">Available Add-Ons</div>
+                            ${addonDropdownItems}
+                        </div>
+                    </div>
+                </div>
+                <div class="addon-active-section" id="addonSection_${serviceId}">
+                    <div class="addon-chip-list" id="addonChips_${serviceId}"></div>
+                    <div class="addon-pricing-breakdown" id="addonBreakdown_${serviceId}"></div>
+                </div>
+            </div>` : '';
+
+        const addonBtn = ''; // no longer used in header
+
+        // Quick-select bar — one pill per add-on, shown above pests-covered
+        const addonQuickBarHTML = applicableAddOns.length ? `
+            <div class="addon-quick-bar">
+                <span class="addon-quick-bar-label">&#9889; Add-Ons</span>
+                ${applicableAddOns.map(a =>
+                    `<button class="addon-quick-btn" id="addonQuick_${serviceId}_${a.addOnId}"
+                        onclick="quickSelectAddon('${serviceId}','${a.addOnId}',this)">&#10133; ${escapeHtml(a.name)}</button>`
+                ).join('')}
+            </div>` : '';
+
         wrapper.innerHTML = `
             <div class="svc-panel-header">
                 <div>
                     <div class="svc-panel-name">${service.name || 'Unnamed Service'}</div>
                     <div class="svc-panel-desc">${(service.description || '').replace(/\n/g, '<br>')}</div>
                 </div>
-                <div class="service-frequency" style="flex-shrink:0">${service.frequency || 'N/A'}</div>
+                <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
+                    <div class="service-frequency">${service.frequency || 'N/A'}</div>
+                </div>
             </div>
             ${service.agentNote ? `<div class="agent-note"><div class="agent-note-title">Agent Note</div><div class="agent-note-content">${service.agentNote}</div></div>` : ''}
+            ${addonQuickBarHTML}
             <div class="pests-covered-section">
                 <div class="pests-covered-title">Pests Covered</div>
                 <div class="pests-covered-list pests-covered">${service.pests || 'N/A'}</div>
@@ -2802,6 +3124,7 @@ function buildServicePanel(service, svcIdx) {
             </div>
             <div class="pricing-calculator">
                 ${calculatorHTML}
+                ${addonCalcHTML}
             </div>`;
         wrapper._pricingData = service.pricingTiers || [];
         wrapper._serviceData = service;
@@ -3097,7 +3420,7 @@ function createTechnicianCard(tech) {
         : '';
 
     const branchTokens = (tech.zipCodeOrBranch || '')
-        .split(',').map(s => s.trim()).filter(s => s && !/^\d{5}$/.test(s) && !(tech.zipCodes || []).includes(s));
+        .split(',').map(s => s.trim()).filter(s => s && !/^\d{5}$/.test(s));
     const branchBadges = branchTokens.length
         ? `<div class="zip-coverage-list">${branchTokens.map(b => `<span class="branch-badge">📍 ${b}</span>`).join('')}</div>`
         : '';
@@ -3951,7 +4274,234 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
     }
     resultEl.classList.add('show');
 }
- 
+
+// ─── Add-Ons ──────────────────────────────────────────────────────────────────
+
+// State: map of serviceId → Set of selected addOnIds
+const _activeAddons = {};
+
+function toggleAddonDropdown(serviceId, event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById(`addonDropdown_${serviceId}`);
+    if (!dropdown) return;
+    const isOpen = dropdown.classList.contains('open');
+    document.querySelectorAll('.addon-dropdown.open').forEach(d => {
+        d.classList.remove('open', 'open-up');
+    });
+    if (!isOpen) {
+        dropdown.classList.add('open');
+        // Measure after adding 'open' so the element has layout
+        const rect = dropdown.getBoundingClientRect();
+        if (rect.bottom > window.innerHeight - 16) {
+            dropdown.classList.add('open-up');
+        }
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.addon-dropdown-wrap')) {
+        document.querySelectorAll('.addon-dropdown.open').forEach(d => {
+            d.classList.remove('open', 'open-up');
+        });
+    }
+});
+
+function quickSelectAddon(serviceId, addOnId, btn) {
+    if (!_activeAddons[serviceId]) _activeAddons[serviceId] = new Set();
+    const set = _activeAddons[serviceId];
+    const isSelected = set.has(addOnId);
+
+    if (isSelected) {
+        set.delete(addOnId);
+        btn.classList.remove('active');
+    } else {
+        set.add(addOnId);
+        btn.classList.add('active');
+    }
+
+    // Keep the dropdown item in sync
+    const dropItem = document.getElementById(`addonItem_${serviceId}_${addOnId}`);
+    if (dropItem) dropItem.classList.toggle('selected', set.has(addOnId));
+
+    // Update badge
+    const badge = document.getElementById(`addonCount_${serviceId}`);
+    if (badge) {
+        badge.textContent = set.size;
+        badge.style.display = set.size > 0 ? 'inline' : 'none';
+    }
+
+    renderAddonSection(serviceId);
+}
+
+function toggleAddon(serviceId, addOnId, event) {
+    event.stopPropagation();
+    if (!_activeAddons[serviceId]) _activeAddons[serviceId] = new Set();
+    const set = _activeAddons[serviceId];
+    if (set.has(addOnId)) { set.delete(addOnId); } else { set.add(addOnId); }
+    // Sync dropdown item
+    const item = document.getElementById(`addonItem_${serviceId}_${addOnId}`);
+    if (item) item.classList.toggle('selected', set.has(addOnId));
+    // Sync quick bar button
+    const quickBtn = document.getElementById(`addonQuick_${serviceId}_${addOnId}`);
+    if (quickBtn) quickBtn.classList.toggle('active', set.has(addOnId));
+    // Update count badge
+    const countBadge = document.getElementById(`addonCount_${serviceId}`);
+    if (countBadge) {
+        countBadge.textContent = set.size;
+        countBadge.style.display = set.size > 0 ? 'inline' : 'none';
+    }
+    renderAddonSection(serviceId);
+}
+
+function removeAddonChip(serviceId, addOnId) {
+    if (_activeAddons[serviceId]) _activeAddons[serviceId].delete(addOnId);
+    const item = document.getElementById(`addonItem_${serviceId}_${addOnId}`);
+    if (item) item.classList.remove('selected');
+    // Sync quick bar button
+    const quickBtn = document.getElementById(`addonQuick_${serviceId}_${addOnId}`);
+    if (quickBtn) quickBtn.classList.remove('active');
+    const countBadge = document.getElementById(`addonCount_${serviceId}`);
+    if (countBadge) {
+        const size = (_activeAddons[serviceId] || new Set()).size;
+        countBadge.textContent = size;
+        countBadge.style.display = size > 0 ? 'inline' : 'none';
+    }
+    renderAddonSection(serviceId);
+}
+
+function renderAddonSection(serviceId) {
+    const section     = document.getElementById(`addonSection_${serviceId}`);
+    const chipsEl     = document.getElementById(`addonChips_${serviceId}`);
+    const breakdownEl = document.getElementById(`addonBreakdown_${serviceId}`);
+    if (!section || !chipsEl || !breakdownEl) return;
+
+    const selected = _activeAddons[serviceId] || new Set();
+    if (selected.size === 0) { section.classList.remove('show'); return; }
+    section.classList.add('show');
+
+    const allAddons    = clientData.addOns || [];
+    const activeAddons = [...selected].map(id => allAddons.find(a => a.addOnId === id)).filter(Boolean);
+
+    // Chips
+    chipsEl.innerHTML = activeAddons.map(a =>
+        `<span class="addon-chip">${escapeHtml(a.name)}<button class="addon-chip-remove" onclick="removeAddonChip('${serviceId}','${a.addOnId}')" title="Remove">\xd7</button></span>`
+    ).join('');
+
+    // Clear any leftover per-addon inputs container (no longer used)
+    const inputsEl = document.getElementById(`addonInputs_${serviceId}`);
+    if (inputsEl) inputsEl.innerHTML = '';
+
+    // Read value from the service's own sqft input
+    const serviceInput = document.getElementById(`sqft_${serviceId}`);
+    const serviceInputVal = parseFloat(serviceInput?.value) || 0;
+
+    // Base price from service calculator result
+    const pricingEl    = document.getElementById(`pricing_${serviceId}`);
+    const resultEl     = document.getElementById(`result_${serviceId}`);
+    const hasBasePrice = resultEl && resultEl.classList.contains('show');
+
+    function parseDisplayedPrice(el, labelText) {
+        if (!el) return null;
+        for (const item of el.querySelectorAll('.price-display-item')) {
+            const lbl = item.querySelector('.price-display-label');
+            const val = item.querySelector('.price-display-value');
+            if (lbl && val && lbl.textContent.toLowerCase().includes(labelText.toLowerCase())) {
+                const n = parseFloat(val.textContent.replace(/[^0-9.]/g, ''));
+                return isNaN(n) ? null : n;
+            }
+        }
+        return null;
+    }
+
+    const baseFirst     = hasBasePrice ? parseDisplayedPrice(pricingEl, 'first') : null;
+    const baseRecurring = hasBasePrice ? parseDisplayedPrice(pricingEl, 'recurring') : null;
+
+    // Resolve an add-on price using the service's shared sqft/acreage input value
+    function resolveAddonPrice(addon, priceType) {
+        let pd = addon.pricingData || {};
+        if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+        const mode = pd.pricingMode || 'flat';
+
+        if (mode === 'flat') {
+            const n = parseFloat((pd.flatPrice || '').replace(/[^0-9.]/g, ''));
+            return isNaN(n) ? null : n;
+        }
+
+        // sqft or acreage — use serviceInputVal
+        if (!serviceInputVal || serviceInputVal <= 0) return null;
+
+        const tiers = [
+            { sqftMin: Number(pd.sqftMin)||0, sqftMax: Number(pd.sqftMax)||999999,
+              firstPrice: pd.firstPrice, recurringPrice: pd.recurringPrice },
+            ...(pd.tiers||[]).map(t => ({
+                sqftMin: Number(t.sqftMin)||0, sqftMax: Number(t.sqftMax)||999999,
+                firstPrice: t.firstPrice, recurringPrice: t.recurringPrice
+            }))
+        ];
+        const tier = tiers.find(t => serviceInputVal >= t.sqftMin && serviceInputVal <= t.sqftMax);
+        if (!tier) return null;
+        const raw = priceType === 'first' ? tier.firstPrice : tier.recurringPrice;
+        const n   = parseFloat((raw || '').replace(/[^0-9.]/g, ''));
+        return isNaN(n) ? null : n;
+    }
+
+    let rows = '';
+    let totalFirst     = baseFirst     !== null ? baseFirst     : null;
+    let totalRecurring = baseRecurring !== null ? baseRecurring : null;
+
+    if (hasBasePrice && baseFirst !== null)
+        rows += `<div class="addon-price-row"><span class="addon-price-row-label">Base service (first)</span><span class="addon-price-row-value">$${baseFirst.toFixed(2)}</span></div>`;
+    if (hasBasePrice && baseRecurring !== null)
+        rows += `<div class="addon-price-row"><span class="addon-price-row-label">Base service (recurring)</span><span class="addon-price-row-value">$${baseRecurring.toFixed(2)}</span></div>`;
+
+    let anyPending = false;
+    activeAddons.forEach(addon => {
+        let pd = addon.pricingData || {};
+        if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+        const mode      = pd.pricingMode || 'flat';
+        const isOneTime = String(addon.recurring) === 'false';
+        const fp        = resolveAddonPrice(addon, 'first');
+        const rp        = resolveAddonPrice(addon, 'recurring');
+        const unit      = mode === 'acreage' ? 'acreage' : 'sq ft';
+
+        if (mode !== 'flat' && fp === null) {
+            anyPending = true;
+            rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}</span><span class="addon-price-row-value" style="color:var(--text-muted);font-style:italic;">enter ${unit} above</span></div>`;
+            return;
+        }
+        if (fp !== null) {
+            rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${isOneTime ? ' (one-time)' : ' (first)'}</span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`;
+            if (totalFirst !== null) totalFirst += fp; else totalFirst = fp;
+        }
+        if (!isOneTime && rp !== null) {
+            rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)} (recurring)</span><span class="addon-price-row-value">$${rp.toFixed(2)}</span></div>`;
+            if (totalRecurring !== null) totalRecurring += rp; else totalRecurring = rp;
+        }
+    });
+
+    const hasAnyResolved = activeAddons.some(a => resolveAddonPrice(a, 'first') !== null);
+    if (hasAnyResolved && (totalFirst !== null || totalRecurring !== null)) {
+        if (totalFirst !== null)
+            rows += `<div class="addon-price-row total-row"><span class="addon-price-row-label">Combined total (first)</span><span class="addon-price-row-value">$${totalFirst.toFixed(2)}</span></div>`;
+        if (totalRecurring !== null)
+            rows += `<div class="addon-price-row total-row"><span class="addon-price-row-label">Combined total (recurring)</span><span class="addon-price-row-value">$${totalRecurring.toFixed(2)}</span></div>`;
+    }
+
+    breakdownEl.innerHTML = rows || '<div class="addon-price-pending">Select an add-on to see pricing.</div>';
+    if (anyPending)
+        breakdownEl.innerHTML += '<div class="addon-price-pending">Enter sq ft / acreage in the calculator above to price remaining add-ons.</div>';
+}
+
+
+
+// Re-render add-on section whenever the main pricing calculator updates
+const _origCalculatePricing = calculatePricing;
+calculatePricing = function(serviceId) {
+    _origCalculatePricing(serviceId);
+    if (_activeAddons[serviceId]?.size > 0) renderAddonSection(serviceId);
+};
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
  
 // ─── Theme (dark/light) ───────────────────────────────────────────────────────
