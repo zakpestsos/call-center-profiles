@@ -1795,6 +1795,54 @@ body {
 }
 .addon-chip-remove:hover { opacity: 1; }
 
+/* Per-unit quantity stepper inside addon chip */
+.addon-chip-qty {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: 0.3rem;
+    background: rgba(12,143,203,0.08);
+    border: 1px solid rgba(12,143,203,0.25);
+    border-radius: 999px;
+    padding: 0.1rem 0.35rem;
+}
+.addon-chip-qty-btn {
+    background: rgba(12,143,203,0.22);
+    border: 1px solid rgba(12,143,203,0.5);
+    color: var(--water);
+    border-radius: 50%;
+    width: 1.35rem;
+    height: 1.35rem;
+    font-size: 0.9rem;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+}
+.addon-chip-qty-btn:hover {
+    background: rgba(12,143,203,0.45);
+    transform: scale(1.15);
+}
+.addon-chip-qty-btn:active { transform: scale(0.92); }
+.addon-chip-qty-val {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--water);
+    min-width: 1.1rem;
+    text-align: center;
+}
+.addon-chip-qty-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-left: 0.1rem;
+}
+
 .addon-pricing-breakdown {
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -2112,7 +2160,32 @@ body {
                         </div>
                         <div class="search-results-content" id="searchResultsContent"></div>
                     </div>
- 
+
+                    <!-- Bottom Search Bar -->
+                    <div class="scheduling-header" id="schedulingHeaderBottom" style="margin-bottom:1.25rem;margin-top:0;">
+                        <div class="scheduling-quick-tools">
+                            <div class="scheduling-tool" id="zipSearchToolBottom" style="display:none;">
+                                <input type="text" class="scheduling-input" id="zipLookupBottom" placeholder="Enter ZIP code" maxlength="5">
+                                <button class="scheduling-btn" onclick="findTechByZipBottom()">Find Tech by ZIP</button>
+                            </div>
+                            <div class="scheduling-tool" id="branchSearchToolBottom" style="display:none;">
+                                <input type="text" class="scheduling-input" id="branchLookupBottom" placeholder="Enter branch name">
+                                <button class="scheduling-btn" onclick="findTechByBranchBottom()">Find Tech by Branch</button>
+                            </div>
+                            <div class="scheduling-tool">
+                                <select class="scheduling-select" id="serviceTypeLookupBottom" onchange="filterByServiceTypeBottom()">
+                                    <option value="">All Service Types</option>
+                                    <option value="inspection">Inspections Only</option>
+                                    <option value="technician">Technicians Only</option>
+                                    <option value="both">Both Services</option>
+                                </select>
+                            </div>
+                            <div class="scheduling-tool">
+                                <button class="scheduling-btn" onclick="showAllTechs()">Show All Techs</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Technicians Grid -->
                     <div id="techniciansGrid" class="technicians-grid"></div>
                 </div>
@@ -2192,6 +2265,7 @@ body {
 <script>
 // ─── State ────────────────────────────────────────────────────────────────────
 let clientData = {};
+let _lastPopulatedProfileId = null;
  
 // ─── Profile Cache ────────────────────────────────────────────────────────────
 const PROFILE_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -2599,6 +2673,14 @@ function loadDummyData() {
  
 // ─── Populate Page ────────────────────────────────────────────────────────────
 function populateClientData() {
+    // Only clear addon selections when switching to a different profile,
+    // not on background refreshes of the same profile
+    const currentProfileId = getProfileIdFromUrl();
+    if (currentProfileId !== _lastPopulatedProfileId) {
+        Object.keys(_activeAddons).forEach(k => delete _activeAddons[k]);
+        _lastPopulatedProfileId = currentProfileId;
+    }
+
     document.getElementById('loadingState').style.display = 'none';
  
     document.getElementById('companyName').textContent    = clientData.companyName;
@@ -3053,7 +3135,9 @@ function buildServicePanel(service, svcIdx) {
         const addonDropdownItems = applicableAddOns.map(a => {
             let pd = a.pricingData || {};
             if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
-            const modeLabel = pd.pricingMode && pd.pricingMode !== 'flat' ? ' \u2022 priced by ' + pd.pricingMode : '';
+            const modeLabel = pd.pricingMode && pd.pricingMode !== 'flat'
+                ? ' \u2022 priced by ' + (pd.pricingMode === 'per_unit' ? 'unit' : pd.pricingMode)
+                : '';
             const recurLabel = a.recurring === 'false' ? 'One-time' : 'Recurring';
             return `<div class="addon-dropdown-item" id="addonItem_${serviceId}_${a.addOnId}" onclick="toggleAddon('${serviceId}', '${a.addOnId}', event)">
                         <div>
@@ -3596,6 +3680,12 @@ function detectSearchTools() {
     const branchTool = document.getElementById('branchSearchTool');
     if (zipTool)    zipTool.style.display    = hasZips    ? '' : 'none';
     if (branchTool) branchTool.style.display = hasBranches ? '' : 'none';
+
+    // Keep bottom bar in sync
+    const zipToolB    = document.getElementById('zipSearchToolBottom');
+    const branchToolB = document.getElementById('branchSearchToolBottom');
+    if (zipToolB)    zipToolB.style.display    = hasZips    ? '' : 'none';
+    if (branchToolB) branchToolB.style.display = hasBranches ? '' : 'none';
 }
 
 function findTechByZip() {
@@ -3603,6 +3693,12 @@ function findTechByZip() {
     if (!/^\d{5}$/.test(zip)) { alert('Please enter a valid 5-digit ZIP code'); return; }
     const matches = clientData.technicians.filter(t => t.zipCodes?.includes(zip));
     showSearchResults(`Technicians servicing ZIP ${zip}`, matches);
+}
+
+function findTechByZipBottom() {
+    const val = document.getElementById('zipLookupBottom').value.trim();
+    document.getElementById('zipLookup').value = val;
+    findTechByZip();
 }
 
 function findTechByBranch() {
@@ -3615,13 +3711,26 @@ function findTechByBranch() {
     });
     showSearchResults(`Technicians for branch "${query}"`, matches);
 }
- 
+
+function findTechByBranchBottom() {
+    const val = document.getElementById('branchLookupBottom').value.trim();
+    document.getElementById('branchLookup').value = val;
+    findTechByBranch();
+}
+
 function filterByServiceType() {
     const type = document.getElementById('serviceTypeLookup').value;
+    document.getElementById('serviceTypeLookupBottom').value = type;
     if (!type) { showAllTechs(); return; }
     const roleMap = { inspection: ['Inspector','Both'], technician: ['Technician','Both'], both: ['Both'] };
     const matches = clientData.technicians.filter(t => (roleMap[type] || []).includes(t.role));
     showSearchResults(`${type.charAt(0).toUpperCase() + type.slice(1)} Results`, matches);
+}
+
+function filterByServiceTypeBottom() {
+    const val = document.getElementById('serviceTypeLookupBottom').value;
+    document.getElementById('serviceTypeLookup').value = val;
+    filterByServiceType();
 }
  
 function showSearchResults(title, techs) {
@@ -3645,9 +3754,12 @@ function showSearchResults(title, techs) {
 function clearTechSearch() {
     document.getElementById('techSearchResults').style.display = 'none';
     document.getElementById('techniciansGrid').style.display   = 'grid';
-    document.getElementById('zipLookup').value          = '';
-    document.getElementById('branchLookup').value       = '';
-    document.getElementById('serviceTypeLookup').value  = '';
+    document.getElementById('zipLookup').value               = '';
+    document.getElementById('branchLookup').value            = '';
+    document.getElementById('serviceTypeLookup').value       = '';
+    document.getElementById('zipLookupBottom').value         = '';
+    document.getElementById('branchLookupBottom').value      = '';
+    document.getElementById('serviceTypeLookupBottom').value = '';
 }
  
 function showAllTechs() { clearTechSearch(); }
@@ -4277,8 +4389,13 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
 
 // ─── Add-Ons ──────────────────────────────────────────────────────────────────
 
-// State: map of serviceId → Set of selected addOnIds
-const _activeAddons = {};
+// State: map of serviceId → Map(addOnId → quantity)
+const _activeAddons = {}; // serviceId → Map(addOnId → quantity)
+
+function _getAddonMap(serviceId) {
+    if (!_activeAddons[serviceId]) _activeAddons[serviceId] = new Map();
+    return _activeAddons[serviceId];
+}
 
 function toggleAddonDropdown(serviceId, event) {
     event.stopPropagation();
@@ -4308,27 +4425,26 @@ document.addEventListener('click', function(e) {
 });
 
 function quickSelectAddon(serviceId, addOnId, btn) {
-    if (!_activeAddons[serviceId]) _activeAddons[serviceId] = new Set();
-    const set = _activeAddons[serviceId];
-    const isSelected = set.has(addOnId);
+    const map = _getAddonMap(serviceId);
+    const isSelected = map.has(addOnId);
 
     if (isSelected) {
-        set.delete(addOnId);
+        map.delete(addOnId);
         btn.classList.remove('active');
     } else {
-        set.add(addOnId);
+        map.set(addOnId, 1);
         btn.classList.add('active');
     }
 
     // Keep the dropdown item in sync
     const dropItem = document.getElementById(`addonItem_${serviceId}_${addOnId}`);
-    if (dropItem) dropItem.classList.toggle('selected', set.has(addOnId));
+    if (dropItem) dropItem.classList.toggle('selected', map.has(addOnId));
 
     // Update badge
     const badge = document.getElementById(`addonCount_${serviceId}`);
     if (badge) {
-        badge.textContent = set.size;
-        badge.style.display = set.size > 0 ? 'inline' : 'none';
+        badge.textContent = map.size;
+        badge.style.display = map.size > 0 ? 'inline' : 'none';
     }
 
     renderAddonSection(serviceId);
@@ -4336,26 +4452,26 @@ function quickSelectAddon(serviceId, addOnId, btn) {
 
 function toggleAddon(serviceId, addOnId, event) {
     event.stopPropagation();
-    if (!_activeAddons[serviceId]) _activeAddons[serviceId] = new Set();
-    const set = _activeAddons[serviceId];
-    if (set.has(addOnId)) { set.delete(addOnId); } else { set.add(addOnId); }
+    const map = _getAddonMap(serviceId);
+    if (map.has(addOnId)) { map.delete(addOnId); } else { map.set(addOnId, 1); }
     // Sync dropdown item
     const item = document.getElementById(`addonItem_${serviceId}_${addOnId}`);
-    if (item) item.classList.toggle('selected', set.has(addOnId));
+    if (item) item.classList.toggle('selected', map.has(addOnId));
     // Sync quick bar button
     const quickBtn = document.getElementById(`addonQuick_${serviceId}_${addOnId}`);
-    if (quickBtn) quickBtn.classList.toggle('active', set.has(addOnId));
+    if (quickBtn) quickBtn.classList.toggle('active', map.has(addOnId));
     // Update count badge
     const countBadge = document.getElementById(`addonCount_${serviceId}`);
     if (countBadge) {
-        countBadge.textContent = set.size;
-        countBadge.style.display = set.size > 0 ? 'inline' : 'none';
+        countBadge.textContent = map.size;
+        countBadge.style.display = map.size > 0 ? 'inline' : 'none';
     }
     renderAddonSection(serviceId);
 }
 
 function removeAddonChip(serviceId, addOnId) {
-    if (_activeAddons[serviceId]) _activeAddons[serviceId].delete(addOnId);
+    const map = _getAddonMap(serviceId);
+    map.delete(addOnId);
     const item = document.getElementById(`addonItem_${serviceId}_${addOnId}`);
     if (item) item.classList.remove('selected');
     // Sync quick bar button
@@ -4363,10 +4479,17 @@ function removeAddonChip(serviceId, addOnId) {
     if (quickBtn) quickBtn.classList.remove('active');
     const countBadge = document.getElementById(`addonCount_${serviceId}`);
     if (countBadge) {
-        const size = (_activeAddons[serviceId] || new Set()).size;
-        countBadge.textContent = size;
-        countBadge.style.display = size > 0 ? 'inline' : 'none';
+        countBadge.textContent = map.size;
+        countBadge.style.display = map.size > 0 ? 'inline' : 'none';
     }
+    renderAddonSection(serviceId);
+}
+
+function changeAddonQty(serviceId, addOnId, delta) {
+    const map = _getAddonMap(serviceId);
+    if (!map.has(addOnId)) return;
+    const newQty = Math.max(1, (map.get(addOnId) || 1) + delta);
+    map.set(addOnId, newQty);
     renderAddonSection(serviceId);
 }
 
@@ -4376,17 +4499,30 @@ function renderAddonSection(serviceId) {
     const breakdownEl = document.getElementById(`addonBreakdown_${serviceId}`);
     if (!section || !chipsEl || !breakdownEl) return;
 
-    const selected = _activeAddons[serviceId] || new Set();
+    const selected = _getAddonMap(serviceId);
     if (selected.size === 0) { section.classList.remove('show'); return; }
     section.classList.add('show');
 
     const allAddons    = clientData.addOns || [];
-    const activeAddons = [...selected].map(id => allAddons.find(a => a.addOnId === id)).filter(Boolean);
+    const activeAddons = [...selected.keys()].map(id => allAddons.find(a => a.addOnId === id)).filter(Boolean);
 
-    // Chips
-    chipsEl.innerHTML = activeAddons.map(a =>
-        `<span class="addon-chip">${escapeHtml(a.name)}<button class="addon-chip-remove" onclick="removeAddonChip('${serviceId}','${a.addOnId}')" title="Remove">\xd7</button></span>`
-    ).join('');
+    // Chips — per-unit addons get a quantity stepper inline
+    chipsEl.innerHTML = activeAddons.map(a => {
+        let pd = a.pricingData || {};
+        if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+        const isPerUnit = (pd.pricingMode || 'flat') === 'per_unit';
+        const qty = selected.get(a.addOnId) || 1;
+        const unitLbl = pd.unitLabel ? escapeHtml(pd.unitLabel) : 'unit';
+        const qtyHtml = isPerUnit
+            ? `<span class="addon-chip-qty">` +
+              `<button class="addon-chip-qty-btn" onclick="changeAddonQty('${serviceId}','${a.addOnId}',-1)" title="Decrease">&#8722;</button>` +
+              `<span class="addon-chip-qty-val">${qty}</span>` +
+              `<button class="addon-chip-qty-btn" onclick="changeAddonQty('${serviceId}','${a.addOnId}',1)" title="Increase">&#43;</button>` +
+              `<span class="addon-chip-qty-label">${unitLbl}</span>` +
+              `</span>`
+            : '';
+        return `<span class="addon-chip">${escapeHtml(a.name)}${qtyHtml}<button class="addon-chip-remove" onclick="removeAddonChip('${serviceId}','${a.addOnId}')" title="Remove">\xd7</button></span>`;
+    }).join('');
 
     // Clear any leftover per-addon inputs container (no longer used)
     const inputsEl = document.getElementById(`addonInputs_${serviceId}`);
@@ -4422,10 +4558,16 @@ function renderAddonSection(serviceId) {
         let pd = addon.pricingData || {};
         if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
         const mode = pd.pricingMode || 'flat';
+        const qty  = selected.get(addon.addOnId) || 1;
 
         if (mode === 'flat') {
             const n = parseFloat((pd.flatPrice || '').replace(/[^0-9.]/g, ''));
             return isNaN(n) ? null : n;
+        }
+
+        if (mode === 'per_unit') {
+            const n = parseFloat((pd.pricePerUnit || '').replace(/[^0-9.]/g, ''));
+            return isNaN(n) ? null : n * qty;
         }
 
         // sqft or acreage — use serviceInputVal
@@ -4463,7 +4605,28 @@ function renderAddonSection(serviceId) {
         const isOneTime = String(addon.recurring) === 'false';
         const fp        = resolveAddonPrice(addon, 'first');
         const rp        = resolveAddonPrice(addon, 'recurring');
+        const qty       = selected.get(addon.addOnId) || 1;
+        const unitLbl   = pd.unitLabel ? pd.unitLabel : 'unit';
         const unit      = mode === 'acreage' ? 'acreage' : 'sq ft';
+
+        if (mode === 'per_unit') {
+            const qtyLabel = ` ×${qty} ${unitLbl}`;
+            if (fp === null) {
+                anyPending = true;
+                rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}</span><span class="addon-price-row-value" style="color:var(--text-muted);font-style:italic;">price not set</span></div>`;
+                return;
+            }
+            if (isOneTime) {
+                rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(one-time)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`;
+                if (totalFirst !== null) totalFirst += fp; else totalFirst = fp;
+            } else {
+                rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(first)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`;
+                rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(recurring)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`;
+                if (totalFirst !== null) totalFirst += fp; else totalFirst = fp;
+                if (totalRecurring !== null) totalRecurring += fp; else totalRecurring = fp;
+            }
+            return;
+        }
 
         if (mode !== 'flat' && fp === null) {
             anyPending = true;
@@ -4499,7 +4662,7 @@ function renderAddonSection(serviceId) {
 const _origCalculatePricing = calculatePricing;
 calculatePricing = function(serviceId) {
     _origCalculatePricing(serviceId);
-    if (_activeAddons[serviceId]?.size > 0) renderAddonSection(serviceId);
+    if (_getAddonMap(serviceId).size > 0) renderAddonSection(serviceId);
 };
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
@@ -4549,7 +4712,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const popup = document.getElementById('searchPopup');
         if (!pestInput.contains(e.target) && !popup.contains(e.target) && popup.style.display === 'block') hideSearchPopup();
     });
- 
+
     // Enter key in sqft inputs
     document.addEventListener('keypress', e => {
         if (e.key === 'Enter' && e.target.classList.contains('sqft-input')) {
@@ -4560,6 +4723,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const bundleId = e.target.id.replace(/^bnd-input-/, '').replace(/-(?:sqft|acreage)$/, '');
             calculateBundlePricing(bundleId);
         }
+        // Enter key in ZIP and branch inputs (top and bottom bars)
+        if (e.key === 'Enter' && e.target.id === 'zipLookup')         findTechByZip();
+        if (e.key === 'Enter' && e.target.id === 'zipLookupBottom')    findTechByZipBottom();
+        if (e.key === 'Enter' && e.target.id === 'branchLookup')       findTechByBranch();
+        if (e.key === 'Enter' && e.target.id === 'branchLookupBottom') findTechByBranchBottom();
     });
 });
  
