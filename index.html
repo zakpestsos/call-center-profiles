@@ -2643,6 +2643,7 @@ function loadDummyData() {
                     name: "Indoor Flea Treatment",
                     description: "Interior flea treatment added to any general pest service visit.",
                     applicableServices: ["General Pest Control", "Monthly Mosquito Service"],
+                    applicableBundles: ["Home Protection Bundle", "Full Property Protection Bundle"],
                     pricingData: { pricingMode: "flat", flatPrice: "$45.00" },
                     recurring: "false",
                     agentNote: "One-time charge. Customer must vacuum before technician arrives."
@@ -2652,6 +2653,7 @@ function loadDummyData() {
                     name: "Exterior Spider Web Removal",
                     description: "Full exterior de-webbing added to any pest control visit.",
                     applicableServices: ["General Pest Control"],
+                    applicableBundles: ["Home Protection Bundle"],
                     pricingData: { pricingMode: "flat", flatPrice: "$25.00" },
                     recurring: "true",
                     agentNote: "Added each visit. Popular in summer months."
@@ -3288,6 +3290,20 @@ function buildBundlePanel(bundle) {
             </div>`;
     }
 
+    // Add-ons applicable to this bundle
+    const applicableBundleAddOns = (clientData.addOns || []).filter(a =>
+        (a.applicableBundles || []).includes(bundle.name)
+    );
+
+    const bundleAddonQuickBarHTML = applicableBundleAddOns.length ? `
+        <div class="addon-quick-bar" style="margin-top:0.75rem;">
+            <span class="addon-quick-bar-label">&#9889; Add-Ons</span>
+            ${applicableBundleAddOns.map(a =>
+                `<button class="addon-quick-btn" id="addonQuick_${bundleId}_${a.addOnId}"
+                    onclick="quickSelectAddon('${bundleId}','${a.addOnId}',this)">&#10133; ${escapeHtml(a.name)}</button>`
+            ).join('')}
+        </div>` : '';
+
     wrapper.innerHTML = `
         <div class="bundle-panel-header">
             <div>
@@ -3302,6 +3318,12 @@ function buildBundlePanel(bundle) {
             ${subChips}
         </div>
         ${bundle.noteToAgent ? `<div class="agent-note"><div class="agent-note-title">Agent Note</div><div class="agent-note-content">${bundle.noteToAgent}</div></div>` : ''}
+        ${bundleAddonQuickBarHTML}
+        ${applicableBundleAddOns.length ? `
+        <div class="addon-active-section" id="addonSection_${bundleId}">
+            <div class="addon-chip-list" id="addonChips_${bundleId}"></div>
+            <div class="addon-pricing-breakdown" id="addonBreakdown_${bundleId}"></div>
+        </div>` : ''}
         ${calcHTML}`;
 
     // Store pricing data on the element for the calculator
@@ -3405,6 +3427,54 @@ function calculateBundlePricing(bundleId) {
     });
 
     breakdownEl.innerHTML = cards.join('');
+
+    // ── Add selected add-on prices into the bundle total ──────────────────────
+    const addonMap = _getAddonMap(bundleId);
+    if (addonMap.size > 0) {
+        const allAddons = clientData.addOns || [];
+        addonMap.forEach((qty, addOnId) => {
+            const addon = allAddons.find(a => a.addOnId === addOnId);
+            if (!addon) return;
+            let pd = addon.pricingData || {};
+            if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+            const mode      = pd.pricingMode || 'flat';
+            const isOneTime = String(addon.recurring) === 'false';
+            const unitLbl   = pd.unitLabel ? pd.unitLabel : 'unit';
+            const qtyLabel  = mode === 'per_unit' ? ` ×${qty} ${unitLbl}` : '';
+
+            let addonFirst = null, addonRecurring = null;
+
+            if (mode === 'flat') {
+                const n = parsePrice(pd.flatPrice || '');
+                if (n !== null) { addonFirst = n; addonRecurring = isOneTime ? null : n; }
+            } else if (mode === 'per_unit') {
+                const n = parsePrice(pd.pricePerUnit || '');
+                if (n !== null) { addonFirst = n * qty; addonRecurring = isOneTime ? null : n * qty; }
+            }
+            // sqft/acreage add-ons on bundles can't resolve without a separate sqft input
+            // so we skip them from the total (they show pending in the addon breakdown)
+
+            if (addonFirst !== null) {
+                totalFirst += addonFirst;
+                if (isOneTime) {
+                    cards.push(`<div class="bundle-price-card" style="border-left:2px solid rgba(16,185,129,0.4);">
+                        <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">+ Add-On</div>
+                        <div class="bundle-price-card-name">${escapeHtml(addon.name)}${qtyLabel}</div>
+                        <div class="bundle-price-row"><span class="bundle-price-label">One-Time</span><span class="bundle-price-value">$${addonFirst.toFixed(2)}</span></div>
+                    </div>`);
+                } else {
+                    cards.push(`<div class="bundle-price-card" style="border-left:2px solid rgba(16,185,129,0.4);">
+                        <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">+ Add-On</div>
+                        <div class="bundle-price-card-name">${escapeHtml(addon.name)}${qtyLabel}</div>
+                        <div class="bundle-price-row"><span class="bundle-price-label">First</span><span class="bundle-price-value">$${addonFirst.toFixed(2)}</span></div>
+                        <div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value">$${addonRecurring.toFixed(2)}</span></div>
+                    </div>`);
+                    totalRecurring += addonRecurring;
+                }
+            }
+        });
+        breakdownEl.innerHTML = cards.join('');
+    }
 
     // ── Total row ─────────────────────────────────────────────────────────────
     const fmtTotal = (n, unknown, missingInput, absent) => {
@@ -4500,7 +4570,15 @@ function renderAddonSection(serviceId) {
     if (!section || !chipsEl || !breakdownEl) return;
 
     const selected = _getAddonMap(serviceId);
-    if (selected.size === 0) { section.classList.remove('show'); return; }
+    if (selected.size === 0) {
+        section.classList.remove('show');
+        // Still re-run bundle calc so the total box drops back to service-only price
+        const bundleResultEl = document.getElementById(`bnd-result-${serviceId}`);
+        if (bundleResultEl && bundleResultEl.classList.contains('show')) {
+            _origCalculateBundlePricing(serviceId);
+        }
+        return;
+    }
     section.classList.add('show');
 
     const allAddons    = clientData.addOns || [];
@@ -4654,6 +4732,13 @@ function renderAddonSection(serviceId) {
     breakdownEl.innerHTML = rows || '<div class="addon-price-pending">Select an add-on to see pricing.</div>';
     if (anyPending)
         breakdownEl.innerHTML += '<div class="addon-price-pending">Enter sq ft / acreage in the calculator above to price remaining add-ons.</div>';
+
+    // If this is a bundle context and the bundle total is already showing, re-run
+    // the bundle pricing so the total box stays in sync with add-on selections
+    const bundleResultEl = document.getElementById(`bnd-result-${serviceId}`);
+    if (bundleResultEl && bundleResultEl.classList.contains('show')) {
+        _origCalculateBundlePricing(serviceId);
+    }
 }
 
 
@@ -4663,6 +4748,12 @@ const _origCalculatePricing = calculatePricing;
 calculatePricing = function(serviceId) {
     _origCalculatePricing(serviceId);
     if (_getAddonMap(serviceId).size > 0) renderAddonSection(serviceId);
+};
+
+const _origCalculateBundlePricing = calculateBundlePricing;
+calculateBundlePricing = function(bundleId) {
+    _origCalculateBundlePricing(bundleId);
+    if (_getAddonMap(bundleId).size > 0) renderAddonSection(bundleId);
 };
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
