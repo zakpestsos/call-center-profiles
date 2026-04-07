@@ -1990,6 +1990,7 @@ body {
             <button class="nav-btn" data-section="policies" onclick="showSection('policies', this)">Policies</button>
             <button class="nav-btn" data-section="technicians" onclick="showSection('technicians', this)">Scheduling</button>
             <button class="nav-btn" data-section="bulletin" onclick="showSection('bulletin', this)">Bulletin</button>
+            <button class="nav-btn" data-section="documents" id="navDocuments" style="display:none;" onclick="showSection('documents', this)">Company Notice</button>
         </nav>
  
         <!-- Content Area -->
@@ -2209,6 +2210,18 @@ body {
                 </div>
             </div>
  
+            <!-- Documents Section -->
+            <div id="documentsSection" class="content-section">
+                <div id="acquisitionLetterCard" class="info-section" style="display:none;">
+                    <h2 class="info-title">&#128140; Acquisition Letter</h2>
+                    <div class="info-content" id="acquisitionLetterContent"></div>
+                </div>
+                <div id="agentScriptCard" class="info-section" style="display:none;margin-top:1.25rem;">
+                    <h2 class="info-title">&#128221; Agent Script</h2>
+                    <div class="info-content" id="agentScriptContent"></div>
+                </div>
+            </div>
+
             <!-- Pests Not Covered Section -->
             <div id="pestsNotCoveredSection" class="content-section">
                 <div class="info-section">
@@ -2753,7 +2766,34 @@ function populateClientData() {
     }
  
     // Poison Procedure — now rendered inside Policies tab, no standalone element needed
- 
+
+    // Documents & Scripts — show nav button and populate cards only if content exists
+    const hasAcquisitionLetter = !!clientData.acquisitionLetter?.trim();
+    const hasAgentScript       = !!clientData.agentScript?.trim();
+    const hasDocuments         = hasAcquisitionLetter || hasAgentScript;
+
+    const navDocBtn = document.getElementById('navDocuments');
+    if (navDocBtn) {
+        navDocBtn.style.display = hasDocuments ? '' : 'none';
+        if (hasAcquisitionLetter && hasAgentScript) navDocBtn.textContent = 'Company Notice';
+        else if (hasAcquisitionLetter) navDocBtn.textContent = 'Company Notice';
+        else if (hasAgentScript)       navDocBtn.textContent = 'Company Notice';
+    }
+
+    const acqCard     = document.getElementById('acquisitionLetterCard');
+    const acqContent  = document.getElementById('acquisitionLetterContent');
+    const scriptCard  = document.getElementById('agentScriptCard');
+    const scriptContent = document.getElementById('agentScriptContent');
+
+    if (acqCard && acqContent) {
+        acqCard.style.display = hasAcquisitionLetter ? '' : 'none';
+        if (hasAcquisitionLetter) acqContent.innerHTML = clientData.acquisitionLetter.split(/\n\n+/).map(para => `<p style="margin-bottom:0.85rem;">${linkify(para).replace(/\n/g,'<br>')}</p>`).join('');
+    }
+    if (scriptCard && scriptContent) {
+        scriptCard.style.display = hasAgentScript ? '' : 'none';
+        if (hasAgentScript) scriptContent.innerHTML = clientData.agentScript.split(/\n\n+/).map(para => `<p style="margin-bottom:0.85rem;">${linkify(para).replace(/\n/g,'<br>')}</p>`).join('');
+    }
+
     showSection('services');
 }
  
@@ -4572,6 +4612,9 @@ function renderAddonSection(serviceId) {
     const selected = _getAddonMap(serviceId);
     if (selected.size === 0) {
         section.classList.remove('show');
+        // Clean up any injected acreage input so stale state doesn't persist
+        const orphanedAcreage = document.getElementById(`addonAcreageInput_${serviceId}`);
+        if (orphanedAcreage) orphanedAcreage.remove();
         // Still re-run bundle calc so the total box drops back to service-only price
         const bundleResultEl = document.getElementById(`bnd-result-${serviceId}`);
         if (bundleResultEl && bundleResultEl.classList.contains('show')) {
@@ -4609,6 +4652,34 @@ function renderAddonSection(serviceId) {
     // Read value from the service's own sqft input
     const serviceInput = document.getElementById(`sqft_${serviceId}`);
     const serviceInputVal = parseFloat(serviceInput?.value) || 0;
+
+    // If any active add-on uses acreage pricing but this service has no acreage input,
+    // inject a standalone acreage input so users can price those add-ons.
+    const hasAcreageAddon = activeAddons.some(a => {
+        let pd = a.pricingData || {};
+        if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+        return (pd.pricingMode || 'flat') === 'acreage';
+    });
+    const serviceHasAcreage = !!document.getElementById(`acreage_${serviceId}`);
+    let addonAcreageInputEl = document.getElementById(`addonAcreageInput_${serviceId}`);
+    if (hasAcreageAddon && !serviceHasAcreage) {
+        if (!addonAcreageInputEl) {
+            addonAcreageInputEl = document.createElement('div');
+            addonAcreageInputEl.id = `addonAcreageInput_${serviceId}`;
+            addonAcreageInputEl.className = 'addon-acreage-input-row';
+            addonAcreageInputEl.innerHTML =
+                `<label class="addon-acreage-label">Acreage (for add-on pricing):</label>` +
+                `<input type="number" min="0" step="0.01" class="addon-acreage-field" ` +
+                `id="addonAcreage_${serviceId}" placeholder="Enter acres" ` +
+                `oninput="renderAddonSection('${serviceId}')" />`;
+            section.insertBefore(addonAcreageInputEl, breakdownEl);
+        }
+    } else if (!hasAcreageAddon && addonAcreageInputEl) {
+        addonAcreageInputEl.remove();
+        addonAcreageInputEl = null;
+    }
+    const addonAcreageEl  = document.getElementById(`addonAcreage_${serviceId}`);
+    const addonAcreageVal = addonAcreageEl ? (parseFloat(addonAcreageEl.value) || 0) : 0;
 
     // Base price from service calculator result
     const pricingEl    = document.getElementById(`pricing_${serviceId}`);
@@ -4648,8 +4719,9 @@ function renderAddonSection(serviceId) {
             return isNaN(n) ? null : n * qty;
         }
 
-        // sqft or acreage — use serviceInputVal
-        if (!serviceInputVal || serviceInputVal <= 0) return null;
+        // sqft or acreage — use addonAcreageVal for acreage mode, serviceInputVal for sqft
+        const rangeVal = mode === 'acreage' ? addonAcreageVal : serviceInputVal;
+        if (!rangeVal || rangeVal <= 0) return null;
 
         const tiers = [
             { sqftMin: Number(pd.sqftMin)||0, sqftMax: Number(pd.sqftMax)||999999,
@@ -4659,7 +4731,7 @@ function renderAddonSection(serviceId) {
                 firstPrice: t.firstPrice, recurringPrice: t.recurringPrice
             }))
         ];
-        const tier = tiers.find(t => serviceInputVal >= t.sqftMin && serviceInputVal <= t.sqftMax);
+        const tier = tiers.find(t => rangeVal >= t.sqftMin && rangeVal <= t.sqftMax);
         if (!tier) return null;
         const raw = priceType === 'first' ? tier.firstPrice : tier.recurringPrice;
         const n   = parseFloat((raw || '').replace(/[^0-9.]/g, ''));
@@ -4730,8 +4802,27 @@ function renderAddonSection(serviceId) {
     }
 
     breakdownEl.innerHTML = rows || '<div class="addon-price-pending">Select an add-on to see pricing.</div>';
-    if (anyPending)
-        breakdownEl.innerHTML += '<div class="addon-price-pending">Enter sq ft / acreage in the calculator above to price remaining add-ons.</div>';
+    if (anyPending) {
+        const pendingHasAcreage = activeAddons.some(a => {
+            let pd = a.pricingData || {};
+            if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+            const m = pd.pricingMode || 'flat';
+            const fp2 = resolveAddonPrice(a, 'first');
+            return m === 'acreage' && fp2 === null;
+        });
+        const pendingHasSqft = activeAddons.some(a => {
+            let pd = a.pricingData || {};
+            if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+            const m = pd.pricingMode || 'flat';
+            const fp2 = resolveAddonPrice(a, 'first');
+            return m === 'sqft' && fp2 === null;
+        });
+        let pendingMsg = '';
+        if (pendingHasSqft && !pendingHasAcreage) pendingMsg = 'Enter sq ft in the calculator above to price remaining add-ons.';
+        if (pendingHasAcreage && !pendingHasSqft) pendingMsg = 'Enter acreage in the field above to price remaining add-ons.';
+        if (pendingHasSqft && pendingHasAcreage) pendingMsg = 'Enter sq ft / acreage above to price remaining add-ons.';
+        if (pendingMsg) breakdownEl.innerHTML += `<div class="addon-price-pending">${pendingMsg}</div>`;
+    }
 
     // If this is a bundle context and the bundle total is already showing, re-run
     // the bundle pricing so the total box stays in sync with add-on selections
