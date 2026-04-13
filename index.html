@@ -2820,7 +2820,7 @@ function showAlertBanner() {
     const banner   = document.getElementById('alertBanner');
     const alertTxt = document.getElementById('alertText');
     if (clientData.alerts?.trim()) {
-        alertTxt.innerHTML    = linkify(clientData.alerts);
+        alertTxt.innerHTML    = linkify(clientData.alerts).replace(/\r\n|\r|\n/g, '<br>');
         banner.style.display  = 'block';
     } else {
         banner.style.display  = 'none';
@@ -3132,8 +3132,18 @@ function buildServicePanel(service, svcIdx) {
             </div>`;
  
         wrapper._subServicesData = service.subServices;
+        wrapper._serviceData = service;
+
+        // Auto-select any add-ons required for this service
+        const requiredAddonsMulti = (clientData.addOns || []).filter(a =>
+            (a.requiredForServices || []).includes(service.name)
+        );
+        if (requiredAddonsMulti.length) {
+            const map = _getAddonMap(serviceId);
+            requiredAddonsMulti.forEach(a => { if (!map.has(a.addOnId)) map.set(a.addOnId, 1); });
+            setTimeout(() => renderAddonSection(serviceId), 0);
+        }
     } else {
-        // ── Regular service ──
         const isInspection   = (service.serviceType || '').toLowerCase().includes('inspection');
         const isReferOffice  = (service.serviceType || '').toLowerCase().includes('refer-office');
         const flatPrice = service.pricingTiers?.[0]?.flatPrice;
@@ -3255,6 +3265,16 @@ function buildServicePanel(service, svcIdx) {
         wrapper._pricingData = service.pricingTiers || [];
         wrapper._serviceData = service;
 
+        // Auto-select any add-ons that are required for this service
+        const requiredAddons = (clientData.addOns || []).filter(a =>
+            (a.requiredForServices || []).includes(service.name)
+        );
+        if (requiredAddons.length) {
+            const map = _getAddonMap(serviceId);
+            requiredAddons.forEach(a => { if (!map.has(a.addOnId)) map.set(a.addOnId, 1); });
+            setTimeout(() => renderAddonSection(serviceId), 0);
+        }
+
         // Auto-show flat pricing immediately — no input needed (skip inspections/referrals, they render inline)
         if (!isInspection && !isReferOffice && service.pricingTiers?.[0]?.pricingMode === 'flat') {
             setTimeout(() => calculatePricing(serviceId), 0);
@@ -3358,6 +3378,11 @@ function buildBundlePanel(bundle) {
             ${subChips}
         </div>
         ${bundle.noteToAgent ? `<div class="agent-note"><div class="agent-note-title">Agent Note</div><div class="agent-note-content">${bundle.noteToAgent}</div></div>` : ''}
+        ${bundle.pests ? `
+        <div class="pests-covered-section">
+            <div class="pests-covered-title">Pests Covered</div>
+            <div class="pests-covered-list pests-covered">${bundle.pests}</div>
+        </div>` : ''}
         ${bundleAddonQuickBarHTML}
         ${applicableBundleAddOns.length ? `
         <div class="addon-active-section" id="addonSection_${bundleId}">
@@ -3389,6 +3414,44 @@ function calculateBundlePricing(bundleId) {
         const n = parseFloat(String(str || '').replace(/[^0-9.]/g, ''));
         return isNaN(n) ? null : n;
     };
+
+    // ── Inject inputs for any add-on mode not already covered by service inputs ──
+    // e.g. bundle services use sqft but a selected add-on uses acreage (or vice versa)
+    const inputContainer = wrapper.querySelector('.sqft-input-container');
+    if (inputContainer) {
+        const addonMap = _getAddonMap(bundleId);
+        const allAddons = clientData.addOns || [];
+        const addonModes = new Set();
+        addonMap.forEach((qty, addOnId) => {
+            const addon = allAddons.find(a => a.addOnId === addOnId);
+            if (!addon) return;
+            let pd = addon.pricingData || {};
+            if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
+            const m = pd.pricingMode || 'flat';
+            if (m === 'sqft' || m === 'acreage') addonModes.add(m);
+        });
+        addonModes.forEach(mode => {
+            if (!document.getElementById(`bnd-input-${bundleId}-${mode}`)) {
+                const label = mode === 'acreage' ? 'Enter acreage (add-ons)' : 'Enter sq ft (add-ons)';
+                const inp   = document.createElement('input');
+                inp.type        = 'number';
+                inp.className   = 'sqft-input bundle-calc-input';
+                inp.id          = `bnd-input-${bundleId}-${mode}`;
+                inp.placeholder = label;
+                inp.min         = '0';
+                inp.step        = mode === 'acreage' ? '0.01' : '1';
+                inp.setAttribute('onkeypress', `if(event.key==='Enter') calculateBundlePricing('${bundleId}')`);
+                const calcBtn = inputContainer.querySelector('.calculate-btn');
+                inputContainer.insertBefore(inp, calcBtn || null);
+            }
+        });
+        // Remove any previously injected inputs whose add-on is no longer selected
+        inputContainer.querySelectorAll(`input[id^="bnd-input-${bundleId}-"]`).forEach(inp => {
+            const mode = inp.id.replace(`bnd-input-${bundleId}-`, '');
+            const usedByService = Object.values(sp).some(p => (p.pricingMode || 'sqft') === mode);
+            if (!usedByService && !addonModes.has(mode)) inp.remove();
+        });
+    }
 
     Object.entries(sp).forEach(([svcName, pricing]) => {
         const mode = pricing.pricingMode || 'sqft';
@@ -3460,8 +3523,11 @@ function calculateBundlePricing(bundleId) {
 
         cards.push(`<div class="bundle-price-card">
             <div class="bundle-price-card-name">${svcName}</div>
-            ${firstRaw     !== '—' ? `<div class="bundle-price-row"><span class="bundle-price-label">First</span><span class="bundle-price-value">${firstRaw}</span></div>` : ''}
-            ${recurringRaw !== '—' ? `<div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value">${recurringRaw}</span></div>` : ''}
+            ${firstRaw !== '—' ? `<div class="bundle-price-row"><span class="bundle-price-label">First</span><span class="bundle-price-value">${firstRaw}</span></div>` : ''}
+            ${recurringAbsent
+                ? `<div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value" style="color:var(--text-muted);font-style:italic;">N/A</span></div>`
+                : `<div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value">${recurringRaw}</span></div>`
+            }
             <div class="bundle-price-row"><span class="bundle-price-label" style="font-size:0.68rem;color:var(--text-muted);">${rangeLabel}</span></div>
         </div>`);
     });
@@ -3481,8 +3547,10 @@ function calculateBundlePricing(bundleId) {
             const isOneTime = String(addon.recurring) === 'false';
             const unitLbl   = pd.unitLabel ? pd.unitLabel : 'unit';
             const qtyLabel  = mode === 'per_unit' ? ` ×${qty} ${unitLbl}` : '';
+            const unit      = mode === 'acreage' ? 'acreage' : 'sq ft';
 
             let addonFirst = null, addonRecurring = null;
+            let addonPending = false;
 
             if (mode === 'flat') {
                 const n = parsePrice(pd.flatPrice || '');
@@ -3490,26 +3558,55 @@ function calculateBundlePricing(bundleId) {
             } else if (mode === 'per_unit') {
                 const n = parsePrice(pd.pricePerUnit || '');
                 if (n !== null) { addonFirst = n * qty; addonRecurring = isOneTime ? null : n * qty; }
+            } else {
+                // sqft or acreage — read the same bundle input the services already use
+                const inputEl  = document.getElementById(`bnd-input-${bundleId}-${mode}`);
+                const rangeVal = mode === 'acreage' ? parseFloat(inputEl?.value) : parseInt(inputEl?.value);
+                if (!rangeVal || rangeVal <= 0) {
+                    addonPending = true;
+                } else {
+                    const addonTiers = [
+                        { sqftMin: Number(pd.sqftMin)||0, sqftMax: Number(pd.sqftMax)||999999,
+                          firstPrice: pd.firstPrice, recurringPrice: pd.recurringPrice },
+                        ...(pd.tiers||[]).map(t => ({
+                            sqftMin: Number(t.sqftMin)||0, sqftMax: Number(t.sqftMax)||999999,
+                            firstPrice: t.firstPrice, recurringPrice: t.recurringPrice
+                        }))
+                    ];
+                    const matchedTier = addonTiers.find(t => rangeVal >= t.sqftMin && rangeVal <= t.sqftMax);
+                    if (matchedTier) {
+                        const fp2 = parsePrice(matchedTier.firstPrice || '');
+                        const rp2 = parsePrice(matchedTier.recurringPrice || '');
+                        if (fp2 !== null) { addonFirst = fp2; addonRecurring = isOneTime ? null : (rp2 !== null ? rp2 : fp2); }
+                    } else {
+                        addonPending = true;
+                    }
+                }
             }
-            // sqft/acreage add-ons on bundles can't resolve without a separate sqft input
-            // so we skip them from the total (they show pending in the addon breakdown)
 
-            if (addonFirst !== null) {
+            if (addonPending) {
+                cards.push(`<div class="bundle-price-card" style="border-left:2px solid rgba(16,185,129,0.4);">
+                    <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">+ Add-On</div>
+                    <div class="bundle-price-card-name">${escapeHtml(addon.name)}${qtyLabel}</div>
+                    <div class="bundle-price-row"><span class="bundle-price-label" style="color:var(--text-muted);font-style:italic;">Enter ${unit} above</span></div>
+                </div>`);
+            } else if (addonFirst !== null) {
                 totalFirst += addonFirst;
                 if (isOneTime) {
                     cards.push(`<div class="bundle-price-card" style="border-left:2px solid rgba(16,185,129,0.4);">
                         <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">+ Add-On</div>
                         <div class="bundle-price-card-name">${escapeHtml(addon.name)}${qtyLabel}</div>
                         <div class="bundle-price-row"><span class="bundle-price-label">One-Time</span><span class="bundle-price-value">$${addonFirst.toFixed(2)}</span></div>
+                        <div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value" style="color:var(--text-muted);font-style:italic;">N/A</span></div>
                     </div>`);
                 } else {
                     cards.push(`<div class="bundle-price-card" style="border-left:2px solid rgba(16,185,129,0.4);">
                         <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">+ Add-On</div>
                         <div class="bundle-price-card-name">${escapeHtml(addon.name)}${qtyLabel}</div>
                         <div class="bundle-price-row"><span class="bundle-price-label">First</span><span class="bundle-price-value">$${addonFirst.toFixed(2)}</span></div>
-                        <div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value">$${addonRecurring.toFixed(2)}</span></div>
+                        <div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value">${addonRecurring !== null ? '$' + addonRecurring.toFixed(2) : '<span style="color:var(--text-muted);font-style:italic;">N/A</span>'}</span></div>
                     </div>`);
-                    totalRecurring += addonRecurring;
+                    if (addonRecurring !== null) totalRecurring += addonRecurring;
                 }
             }
         });
@@ -4538,7 +4635,15 @@ function quickSelectAddon(serviceId, addOnId, btn) {
     const map = _getAddonMap(serviceId);
     const isSelected = map.has(addOnId);
 
+    // Don't allow deselecting a required add-on
     if (isSelected) {
+        const addon = (clientData.addOns || []).find(a => a.addOnId === addOnId);
+        const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
+        const serviceName = serviceCard?._serviceData?.name || '';
+        if (addon && (addon.requiredForServices || []).includes(serviceName)) {
+            toast(`"${addon.name}" is required for this service and cannot be removed.`, 'warning', 4000);
+            return;
+        }
         map.delete(addOnId);
         btn.classList.remove('active');
     } else {
@@ -4563,7 +4668,19 @@ function quickSelectAddon(serviceId, addOnId, btn) {
 function toggleAddon(serviceId, addOnId, event) {
     event.stopPropagation();
     const map = _getAddonMap(serviceId);
-    if (map.has(addOnId)) { map.delete(addOnId); } else { map.set(addOnId, 1); }
+    // Don't allow deselecting a required add-on
+    if (map.has(addOnId)) {
+        const addon = (clientData.addOns || []).find(a => a.addOnId === addOnId);
+        const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
+        const serviceName = serviceCard?._serviceData?.name || '';
+        if (addon && (addon.requiredForServices || []).includes(serviceName)) {
+            toast(`"${addon.name}" is required for this service and cannot be removed.`, 'warning', 4000);
+            return;
+        }
+        map.delete(addOnId);
+    } else {
+        map.set(addOnId, 1);
+    }
     // Sync dropdown item
     const item = document.getElementById(`addonItem_${serviceId}_${addOnId}`);
     if (item) item.classList.toggle('selected', map.has(addOnId));
@@ -4580,6 +4697,13 @@ function toggleAddon(serviceId, addOnId, event) {
 }
 
 function removeAddonChip(serviceId, addOnId) {
+    const addon = (clientData.addOns || []).find(a => a.addOnId === addOnId);
+    const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
+    const serviceName = serviceCard?._serviceData?.name || '';
+    if (addon && (addon.requiredForServices || []).includes(serviceName)) {
+        toast(`"${addon.name}" is required for this service and cannot be removed.`, 'warning', 4000);
+        return;
+    }
     const map = _getAddonMap(serviceId);
     map.delete(addOnId);
     const item = document.getElementById(`addonItem_${serviceId}_${addOnId}`);
@@ -4627,13 +4751,16 @@ function renderAddonSection(serviceId) {
     const allAddons    = clientData.addOns || [];
     const activeAddons = [...selected.keys()].map(id => allAddons.find(a => a.addOnId === id)).filter(Boolean);
 
-    // Chips — per-unit addons get a quantity stepper inline
+    // Chips — per-unit addons get a quantity stepper inline; required addons get distinct styling and no remove button
+    const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
+    const serviceName = serviceCard?._serviceData?.name || '';
     chipsEl.innerHTML = activeAddons.map(a => {
         let pd = a.pricingData || {};
         if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
-        const isPerUnit = (pd.pricingMode || 'flat') === 'per_unit';
-        const qty = selected.get(a.addOnId) || 1;
-        const unitLbl = pd.unitLabel ? escapeHtml(pd.unitLabel) : 'unit';
+        const isPerUnit  = (pd.pricingMode || 'flat') === 'per_unit';
+        const isRequired = (a.requiredForServices || []).includes(serviceName);
+        const qty        = selected.get(a.addOnId) || 1;
+        const unitLbl    = pd.unitLabel ? escapeHtml(pd.unitLabel) : 'unit';
         const qtyHtml = isPerUnit
             ? `<span class="addon-chip-qty">` +
               `<button class="addon-chip-qty-btn" onclick="changeAddonQty('${serviceId}','${a.addOnId}',-1)" title="Decrease">&#8722;</button>` +
@@ -4642,7 +4769,16 @@ function renderAddonSection(serviceId) {
               `<span class="addon-chip-qty-label">${unitLbl}</span>` +
               `</span>`
             : '';
-        return `<span class="addon-chip">${escapeHtml(a.name)}${qtyHtml}<button class="addon-chip-remove" onclick="removeAddonChip('${serviceId}','${a.addOnId}')" title="Remove">\xd7</button></span>`;
+        const requiredBadge = isRequired
+            ? `<span style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;opacity:0.7;margin-left:0.35rem;">required</span>`
+            : '';
+        const removeBtn = isRequired
+            ? ''
+            : `<button class="addon-chip-remove" onclick="removeAddonChip('${serviceId}','${a.addOnId}')" title="Remove">\xd7</button>`;
+        const chipStyle = isRequired
+            ? ` style="background:rgba(221,30,51,0.08);border-color:rgba(221,30,51,0.25);"`
+            : '';
+        return `<span class="addon-chip"${chipStyle}>${escapeHtml(a.name)}${requiredBadge}${qtyHtml}${removeBtn}</span>`;
     }).join('');
 
     // Clear any leftover per-addon inputs container (no longer used)
