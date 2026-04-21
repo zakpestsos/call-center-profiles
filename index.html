@@ -4205,10 +4205,30 @@ async function openOfficeModal() {
     const holidays = Array.isArray(holidaysRaw)
         ? holidaysRaw
         : String(holidaysRaw).split('\n').filter(Boolean);
- 
+
+    // Build a formatted multi-line address from the individual parts.
+    // Falls back to a single `address` string if parts aren't provided.
+    const formatAddress = (street, suite, city, state, zip) => {
+        const line1 = [street, suite].filter(Boolean).join(', ');
+        const line2 = [[city, state].filter(Boolean).join(', '), zip].filter(Boolean).join(' ');
+        return [line1, line2].filter(Boolean).join('<br>');
+    };
+
+    const physicalAddress =
+        formatAddress(office.physicalStreet, office.physicalSuite, office.physicalCity, office.physicalState, office.physicalZip)
+        || office.address
+        || '';
+
+    const mailingAddress =
+        formatAddress(office.mailingStreet, office.mailingSuite, office.mailingCity, office.mailingState, office.mailingZip);
+
+    const showMailing = mailingAddress && mailingAddress !== physicalAddress && !office.sameAsPhysical;
+
     container.innerHTML = `
         <div><strong>Phone:</strong> ${office.phone || '—'}</div>
         <div><strong>Email:</strong> ${office.email || '—'}</div>
+        <div><strong>Address:</strong><br>${physicalAddress || '—'}</div>
+        ${showMailing ? `<div><strong>Mailing Address:</strong><br>${mailingAddress}</div>` : ''}
         <div><strong>Office Hours:</strong><br>${(office.officeHours || '—').replace(/\n/g, '<br>')}</div>
         <div style="margin-top:12px;">
             <strong>Holidays Observed:</strong><br>
