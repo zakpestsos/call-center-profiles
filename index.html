@@ -4507,14 +4507,25 @@ async function openOfficeModal() {
     };
 
     // If multi-location profile, pull phone/address/hours from the active location.
-    // For single-location/legacy profiles, the synthesized getActiveLocation()
-    // returns the same data officeInfo already held, so behavior is identical.
+    // Phone and hours fall back to clientData.officeInfo when the active
+    // location leaves them blank — most branches don't have their own phone
+    // number and hours may be company-wide. Address always comes from the
+    // active location (that's the whole point of per-location data). Email,
+    // mailing address, and holidays are always company-wide.
     const locs      = getLocations();
     const activeLoc = getActiveLocation() || {};
     const isMulti   = locs.length > 1;
 
-    const activePhone   = isMulti ? activeLoc.phone  : (office.phone || activeLoc.phone || '');
-    const activeHours   = isMulti ? activeLoc.hours  : (office.officeHours || activeLoc.hours || '');
+    // Blank-safe fallback helper
+    const pick = (locVal, officeVal) => {
+        const s = (locVal == null ? '' : String(locVal)).trim();
+        return s !== '' ? s : (officeVal || '');
+    };
+
+    const activePhone   = isMulti ? pick(activeLoc.phone, office.phone)
+                                  : (office.phone || activeLoc.phone || '');
+    const activeHours   = isMulti ? pick(activeLoc.hours, office.officeHours)
+                                  : (office.officeHours || activeLoc.hours || '');
     const locationHeading = isMulti && activeLoc.name
         ? `<div style="font-weight:700;color:var(--water);margin-bottom:8px;">${escapeHtml(activeLoc.name)}</div>`
         : '';
@@ -4528,9 +4539,16 @@ async function openOfficeModal() {
     const mailingAddress =
         formatAddress(office.mailingStreet, office.mailingSuite, office.mailingCity, office.mailingState, office.mailingZip);
 
-    // Hide mailing address for non-primary locations — mailing is a
-    // company-wide field and only relevant to the primary location.
-    const showMailing = !isMulti && mailingAddress && mailingAddress !== physicalAddress && !office.sameAsPhysical;
+    // Mailing address is a company-wide field (stored on Client_Profiles, not
+    // per-location). Show it whenever it's populated and differs from the
+    // active physical address. The `sameAsPhysical` flag was set on the
+    // admin form to suppress duplicate display for the MAIN office — we
+    // only honor it for single-location/main-office view, because a
+    // secondary location's physical address is different from the mailing
+    // address anyway.
+    const showMailing = mailingAddress
+                     && mailingAddress !== physicalAddress
+                     && (isMulti || !office.sameAsPhysical);
 
     container.innerHTML = `
         ${locationHeading}
