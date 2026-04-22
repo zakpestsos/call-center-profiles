@@ -803,7 +803,7 @@ body {
  
 .calculator-title { font-family: 'Nunito Sans', sans-serif; font-weight: 800; color: var(--text-heading); font-size: 0.95rem; margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.4rem; }
  
-.sqft-input-container { display: flex; gap: 0.65rem; align-items: center; margin-bottom: 0.75rem; }
+.sqft-input-container { display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; margin-bottom: 0.75rem; }
  
 .sqft-input {
     flex: 1;
@@ -1866,6 +1866,79 @@ body {
 .addon-price-row.total-row .addon-price-row-label { font-weight: 800; color: var(--text-heading); font-size: 0.85rem; }
 .addon-price-row.total-row .addon-price-row-value { color: #10b981; font-size: 0.95rem; }
 .addon-price-pending { font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-top: 0.3rem; }
+
+/* ── Per-unit stepper (service + bundle sub-service calculators) ─── */
+.per-unit-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(12,143,203,0.08);
+    border: 1px solid rgba(12,143,203,0.3);
+    border-radius: 999px;
+    padding: 0.25rem 0.5rem;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.per-unit-stepper-btn {
+    background: rgba(12,143,203,0.22);
+    border: 1px solid rgba(12,143,203,0.5);
+    color: var(--water);
+    border-radius: 50%;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+}
+.per-unit-stepper-btn:hover {
+    background: rgba(12,143,203,0.45);
+    transform: scale(1.1);
+}
+.per-unit-stepper-btn:active { transform: scale(0.92); }
+.per-unit-qty-input {
+    flex: 0 0 auto;
+    width: 3.5rem;
+    text-align: center;
+    font-weight: 800;
+    padding: 0.25rem 0.3rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 0.3rem;
+    color: var(--text-primary);
+    font-family: 'Nunito Sans', sans-serif;
+}
+.per-unit-qty-input::-webkit-outer-spin-button,
+.per-unit-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.per-unit-qty-input[type=number] { -moz-appearance: textfield; }
+.per-unit-stepper-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
+}
+.per-unit-stepper-svc {
+    font-size: 0.78rem;
+    color: var(--text-heading);
+    font-weight: 700;
+    margin-right: 0.2rem;
+    white-space: nowrap;
+}
+.bundle-per-unit-stepper {
+    flex: 1 1 100%;
+    margin: 0.15rem 0;
+}
+.per-unit-stepper-container {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
 
 /* ══════════════════════════════════════════════════════════════════
    END ADD-ONS
@@ -3279,6 +3352,10 @@ function buildServicePanel(service, svcIdx) {
         if (!isInspection && !isReferOffice && service.pricingTiers?.[0]?.pricingMode === 'flat') {
             setTimeout(() => calculatePricing(serviceId), 0);
         }
+        // Auto-show per-unit pricing immediately at default qty=1 so agents see the price without clicking
+        if (!isInspection && !isReferOffice && service.pricingTiers?.[0]?.pricingMode === 'per_unit') {
+            setTimeout(() => calculatePricing(serviceId), 0);
+        }
     }
     return wrapper;
 }
@@ -3317,14 +3394,20 @@ function buildBundlePanel(bundle) {
     const sp = bundle.servicePricing || {};
     const spEntries = Object.entries(sp);
 
-    // Determine which input modes are needed
+    // Determine which input modes are needed (excluding per_unit — per_unit gets its own per-service stepper)
     const inputModes = [...new Set(
-        spEntries.filter(([, p]) => p.pricingMode !== 'flat').map(([, p]) => p.pricingMode || 'sqft')
+        spEntries.filter(([, p]) => {
+            const m = p.pricingMode || 'sqft';
+            return m !== 'flat' && m !== 'per_unit';
+        }).map(([, p]) => p.pricingMode || 'sqft')
     )];
+
+    // Per-unit sub-services — each gets its own stepper (because unit labels and qty are per-service)
+    const perUnitEntries = spEntries.filter(([, p]) => (p.pricingMode || 'sqft') === 'per_unit');
 
     let calcHTML = '';
     if (spEntries.length) {
-        // Build one input per unique non-flat mode, all sharing one Calculate button
+        // Build one input per unique non-flat, non-per_unit mode, all sharing one Calculate button
         const inputsHTML = inputModes.map(mode => {
             const label = mode === 'acreage' ? 'Enter acreage' : 'Enter square footage';
             const step  = mode === 'acreage' ? '0.01' : '1';
@@ -3333,11 +3416,26 @@ function buildBundlePanel(bundle) {
                 onkeypress="if(event.key==='Enter') calculateBundlePricing('${bundleId}')">`;
         }).join('');
 
+        // Per-unit steppers — one per per_unit sub-service
+        const perUnitSteppersHTML = perUnitEntries.map(([svcName, p]) => {
+            const unitLbl = escapeHtml(p.unitLabel || 'units');
+            const inputId = `bnd-input-${bundleId}-perunit-${encodeURIComponent(svcName).replace(/[^a-zA-Z0-9]/g,'_')}`;
+            return `<div class="per-unit-stepper bundle-per-unit-stepper" data-svc-name="${escapeHtml(svcName)}">
+                <span class="per-unit-stepper-svc">${escapeHtml(svcName)}:</span>
+                <button type="button" class="per-unit-stepper-btn" onclick="changeBundlePerUnitQty('${bundleId}','${inputId}',-1)" title="Decrease">&#8722;</button>
+                <input type="number" class="sqft-input per-unit-qty-input" id="${inputId}" data-svc-name="${escapeHtml(svcName)}" value="1" min="1" step="1"
+                    oninput="calculateBundlePricing('${bundleId}')"
+                    onkeypress="if(event.key==='Enter') calculateBundlePricing('${bundleId}')">
+                <button type="button" class="per-unit-stepper-btn" onclick="changeBundlePerUnitQty('${bundleId}','${inputId}',1)" title="Increase">&#43;</button>
+                <span class="per-unit-stepper-label">${unitLbl}</span>
+            </div>`;
+        }).join('');
+
         // If all services are flat, just show calculate button once
-        const flatOnly = inputModes.length === 0;
-        const triggerHTML = flatOnly
+        const hasAnyInput = inputModes.length > 0 || perUnitEntries.length > 0;
+        const triggerHTML = !hasAnyInput
             ? `<div class="sqft-input-container"><button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Show Pricing</button></div>`
-            : `<div class="sqft-input-container">${inputsHTML}<button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Calculate</button></div>`;
+            : `<div class="sqft-input-container">${inputsHTML}${perUnitSteppersHTML}<button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Calculate</button></div>`;
 
         calcHTML = `
             <div class="pricing-calculator" style="margin-top:1rem;">
@@ -3447,6 +3545,8 @@ function calculateBundlePricing(bundleId) {
         });
         // Remove any previously injected inputs whose add-on is no longer selected
         inputContainer.querySelectorAll(`input[id^="bnd-input-${bundleId}-"]`).forEach(inp => {
+            // Skip per-unit inputs — those are tied to sub-services, not add-ons
+            if (inp.id.indexOf('-perunit-') !== -1) return;
             const mode = inp.id.replace(`bnd-input-${bundleId}-`, '');
             const usedByService = Object.values(sp).some(p => (p.pricingMode || 'sqft') === mode);
             if (!usedByService && !addonModes.has(mode)) inp.remove();
@@ -3466,6 +3566,42 @@ function calculateBundlePricing(bundleId) {
             const flatN = parsePrice(flat);
             if (flatN !== null) { totalFirst += flatN; totalRecurring += flatN; }
             else { totalFirstUnknown = true; totalRecurringUnknown = true; }
+            return;
+        }
+
+        // ── Per-unit pricing ──────────────────────────────────────────────────
+        if (mode === 'per_unit') {
+            const unitLbl = pricing.unitLabel || 'units';
+            const inputId = `bnd-input-${bundleId}-perunit-${encodeURIComponent(svcName).replace(/[^a-zA-Z0-9]/g,'_')}`;
+            const inputEl = document.getElementById(inputId);
+            const qty     = parseInt(inputEl?.value) || 0;
+
+            if (!qty || qty < 1) {
+                cards.push(`<div class="bundle-price-card">
+                    <div class="bundle-price-card-name">${svcName}</div>
+                    <div class="bundle-price-row"><span class="bundle-price-label" style="color:var(--text-muted);font-style:italic;">Enter quantity above</span></div>
+                </div>`);
+                totalFirstMissingInput = totalFirstUnknown = true;
+                totalRecurringMissingInput = totalRecurringUnknown = true;
+                return;
+            }
+
+            const ppu      = parsePrice(pricing.pricePerUnit || '');
+            const subTotal = ppu !== null ? ppu * qty : null;
+
+            if (subTotal !== null) {
+                totalFirst     += subTotal;
+                totalRecurring += subTotal;
+            } else {
+                totalFirstUnknown = true; totalRecurringUnknown = true;
+            }
+
+            cards.push(`<div class="bundle-price-card">
+                <div class="bundle-price-card-name">${svcName}</div>
+                ${ppu !== null ? `<div class="bundle-price-row"><span class="bundle-price-label">Price Per Unit</span><span class="bundle-price-value">$${ppu.toFixed(2).replace(/\.00$/, '')}</span></div>` : ''}
+                <div class="bundle-price-row"><span class="bundle-price-label">Quantity</span><span class="bundle-price-value">${qty} ${escapeHtml(unitLbl)}</span></div>
+                ${subTotal !== null ? `<div class="bundle-price-row"><span class="bundle-price-label">Total</span><span class="bundle-price-value">$${subTotal.toFixed(2).replace(/\.00$/, '')}</span></div>` : ''}
+            </div>`);
             return;
         }
 
@@ -4475,6 +4611,28 @@ function pricingInputHTML(id, tiers, onclickOverride) {
     if (mode === 'flat') {
         return ''; // flat pricing — no input needed, shown directly in results
     }
+    if (mode === 'per_unit') {
+        const unitLbl = escapeHtml(tiers[0]?.unitLabel || 'unit');
+        // For sub-services, the onclickOverride string starts with 'calculateSubServicePricing'.
+        // Use that same expression for stepper buttons and the input's oninput so quantity
+        // changes route to the right calculator (service vs sub-service).
+        const recalcExpr = onclickOverride || `calculatePricing('${id}')`;
+        const isSubService = typeof onclickOverride === 'string' && onclickOverride.indexOf('calculateSubServicePricing') === 0;
+        const stepperCall = isSubService
+            ? `(function(){const i=document.getElementById('sqft_${id}');if(!i)return;const c=parseInt(i.value)||1;i.value=Math.max(1,c+__DELTA__);${recalcExpr};})()`
+            : `changeServiceQty('${id}',__DELTA__)`;
+        const minusCall = stepperCall.replace('__DELTA__', '-1');
+        const plusCall  = stepperCall.replace('__DELTA__', '1');
+        return `<div class="sqft-input-container per-unit-stepper-container" data-service-id="${id}">
+            <div class="per-unit-stepper">
+                <button type="button" class="per-unit-stepper-btn" onclick="${minusCall}" title="Decrease">&#8722;</button>
+                <input type="number" class="sqft-input per-unit-qty-input" id="sqft_${id}" value="1" min="1" step="1" oninput="${recalcExpr}">
+                <button type="button" class="per-unit-stepper-btn" onclick="${plusCall}" title="Increase">&#43;</button>
+                <span class="per-unit-stepper-label">${unitLbl}</span>
+            </div>
+            <button class="calculate-btn" onclick="${onclick}">Calculate</button>
+        </div>`;
+    }
     const isAcreage   = mode === 'acreage';
     const placeholder = isAcreage ? 'Enter acreage' : 'Enter square footage';
     const step        = isAcreage ? '0.01' : '1';
@@ -4485,8 +4643,31 @@ function pricingInputHTML(id, tiers, onclickOverride) {
 }
 
 // Returns the unit label string for range display
-function pricingUnitLabel(mode) {
-    return mode === 'acreage' ? 'acres' : 'sq ft';
+function pricingUnitLabel(mode, tierData) {
+    if (mode === 'acreage') return 'acres';
+    if (mode === 'per_unit') return (tierData && tierData.unitLabel) ? tierData.unitLabel : 'units';
+    return 'sq ft';
+}
+
+// Stepper handler for per-unit service quantity
+function changeServiceQty(serviceId, delta) {
+    const inp = document.getElementById(`sqft_${serviceId}`);
+    if (!inp) return;
+    const cur = parseInt(inp.value) || 1;
+    const next = Math.max(1, cur + delta);
+    inp.value = next;
+    // Re-run calculation immediately so the price updates as user clicks
+    try { calculatePricing(serviceId); } catch(e) {}
+}
+
+// Stepper handler for per-unit bundle sub-service quantity
+function changeBundlePerUnitQty(bundleId, inputId, delta) {
+    const inp = document.getElementById(inputId);
+    if (!inp) return;
+    const cur = parseInt(inp.value) || 1;
+    const next = Math.max(1, cur + delta);
+    inp.value = next;
+    try { calculateBundlePricing(bundleId); } catch(e) {}
 }
 
 function calculatePricing(serviceId) {
@@ -4498,13 +4679,33 @@ function calculatePricing(serviceId) {
     if (!tiers) { document.getElementById(`pricing_${serviceId}`).innerHTML = '<div class="price-display-item"><div class="price-display-value">No pricing tiers available</div></div>'; resultEl.classList.add('show'); return; }
 
     const mode = tiers[0]?.pricingMode || 'sqft';
-    const unit = pricingUnitLabel(mode);
+    const unit = pricingUnitLabel(mode, tiers[0]);
 
     // Flat pricing — show directly without needing input
     if (mode === 'flat') {
         const flat = tiers[0]?.flatPrice || '—';
         const svcTypeLabel = svcData?.serviceTypeDesc || tiers[0]?.serviceTypeDesc || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || tiers[0]?.serviceType || '';
         document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>${svcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${svcTypeLabel}</div></div>` : ''}`;
+        document.getElementById(`range_${serviceId}`).textContent = '';
+        resultEl.classList.add('show');
+        return;
+    }
+
+    // Per-unit pricing — price = pricePerUnit × qty (no tiers, flat rate)
+    if (mode === 'per_unit') {
+        const qty = parseInt(inputEl?.value) || 1;
+        if (qty < 1) { resultEl.classList.remove('show'); return; }
+        const unitLbl = tiers[0]?.unitLabel || 'units';
+        const pricePerUnit = parseFloat((tiers[0]?.pricePerUnit || '').toString().replace(/[^0-9.]/g, ''));
+        const total = !isNaN(pricePerUnit) ? pricePerUnit * qty : null;
+        const svcTypeLabel = svcData?.serviceTypeDesc || tiers[0]?.serviceTypeDesc || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || tiers[0]?.serviceType || '';
+        const perUnitDisplay = !isNaN(pricePerUnit) ? `$${pricePerUnit.toFixed(2).replace(/\.00$/, '')}` : '—';
+        const totalDisplay   = total !== null ? `$${total.toFixed(2).replace(/\.00$/, '')}` : '—';
+        document.getElementById(`pricing_${serviceId}`).innerHTML = `
+            <div class="price-display-item"><div class="price-display-label">Price Per Unit</div><div class="price-display-value">${perUnitDisplay}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Quantity</div><div class="price-display-value">${qty} ${escapeHtml(unitLbl)}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Total</div><div class="price-display-value">${totalDisplay}</div></div>
+            ${svcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${svcTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${serviceId}`).textContent = '';
         resultEl.classList.add('show');
         return;
@@ -4581,12 +4782,32 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
     const tiers    = sub?.pricingTiers;
 
     const mode = tiers?.[0]?.pricingMode || 'sqft';
-    const unit = pricingUnitLabel(mode);
+    const unit = pricingUnitLabel(mode, tiers?.[0]);
 
     if (mode === 'flat') {
         const flat = tiers[0]?.flatPrice || '—';
         const subFlatTypeLabel = tiers[0]?.serviceTypeDesc || tiers[0]?.serviceType || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || '';
         document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>${subFlatTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${subFlatTypeLabel}</div></div>` : ''}`;
+        document.getElementById(`range_${subServiceId}`).textContent = '';
+        resultEl.classList.add('show');
+        return;
+    }
+
+    // Per-unit pricing for sub-services
+    if (mode === 'per_unit') {
+        const qty = parseInt(inputEl?.value) || 1;
+        if (qty < 1) { resultEl.classList.remove('show'); return; }
+        const unitLbl = tiers[0]?.unitLabel || 'units';
+        const pricePerUnit = parseFloat((tiers[0]?.pricePerUnit || '').toString().replace(/[^0-9.]/g, ''));
+        const total = !isNaN(pricePerUnit) ? pricePerUnit * qty : null;
+        const subSvcTypeLabel = tiers[0]?.serviceTypeDesc || tiers[0]?.serviceType || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || '';
+        const perUnitDisplay = !isNaN(pricePerUnit) ? `$${pricePerUnit.toFixed(2).replace(/\.00$/, '')}` : '—';
+        const totalDisplay   = total !== null ? `$${total.toFixed(2).replace(/\.00$/, '')}` : '—';
+        document.getElementById(`pricing_${subServiceId}`).innerHTML = `
+            <div class="price-display-item"><div class="price-display-label">Price Per Unit</div><div class="price-display-value">${perUnitDisplay}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Quantity</div><div class="price-display-value">${qty} ${escapeHtml(unitLbl)}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Total</div><div class="price-display-value">${totalDisplay}</div></div>
+            ${subSvcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${subSvcTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${subServiceId}`).textContent = '';
         resultEl.classList.add('show');
         return;
