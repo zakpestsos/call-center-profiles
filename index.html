@@ -241,6 +241,26 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+/* Location switcher — shown only when a profile has multiple locations */
+.location-switcher {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--metal);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 0.3rem;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    max-width: 320px;
+    appearance: menulist;
+}
+.location-switcher:hover  { border-color: rgba(255,255,255,0.4); }
+.location-switcher:focus  { outline: 2px solid var(--water); outline-offset: 1px; }
+.location-switcher option { color: #1a202c; background: #fff; text-transform: none; letter-spacing: 0; }
  
 .time-weather-container { display: flex; gap: 1rem; align-items: center; }
  
@@ -803,7 +823,7 @@ body {
  
 .calculator-title { font-family: 'Nunito Sans', sans-serif; font-weight: 800; color: var(--text-heading); font-size: 0.95rem; margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.4rem; }
  
-.sqft-input-container { display: flex; gap: 0.65rem; align-items: center; margin-bottom: 0.75rem; }
+.sqft-input-container { display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; margin-bottom: 0.75rem; }
  
 .sqft-input {
     flex: 1;
@@ -1867,6 +1887,107 @@ body {
 .addon-price-row.total-row .addon-price-row-value { color: #10b981; font-size: 0.95rem; }
 .addon-price-pending { font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-top: 0.3rem; }
 
+/* Informational / production-pricing section — shown below regular add-on
+   breakdown. These prices display for agent reference but do NOT roll into
+   the combined totals above. */
+.addon-production-section {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border);
+}
+.addon-production-header {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.3rem;
+}
+.addon-production-header .addon-production-sub {
+    font-weight: 400;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.78em;
+    margin-left: 0.35rem;
+}
+.addon-production-section .addon-price-row {
+    opacity: 0.75;
+}
+
+/* ── Per-unit stepper (service + bundle sub-service calculators) ─── */
+.per-unit-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(12,143,203,0.08);
+    border: 1px solid rgba(12,143,203,0.3);
+    border-radius: 999px;
+    padding: 0.25rem 0.5rem;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.per-unit-stepper-btn {
+    background: rgba(12,143,203,0.22);
+    border: 1px solid rgba(12,143,203,0.5);
+    color: var(--water);
+    border-radius: 50%;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+}
+.per-unit-stepper-btn:hover {
+    background: rgba(12,143,203,0.45);
+    transform: scale(1.1);
+}
+.per-unit-stepper-btn:active { transform: scale(0.92); }
+.per-unit-qty-input {
+    flex: 0 0 auto;
+    width: 3.5rem;
+    text-align: center;
+    font-weight: 800;
+    padding: 0.25rem 0.3rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 0.3rem;
+    color: var(--text-primary);
+    font-family: 'Nunito Sans', sans-serif;
+}
+.per-unit-qty-input::-webkit-outer-spin-button,
+.per-unit-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.per-unit-qty-input[type=number] { -moz-appearance: textfield; }
+.per-unit-stepper-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
+}
+.per-unit-stepper-svc {
+    font-size: 0.78rem;
+    color: var(--text-heading);
+    font-weight: 700;
+    margin-right: 0.2rem;
+    white-space: nowrap;
+}
+.bundle-per-unit-stepper {
+    flex: 1 1 100%;
+    margin: 0.15rem 0;
+}
+.per-unit-stepper-container {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    END ADD-ONS
    ══════════════════════════════════════════════════════════════════ */
@@ -2279,6 +2400,7 @@ body {
 // ─── State ────────────────────────────────────────────────────────────────────
 let clientData = {};
 let _lastPopulatedProfileId = null;
+let _activeLocationIdx = 0; // Index into clientData.locations; 0 = primary (mirrors Client_Profiles)
  
 // ─── Profile Cache ────────────────────────────────────────────────────────────
 const PROFILE_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -2699,11 +2821,17 @@ function populateClientData() {
     document.getElementById('loadingState').style.display = 'none';
  
     document.getElementById('companyName').textContent    = clientData.companyName;
-    document.getElementById('locationInfo').textContent   = clientData.location;
     document.getElementById('stickyCompanyName').textContent = clientData.companyName;
- 
+
+    // ── Location header ─────────────────────────────────────────────────────
+    // Multi-location support: if >1 locations, show a dropdown; otherwise show
+    // the single location name as plain text (preserves original UX).
+    renderLocationSwitcher();
+
     showAlertBanner();
-    loadWeatherForecast(clientData.location);
+    // Weather uses the active location (falls back to clientData.location string
+    // for single-location or legacy profiles).
+    loadWeatherForecast(getActiveLocationWeatherQuery());
  
     // Website links
     if (clientData.officeInfo?.website) {
@@ -3279,6 +3407,10 @@ function buildServicePanel(service, svcIdx) {
         if (!isInspection && !isReferOffice && service.pricingTiers?.[0]?.pricingMode === 'flat') {
             setTimeout(() => calculatePricing(serviceId), 0);
         }
+        // Auto-show per-unit pricing immediately at default qty=1 so agents see the price without clicking
+        if (!isInspection && !isReferOffice && service.pricingTiers?.[0]?.pricingMode === 'per_unit') {
+            setTimeout(() => calculatePricing(serviceId), 0);
+        }
     }
     return wrapper;
 }
@@ -3317,14 +3449,20 @@ function buildBundlePanel(bundle) {
     const sp = bundle.servicePricing || {};
     const spEntries = Object.entries(sp);
 
-    // Determine which input modes are needed
+    // Determine which input modes are needed (excluding per_unit — per_unit gets its own per-service stepper)
     const inputModes = [...new Set(
-        spEntries.filter(([, p]) => p.pricingMode !== 'flat').map(([, p]) => p.pricingMode || 'sqft')
+        spEntries.filter(([, p]) => {
+            const m = p.pricingMode || 'sqft';
+            return m !== 'flat' && m !== 'per_unit';
+        }).map(([, p]) => p.pricingMode || 'sqft')
     )];
+
+    // Per-unit sub-services — each gets its own stepper (because unit labels and qty are per-service)
+    const perUnitEntries = spEntries.filter(([, p]) => (p.pricingMode || 'sqft') === 'per_unit');
 
     let calcHTML = '';
     if (spEntries.length) {
-        // Build one input per unique non-flat mode, all sharing one Calculate button
+        // Build one input per unique non-flat, non-per_unit mode, all sharing one Calculate button
         const inputsHTML = inputModes.map(mode => {
             const label = mode === 'acreage' ? 'Enter acreage' : 'Enter square footage';
             const step  = mode === 'acreage' ? '0.01' : '1';
@@ -3333,11 +3471,26 @@ function buildBundlePanel(bundle) {
                 onkeypress="if(event.key==='Enter') calculateBundlePricing('${bundleId}')">`;
         }).join('');
 
+        // Per-unit steppers — one per per_unit sub-service
+        const perUnitSteppersHTML = perUnitEntries.map(([svcName, p]) => {
+            const unitLbl = escapeHtml(p.unitLabel || 'units');
+            const inputId = `bnd-input-${bundleId}-perunit-${encodeURIComponent(svcName).replace(/[^a-zA-Z0-9]/g,'_')}`;
+            return `<div class="per-unit-stepper bundle-per-unit-stepper" data-svc-name="${escapeHtml(svcName)}">
+                <span class="per-unit-stepper-svc">${escapeHtml(svcName)}:</span>
+                <button type="button" class="per-unit-stepper-btn" onclick="changeBundlePerUnitQty('${bundleId}','${inputId}',-1)" title="Decrease">&#8722;</button>
+                <input type="number" class="sqft-input per-unit-qty-input" id="${inputId}" data-svc-name="${escapeHtml(svcName)}" value="1" min="1" step="1"
+                    oninput="calculateBundlePricing('${bundleId}')"
+                    onkeypress="if(event.key==='Enter') calculateBundlePricing('${bundleId}')">
+                <button type="button" class="per-unit-stepper-btn" onclick="changeBundlePerUnitQty('${bundleId}','${inputId}',1)" title="Increase">&#43;</button>
+                <span class="per-unit-stepper-label">${unitLbl}</span>
+            </div>`;
+        }).join('');
+
         // If all services are flat, just show calculate button once
-        const flatOnly = inputModes.length === 0;
-        const triggerHTML = flatOnly
+        const hasAnyInput = inputModes.length > 0 || perUnitEntries.length > 0;
+        const triggerHTML = !hasAnyInput
             ? `<div class="sqft-input-container"><button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Show Pricing</button></div>`
-            : `<div class="sqft-input-container">${inputsHTML}<button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Calculate</button></div>`;
+            : `<div class="sqft-input-container">${inputsHTML}${perUnitSteppersHTML}<button class="calculate-btn" onclick="calculateBundlePricing('${bundleId}')">Calculate</button></div>`;
 
         calcHTML = `
             <div class="pricing-calculator" style="margin-top:1rem;">
@@ -3447,6 +3600,8 @@ function calculateBundlePricing(bundleId) {
         });
         // Remove any previously injected inputs whose add-on is no longer selected
         inputContainer.querySelectorAll(`input[id^="bnd-input-${bundleId}-"]`).forEach(inp => {
+            // Skip per-unit inputs — those are tied to sub-services, not add-ons
+            if (inp.id.indexOf('-perunit-') !== -1) return;
             const mode = inp.id.replace(`bnd-input-${bundleId}-`, '');
             const usedByService = Object.values(sp).some(p => (p.pricingMode || 'sqft') === mode);
             if (!usedByService && !addonModes.has(mode)) inp.remove();
@@ -3466,6 +3621,42 @@ function calculateBundlePricing(bundleId) {
             const flatN = parsePrice(flat);
             if (flatN !== null) { totalFirst += flatN; totalRecurring += flatN; }
             else { totalFirstUnknown = true; totalRecurringUnknown = true; }
+            return;
+        }
+
+        // ── Per-unit pricing ──────────────────────────────────────────────────
+        if (mode === 'per_unit') {
+            const unitLbl = pricing.unitLabel || 'units';
+            const inputId = `bnd-input-${bundleId}-perunit-${encodeURIComponent(svcName).replace(/[^a-zA-Z0-9]/g,'_')}`;
+            const inputEl = document.getElementById(inputId);
+            const qty     = parseInt(inputEl?.value) || 0;
+
+            if (!qty || qty < 1) {
+                cards.push(`<div class="bundle-price-card">
+                    <div class="bundle-price-card-name">${svcName}</div>
+                    <div class="bundle-price-row"><span class="bundle-price-label" style="color:var(--text-muted);font-style:italic;">Enter quantity above</span></div>
+                </div>`);
+                totalFirstMissingInput = totalFirstUnknown = true;
+                totalRecurringMissingInput = totalRecurringUnknown = true;
+                return;
+            }
+
+            const ppu      = parsePrice(pricing.pricePerUnit || '');
+            const subTotal = ppu !== null ? ppu * qty : null;
+
+            if (subTotal !== null) {
+                totalFirst     += subTotal;
+                totalRecurring += subTotal;
+            } else {
+                totalFirstUnknown = true; totalRecurringUnknown = true;
+            }
+
+            cards.push(`<div class="bundle-price-card">
+                <div class="bundle-price-card-name">${svcName}</div>
+                ${ppu !== null ? `<div class="bundle-price-row"><span class="bundle-price-label">Price Per Unit</span><span class="bundle-price-value">$${ppu.toFixed(2).replace(/\.00$/, '')}</span></div>` : ''}
+                <div class="bundle-price-row"><span class="bundle-price-label">Quantity</span><span class="bundle-price-value">${qty} ${escapeHtml(unitLbl)}</span></div>
+                ${subTotal !== null ? `<div class="bundle-price-row"><span class="bundle-price-label">Total</span><span class="bundle-price-value">$${subTotal.toFixed(2).replace(/\.00$/, '')}</span></div>` : ''}
+            </div>`);
             return;
         }
 
@@ -3538,16 +3729,20 @@ function calculateBundlePricing(bundleId) {
     const addonMap = _getAddonMap(bundleId);
     if (addonMap.size > 0) {
         const allAddons = clientData.addOns || [];
+        // Name-based detection — matches renderAddonSection's helper.
+        // Keep in sync with isProductionPricingAddon defined there.
+        const isInfoOnlyAddon = (a) => !!(a && a.name && /production\s*pricing/i.test(a.name));
         addonMap.forEach((qty, addOnId) => {
             const addon = allAddons.find(a => a.addOnId === addOnId);
             if (!addon) return;
             let pd = addon.pricingData || {};
             if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
-            const mode      = pd.pricingMode || 'flat';
-            const isOneTime = String(addon.recurring) === 'false';
-            const unitLbl   = pd.unitLabel ? pd.unitLabel : 'unit';
-            const qtyLabel  = mode === 'per_unit' ? ` ×${qty} ${unitLbl}` : '';
-            const unit      = mode === 'acreage' ? 'acreage' : 'sq ft';
+            const mode       = pd.pricingMode || 'flat';
+            const isOneTime  = String(addon.recurring) === 'false';
+            const isInfoOnly = isInfoOnlyAddon(addon);
+            const unitLbl    = pd.unitLabel ? pd.unitLabel : 'unit';
+            const qtyLabel   = mode === 'per_unit' ? ` ×${qty} ${unitLbl}` : '';
+            const unit       = mode === 'acreage' ? 'acreage' : 'sq ft';
 
             let addonFirst = null, addonRecurring = null;
             let addonPending = false;
@@ -3584,29 +3779,41 @@ function calculateBundlePricing(bundleId) {
                 }
             }
 
+            // Visual differentiator for informational-only add-ons
+            const cardBorder = isInfoOnly
+                ? 'border-left:2px solid rgba(160,160,160,0.5);opacity:0.85;'
+                : 'border-left:2px solid rgba(16,185,129,0.4);';
+            const addonLabel = isInfoOnly ? '+ Informational Add-On' : '+ Add-On';
+
             if (addonPending) {
-                cards.push(`<div class="bundle-price-card" style="border-left:2px solid rgba(16,185,129,0.4);">
-                    <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">+ Add-On</div>
+                cards.push(`<div class="bundle-price-card" style="${cardBorder}">
+                    <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">${addonLabel}</div>
                     <div class="bundle-price-card-name">${escapeHtml(addon.name)}${qtyLabel}</div>
                     <div class="bundle-price-row"><span class="bundle-price-label" style="color:var(--text-muted);font-style:italic;">Enter ${unit} above</span></div>
                 </div>`);
             } else if (addonFirst !== null) {
-                totalFirst += addonFirst;
+                // Only roll into bundle totals when NOT informational
+                if (!isInfoOnly) totalFirst += addonFirst;
+                const infoBadge = isInfoOnly
+                    ? `<div class="bundle-price-row"><span class="bundle-price-label" style="font-size:0.7rem;color:var(--text-muted);font-style:italic;">Not in total</span></div>`
+                    : '';
                 if (isOneTime) {
-                    cards.push(`<div class="bundle-price-card" style="border-left:2px solid rgba(16,185,129,0.4);">
-                        <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">+ Add-On</div>
+                    cards.push(`<div class="bundle-price-card" style="${cardBorder}">
+                        <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">${addonLabel}</div>
                         <div class="bundle-price-card-name">${escapeHtml(addon.name)}${qtyLabel}</div>
                         <div class="bundle-price-row"><span class="bundle-price-label">One-Time</span><span class="bundle-price-value">$${addonFirst.toFixed(2)}</span></div>
                         <div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value" style="color:var(--text-muted);font-style:italic;">N/A</span></div>
+                        ${infoBadge}
                     </div>`);
                 } else {
-                    cards.push(`<div class="bundle-price-card" style="border-left:2px solid rgba(16,185,129,0.4);">
-                        <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">+ Add-On</div>
+                    cards.push(`<div class="bundle-price-card" style="${cardBorder}">
+                        <div class="bundle-price-card-name" style="color:var(--text-muted);font-size:0.8em;">${addonLabel}</div>
                         <div class="bundle-price-card-name">${escapeHtml(addon.name)}${qtyLabel}</div>
                         <div class="bundle-price-row"><span class="bundle-price-label">First</span><span class="bundle-price-value">$${addonFirst.toFixed(2)}</span></div>
                         <div class="bundle-price-row"><span class="bundle-price-label">Recurring</span><span class="bundle-price-value">${addonRecurring !== null ? '$' + addonRecurring.toFixed(2) : '<span style="color:var(--text-muted);font-style:italic;">N/A</span>'}</span></div>
+                        ${infoBadge}
                     </div>`);
-                    if (addonRecurring !== null) totalRecurring += addonRecurring;
+                    if (!isInfoOnly && addonRecurring !== null) totalRecurring += addonRecurring;
                 }
             }
         });
@@ -4191,6 +4398,91 @@ function checkZip() {
     }
 }
  
+// ─── Multi-Location Support ───────────────────────────────────────────────────
+// Clients can have multiple physical locations (different phone/address/hours).
+// Services, technicians, policies, service areas, and bundles are company-wide,
+// so only the office-info view swaps when the active location changes.
+
+function getLocations() {
+    // Always returns an array. If no locations array is set (legacy profile),
+    // synthesize one from the flat officeInfo fields so the rest of the code
+    // can treat everything uniformly.
+    const locs = Array.isArray(clientData.locations) ? clientData.locations : [];
+    if (locs.length > 0) return locs;
+    const o = clientData.officeInfo || {};
+    return [{
+        name:   clientData.location || '',
+        phone:  o.phone  || '',
+        street: o.physicalStreet || '',
+        suite:  o.physicalSuite  || '',
+        city:   o.physicalCity   || '',
+        state:  o.physicalState  || '',
+        zip:    o.physicalZip    || '',
+        hours:  o.officeHours    || o.hours || ''
+    }];
+}
+
+function getActiveLocation() {
+    const locs = getLocations();
+    if (!locs.length) return null;
+    const idx = Math.max(0, Math.min(_activeLocationIdx, locs.length - 1));
+    return locs[idx];
+}
+
+function getActiveLocationWeatherQuery() {
+    // Weather API needs a geocodeable string. Prefer "city, state" from the
+    // active location, then zip, then fall back to clientData.location.
+    const loc = getActiveLocation();
+    if (loc) {
+        if (loc.city && loc.state) return `${loc.city}, ${loc.state}`;
+        if (loc.city) return loc.city;
+        if (loc.zip)  return loc.zip;
+    }
+    return clientData.location || '';
+}
+
+function renderLocationSwitcher() {
+    const container = document.getElementById('locationInfo');
+    if (!container) return;
+    const locs = getLocations();
+
+    // Single location (or legacy profile): plain text, original behavior.
+    if (locs.length <= 1) {
+        container.textContent = clientData.location || (locs[0] && locs[0].name) || '';
+        return;
+    }
+
+    // Multiple locations: build a <select> with each location's name + city.
+    // Preserve currently-selected value if valid; otherwise default to 0.
+    if (_activeLocationIdx >= locs.length || _activeLocationIdx < 0) {
+        _activeLocationIdx = 0;
+    }
+    const options = locs.map((loc, i) => {
+        const label = [loc.name, loc.city ? `(${loc.city}${loc.state ? ', ' + loc.state : ''})` : '']
+            .filter(Boolean).join(' ');
+        return `<option value="${i}"${i === _activeLocationIdx ? ' selected' : ''}>${escapeHtml(label || `Location ${i + 1}`)}</option>`;
+    }).join('');
+
+    container.innerHTML = `
+        <select id="locationSwitcher" class="location-switcher" onchange="setActiveLocation(parseInt(this.value))" title="Select location">
+            ${options}
+        </select>`;
+}
+
+function setActiveLocation(idx) {
+    const locs = getLocations();
+    if (!locs.length) return;
+    if (idx < 0 || idx >= locs.length) return;
+    _activeLocationIdx = idx;
+    // Refresh weather for the newly-selected location
+    loadWeatherForecast(getActiveLocationWeatherQuery());
+    // Re-render the office modal if it's open (so data stays in sync)
+    const modal = document.getElementById('officeModal');
+    if (modal && modal.style.display === 'block') {
+        openOfficeModal();
+    }
+}
+
 // ─── Office Modal ─────────────────────────────────────────────────────────────
 async function openOfficeModal() {
     const modal     = document.getElementById('officeModal');
@@ -4214,22 +4506,39 @@ async function openOfficeModal() {
         return [line1, line2].filter(Boolean).join('<br>');
     };
 
-    const physicalAddress =
-        formatAddress(office.physicalStreet, office.physicalSuite, office.physicalCity, office.physicalState, office.physicalZip)
-        || office.address
-        || '';
+    // If multi-location profile, pull phone/address/hours from the active location.
+    // For single-location/legacy profiles, the synthesized getActiveLocation()
+    // returns the same data officeInfo already held, so behavior is identical.
+    const locs      = getLocations();
+    const activeLoc = getActiveLocation() || {};
+    const isMulti   = locs.length > 1;
+
+    const activePhone   = isMulti ? activeLoc.phone  : (office.phone || activeLoc.phone || '');
+    const activeHours   = isMulti ? activeLoc.hours  : (office.officeHours || activeLoc.hours || '');
+    const locationHeading = isMulti && activeLoc.name
+        ? `<div style="font-weight:700;color:var(--water);margin-bottom:8px;">${escapeHtml(activeLoc.name)}</div>`
+        : '';
+
+    const physicalAddress = isMulti
+        ? formatAddress(activeLoc.street, activeLoc.suite, activeLoc.city, activeLoc.state, activeLoc.zip)
+        : (formatAddress(office.physicalStreet, office.physicalSuite, office.physicalCity, office.physicalState, office.physicalZip)
+            || office.address
+            || formatAddress(activeLoc.street, activeLoc.suite, activeLoc.city, activeLoc.state, activeLoc.zip));
 
     const mailingAddress =
         formatAddress(office.mailingStreet, office.mailingSuite, office.mailingCity, office.mailingState, office.mailingZip);
 
-    const showMailing = mailingAddress && mailingAddress !== physicalAddress && !office.sameAsPhysical;
+    // Hide mailing address for non-primary locations — mailing is a
+    // company-wide field and only relevant to the primary location.
+    const showMailing = !isMulti && mailingAddress && mailingAddress !== physicalAddress && !office.sameAsPhysical;
 
     container.innerHTML = `
-        <div><strong>Phone:</strong> ${office.phone || '—'}</div>
+        ${locationHeading}
+        <div><strong>Phone:</strong> ${activePhone || '—'}</div>
         <div><strong>Email:</strong> ${office.email || '—'}</div>
         <div><strong>Address:</strong><br>${physicalAddress || '—'}</div>
         ${showMailing ? `<div><strong>Mailing Address:</strong><br>${mailingAddress}</div>` : ''}
-        <div><strong>Office Hours:</strong><br>${(office.officeHours || '—').replace(/\n/g, '<br>')}</div>
+        <div><strong>Office Hours:</strong><br>${(activeHours || '—').replace(/\n/g, '<br>')}</div>
         <div style="margin-top:12px;">
             <strong>Holidays Observed:</strong><br>
             ${holidays.length ? holidays.map(h => `• ${h}`).join('<br>') : '—'}
@@ -4475,6 +4784,28 @@ function pricingInputHTML(id, tiers, onclickOverride) {
     if (mode === 'flat') {
         return ''; // flat pricing — no input needed, shown directly in results
     }
+    if (mode === 'per_unit') {
+        const unitLbl = escapeHtml(tiers[0]?.unitLabel || 'unit');
+        // For sub-services, the onclickOverride string starts with 'calculateSubServicePricing'.
+        // Use that same expression for stepper buttons and the input's oninput so quantity
+        // changes route to the right calculator (service vs sub-service).
+        const recalcExpr = onclickOverride || `calculatePricing('${id}')`;
+        const isSubService = typeof onclickOverride === 'string' && onclickOverride.indexOf('calculateSubServicePricing') === 0;
+        const stepperCall = isSubService
+            ? `(function(){const i=document.getElementById('sqft_${id}');if(!i)return;const c=parseInt(i.value)||1;i.value=Math.max(1,c+__DELTA__);${recalcExpr};})()`
+            : `changeServiceQty('${id}',__DELTA__)`;
+        const minusCall = stepperCall.replace('__DELTA__', '-1');
+        const plusCall  = stepperCall.replace('__DELTA__', '1');
+        return `<div class="sqft-input-container per-unit-stepper-container" data-service-id="${id}">
+            <div class="per-unit-stepper">
+                <button type="button" class="per-unit-stepper-btn" onclick="${minusCall}" title="Decrease">&#8722;</button>
+                <input type="number" class="sqft-input per-unit-qty-input" id="sqft_${id}" value="1" min="1" step="1" oninput="${recalcExpr}">
+                <button type="button" class="per-unit-stepper-btn" onclick="${plusCall}" title="Increase">&#43;</button>
+                <span class="per-unit-stepper-label">${unitLbl}</span>
+            </div>
+            <button class="calculate-btn" onclick="${onclick}">Calculate</button>
+        </div>`;
+    }
     const isAcreage   = mode === 'acreage';
     const placeholder = isAcreage ? 'Enter acreage' : 'Enter square footage';
     const step        = isAcreage ? '0.01' : '1';
@@ -4485,8 +4816,31 @@ function pricingInputHTML(id, tiers, onclickOverride) {
 }
 
 // Returns the unit label string for range display
-function pricingUnitLabel(mode) {
-    return mode === 'acreage' ? 'acres' : 'sq ft';
+function pricingUnitLabel(mode, tierData) {
+    if (mode === 'acreage') return 'acres';
+    if (mode === 'per_unit') return (tierData && tierData.unitLabel) ? tierData.unitLabel : 'units';
+    return 'sq ft';
+}
+
+// Stepper handler for per-unit service quantity
+function changeServiceQty(serviceId, delta) {
+    const inp = document.getElementById(`sqft_${serviceId}`);
+    if (!inp) return;
+    const cur = parseInt(inp.value) || 1;
+    const next = Math.max(1, cur + delta);
+    inp.value = next;
+    // Re-run calculation immediately so the price updates as user clicks
+    try { calculatePricing(serviceId); } catch(e) {}
+}
+
+// Stepper handler for per-unit bundle sub-service quantity
+function changeBundlePerUnitQty(bundleId, inputId, delta) {
+    const inp = document.getElementById(inputId);
+    if (!inp) return;
+    const cur = parseInt(inp.value) || 1;
+    const next = Math.max(1, cur + delta);
+    inp.value = next;
+    try { calculateBundlePricing(bundleId); } catch(e) {}
 }
 
 function calculatePricing(serviceId) {
@@ -4498,13 +4852,33 @@ function calculatePricing(serviceId) {
     if (!tiers) { document.getElementById(`pricing_${serviceId}`).innerHTML = '<div class="price-display-item"><div class="price-display-value">No pricing tiers available</div></div>'; resultEl.classList.add('show'); return; }
 
     const mode = tiers[0]?.pricingMode || 'sqft';
-    const unit = pricingUnitLabel(mode);
+    const unit = pricingUnitLabel(mode, tiers[0]);
 
     // Flat pricing — show directly without needing input
     if (mode === 'flat') {
         const flat = tiers[0]?.flatPrice || '—';
         const svcTypeLabel = svcData?.serviceTypeDesc || tiers[0]?.serviceTypeDesc || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || tiers[0]?.serviceType || '';
         document.getElementById(`pricing_${serviceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>${svcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${svcTypeLabel}</div></div>` : ''}`;
+        document.getElementById(`range_${serviceId}`).textContent = '';
+        resultEl.classList.add('show');
+        return;
+    }
+
+    // Per-unit pricing — price = pricePerUnit × qty (no tiers, flat rate)
+    if (mode === 'per_unit') {
+        const qty = parseInt(inputEl?.value) || 1;
+        if (qty < 1) { resultEl.classList.remove('show'); return; }
+        const unitLbl = tiers[0]?.unitLabel || 'units';
+        const pricePerUnit = parseFloat((tiers[0]?.pricePerUnit || '').toString().replace(/[^0-9.]/g, ''));
+        const total = !isNaN(pricePerUnit) ? pricePerUnit * qty : null;
+        const svcTypeLabel = svcData?.serviceTypeDesc || tiers[0]?.serviceTypeDesc || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || tiers[0]?.serviceType || '';
+        const perUnitDisplay = !isNaN(pricePerUnit) ? `$${pricePerUnit.toFixed(2).replace(/\.00$/, '')}` : '—';
+        const totalDisplay   = total !== null ? `$${total.toFixed(2).replace(/\.00$/, '')}` : '—';
+        document.getElementById(`pricing_${serviceId}`).innerHTML = `
+            <div class="price-display-item"><div class="price-display-label">Price Per Unit</div><div class="price-display-value">${perUnitDisplay}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Quantity</div><div class="price-display-value">${qty} ${escapeHtml(unitLbl)}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Total</div><div class="price-display-value">${totalDisplay}</div></div>
+            ${svcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${svcTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${serviceId}`).textContent = '';
         resultEl.classList.add('show');
         return;
@@ -4581,12 +4955,32 @@ function calculateSubServicePricing(subServiceId, subServiceIndex) {
     const tiers    = sub?.pricingTiers;
 
     const mode = tiers?.[0]?.pricingMode || 'sqft';
-    const unit = pricingUnitLabel(mode);
+    const unit = pricingUnitLabel(mode, tiers?.[0]);
 
     if (mode === 'flat') {
         const flat = tiers[0]?.flatPrice || '—';
         const subFlatTypeLabel = tiers[0]?.serviceTypeDesc || tiers[0]?.serviceType || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || '';
         document.getElementById(`pricing_${subServiceId}`).innerHTML = `<div class="price-display-item"><div class="price-display-label">Price</div><div class="price-display-value">${flat}</div></div>${subFlatTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${subFlatTypeLabel}</div></div>` : ''}`;
+        document.getElementById(`range_${subServiceId}`).textContent = '';
+        resultEl.classList.add('show');
+        return;
+    }
+
+    // Per-unit pricing for sub-services
+    if (mode === 'per_unit') {
+        const qty = parseInt(inputEl?.value) || 1;
+        if (qty < 1) { resultEl.classList.remove('show'); return; }
+        const unitLbl = tiers[0]?.unitLabel || 'units';
+        const pricePerUnit = parseFloat((tiers[0]?.pricePerUnit || '').toString().replace(/[^0-9.]/g, ''));
+        const total = !isNaN(pricePerUnit) ? pricePerUnit * qty : null;
+        const subSvcTypeLabel = tiers[0]?.serviceTypeDesc || tiers[0]?.serviceType || tiers[0]?.soldAsName || tiers[0]?.serviceFrequency || '';
+        const perUnitDisplay = !isNaN(pricePerUnit) ? `$${pricePerUnit.toFixed(2).replace(/\.00$/, '')}` : '—';
+        const totalDisplay   = total !== null ? `$${total.toFixed(2).replace(/\.00$/, '')}` : '—';
+        document.getElementById(`pricing_${subServiceId}`).innerHTML = `
+            <div class="price-display-item"><div class="price-display-label">Price Per Unit</div><div class="price-display-value">${perUnitDisplay}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Quantity</div><div class="price-display-value">${qty} ${escapeHtml(unitLbl)}</div></div>
+            <div class="price-display-item"><div class="price-display-label">Total</div><div class="price-display-value">${totalDisplay}</div></div>
+            ${subSvcTypeLabel ? `<div class="price-display-item"><div class="price-display-label">Service Type</div><div class="price-display-value">${subSvcTypeLabel}</div></div>` : ''}`;
         document.getElementById(`range_${subServiceId}`).textContent = '';
         resultEl.classList.add('show');
         return;
@@ -4842,12 +5236,25 @@ function renderAddonSection(serviceId) {
     const resultEl     = document.getElementById(`result_${serviceId}`);
     const hasBasePrice = resultEl && resultEl.classList.contains('show');
 
-    function parseDisplayedPrice(el, labelText) {
+    // Find a price value in the service's result display by label. Different
+    // pricing modes use different labels, so we accept a list of label
+    // substrings and return the first match:
+    //   - sqft/acreage: "First Service" / "Recurring"
+    //   - flat: "Price" (used for both first and recurring since flat is one price)
+    //   - per_unit: "Total" (pricePerUnit × qty; same for first and recurring)
+    // If `labelAliases` is a string, treat it as a single alias for back-compat.
+    function parseDisplayedPrice(el, labelAliases) {
         if (!el) return null;
+        const aliases = (Array.isArray(labelAliases) ? labelAliases : [labelAliases])
+            .map(s => String(s).toLowerCase());
         for (const item of el.querySelectorAll('.price-display-item')) {
             const lbl = item.querySelector('.price-display-label');
             const val = item.querySelector('.price-display-value');
-            if (lbl && val && lbl.textContent.toLowerCase().includes(labelText.toLowerCase())) {
+            if (!lbl || !val) continue;
+            const lblText = lbl.textContent.toLowerCase();
+            // Skip the "Service Type" item — it contains descriptive text, not a price
+            if (lblText.includes('service type')) continue;
+            if (aliases.some(a => lblText.includes(a))) {
                 const n = parseFloat(val.textContent.replace(/[^0-9.]/g, ''));
                 return isNaN(n) ? null : n;
             }
@@ -4855,8 +5262,34 @@ function renderAddonSection(serviceId) {
         return null;
     }
 
-    const baseFirst     = hasBasePrice ? parseDisplayedPrice(pricingEl, 'first') : null;
-    const baseRecurring = hasBasePrice ? parseDisplayedPrice(pricingEl, 'recurring') : null;
+    // Pick the label set based on the service's pricing mode. We look at the
+    // card's pricingTiers (the same source the calculator reads from) to
+    // decide whether we're dealing with flat / per_unit / sqft / acreage.
+    const baseServiceMode = (serviceCard?._pricingData?.[0]?.pricingMode)
+        || (serviceCard?._subServicesData?.[0]?.pricingTiers?.[0]?.pricingMode)
+        || 'sqft';
+
+    // Flat and per_unit don't distinguish "first" from "recurring" — the one
+    // displayed price serves as both. Sqft/acreage use the traditional labels.
+    const firstLabels = baseServiceMode === 'flat'     ? ['price']
+                      : baseServiceMode === 'per_unit' ? ['total']
+                      : ['first'];
+    const recurringLabels = baseServiceMode === 'flat'     ? ['price']
+                          : baseServiceMode === 'per_unit' ? ['total']
+                          : ['recurring'];
+
+    const baseFirst     = hasBasePrice ? parseDisplayedPrice(pricingEl, firstLabels)     : null;
+    const baseRecurring = hasBasePrice ? parseDisplayedPrice(pricingEl, recurringLabels) : null;
+
+    // "Production Pricing" add-ons are informational only — they display to the
+    // agent so they can be quoted to the customer for transparency, but they
+    // DO NOT roll into the combined total. Detection is name-based (case-
+    // insensitive "production pricing" substring). If we ever add a proper
+    // Informational_Only field on the Add_Ons sheet, swap this helper for
+    // that check and all call sites stay unchanged.
+    function isProductionPricingAddon(addon) {
+        return !!(addon && addon.name && /production\s*pricing/i.test(addon.name));
+    }
 
     // Resolve an add-on price using the service's shared sqft/acreage input value
     function resolveAddonPrice(addon, priceType) {
@@ -4895,6 +5328,7 @@ function renderAddonSection(serviceId) {
     }
 
     let rows = '';
+    let productionRows = ''; // Informational-only add-ons shown in separate section
     let totalFirst     = baseFirst     !== null ? baseFirst     : null;
     let totalRecurring = baseRecurring !== null ? baseRecurring : null;
 
@@ -4907,54 +5341,83 @@ function renderAddonSection(serviceId) {
     activeAddons.forEach(addon => {
         let pd = addon.pricingData || {};
         if (typeof pd === 'string') { try { pd = JSON.parse(pd); } catch(e) { pd = {}; } }
-        const mode      = pd.pricingMode || 'flat';
-        const isOneTime = String(addon.recurring) === 'false';
-        const fp        = resolveAddonPrice(addon, 'first');
-        const rp        = resolveAddonPrice(addon, 'recurring');
-        const qty       = selected.get(addon.addOnId) || 1;
-        const unitLbl   = pd.unitLabel ? pd.unitLabel : 'unit';
-        const unit      = mode === 'acreage' ? 'acreage' : 'sq ft';
+        const mode       = pd.pricingMode || 'flat';
+        const isOneTime  = String(addon.recurring) === 'false';
+        const fp         = resolveAddonPrice(addon, 'first');
+        const rp         = resolveAddonPrice(addon, 'recurring');
+        const qty        = selected.get(addon.addOnId) || 1;
+        const unitLbl    = pd.unitLabel ? pd.unitLabel : 'unit';
+        const unit       = mode === 'acreage' ? 'acreage' : 'sq ft';
+        const isInfoOnly = isProductionPricingAddon(addon);
+
+        // Redirect output and skip total-adding for informational add-ons.
+        // Using a `push` helper keeps the existing branching logic simple.
+        const pushRow = (html) => {
+            if (isInfoOnly) productionRows += html;
+            else            rows           += html;
+        };
+        const addToFirst = (amount) => {
+            if (isInfoOnly) return;
+            if (totalFirst !== null) totalFirst += amount; else totalFirst = amount;
+        };
+        const addToRecurring = (amount) => {
+            if (isInfoOnly) return;
+            if (totalRecurring !== null) totalRecurring += amount; else totalRecurring = amount;
+        };
 
         if (mode === 'per_unit') {
             const qtyLabel = ` ×${qty} ${unitLbl}`;
             if (fp === null) {
-                anyPending = true;
-                rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}</span><span class="addon-price-row-value" style="color:var(--text-muted);font-style:italic;">price not set</span></div>`;
+                if (!isInfoOnly) anyPending = true;
+                pushRow(`<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}</span><span class="addon-price-row-value" style="color:var(--text-muted);font-style:italic;">price not set</span></div>`);
                 return;
             }
             if (isOneTime) {
-                rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(one-time)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`;
-                if (totalFirst !== null) totalFirst += fp; else totalFirst = fp;
+                pushRow(`<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(one-time)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`);
+                addToFirst(fp);
             } else {
-                rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(first)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`;
-                rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(recurring)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`;
-                if (totalFirst !== null) totalFirst += fp; else totalFirst = fp;
-                if (totalRecurring !== null) totalRecurring += fp; else totalRecurring = fp;
+                pushRow(`<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(first)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`);
+                pushRow(`<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${escapeHtml(qtyLabel)} <em style="font-weight:400;">(recurring)</em></span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`);
+                addToFirst(fp);
+                addToRecurring(fp);
             }
             return;
         }
 
         if (mode !== 'flat' && fp === null) {
-            anyPending = true;
-            rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}</span><span class="addon-price-row-value" style="color:var(--text-muted);font-style:italic;">enter ${unit} above</span></div>`;
+            if (!isInfoOnly) anyPending = true;
+            pushRow(`<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}</span><span class="addon-price-row-value" style="color:var(--text-muted);font-style:italic;">enter ${unit} above</span></div>`);
             return;
         }
         if (fp !== null) {
-            rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${isOneTime ? ' (one-time)' : ' (first)'}</span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`;
-            if (totalFirst !== null) totalFirst += fp; else totalFirst = fp;
+            pushRow(`<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)}${isOneTime ? ' (one-time)' : ' (first)'}</span><span class="addon-price-row-value">$${fp.toFixed(2)}</span></div>`);
+            addToFirst(fp);
         }
         if (!isOneTime && rp !== null) {
-            rows += `<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)} (recurring)</span><span class="addon-price-row-value">$${rp.toFixed(2)}</span></div>`;
-            if (totalRecurring !== null) totalRecurring += rp; else totalRecurring = rp;
+            pushRow(`<div class="addon-price-row"><span class="addon-price-row-label">+ ${escapeHtml(addon.name)} (recurring)</span><span class="addon-price-row-value">$${rp.toFixed(2)}</span></div>`);
+            addToRecurring(rp);
         }
     });
 
-    const hasAnyResolved = activeAddons.some(a => resolveAddonPrice(a, 'first') !== null);
+    // Only check resolved prices on non-informational add-ons — info-only
+    // add-ons have prices but they shouldn't trigger the total-row display.
+    const nonInfoAddons   = activeAddons.filter(a => !isProductionPricingAddon(a));
+    const hasAnyResolved  = nonInfoAddons.some(a => resolveAddonPrice(a, 'first') !== null);
     if (hasAnyResolved && (totalFirst !== null || totalRecurring !== null)) {
         if (totalFirst !== null)
             rows += `<div class="addon-price-row total-row"><span class="addon-price-row-label">Combined total (first)</span><span class="addon-price-row-value">$${totalFirst.toFixed(2)}</span></div>`;
         if (totalRecurring !== null)
             rows += `<div class="addon-price-row total-row"><span class="addon-price-row-label">Combined total (recurring)</span><span class="addon-price-row-value">$${totalRecurring.toFixed(2)}</span></div>`;
+    }
+
+    // Append informational / production-pricing section below the regular
+    // breakdown. These are shown so agents can quote them to the customer
+    // but they are NOT included in the combined totals above.
+    if (productionRows) {
+        rows += `<div class="addon-production-section">
+            <div class="addon-production-header">Informational Pricing <span class="addon-production-sub">(not included in total)</span></div>
+            ${productionRows}
+        </div>`;
     }
 
     breakdownEl.innerHTML = rows || '<div class="addon-price-pending">Select an add-on to see pricing.</div>';
