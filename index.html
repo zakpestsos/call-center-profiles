@@ -4540,10 +4540,15 @@ async function openOfficeModal() {
         formatAddress(office.mailingStreet, office.mailingSuite, office.mailingCity, office.mailingState, office.mailingZip);
 
     // Mailing address is a company-wide field (stored on Client_Profiles, not
-    // per-location). Show it whenever it differs from the active physical
-    // address and isn't marked "same as physical" — the agent needs this
-    // regardless of which branch they're viewing.
-    const showMailing = mailingAddress && mailingAddress !== physicalAddress && !office.sameAsPhysical;
+    // per-location). Show it whenever it's populated and differs from the
+    // active physical address. The `sameAsPhysical` flag was set on the
+    // admin form to suppress duplicate display for the MAIN office — we
+    // only honor it for single-location/main-office view, because a
+    // secondary location's physical address is different from the mailing
+    // address anyway.
+    const showMailing = mailingAddress
+                     && mailingAddress !== physicalAddress
+                     && (isMulti || !office.sameAsPhysical);
 
     container.innerHTML = `
         ${locationHeading}
