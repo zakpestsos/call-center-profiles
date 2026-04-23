@@ -4136,7 +4136,7 @@ function filterByServiceType() {
     const type = document.getElementById('serviceTypeLookup').value;
     document.getElementById('serviceTypeLookupBottom').value = type;
     if (!type) { showAllTechs(); return; }
-    const roleMap = { inspection: ['Inspector','Both'], technician: ['Technician','Both'], both: ['Both'] };
+    const roleMap = { inspection: ['Inspector','Both'], technician: ['Tech','Technician','Both'], both: ['Both'] };
     const matches = clientData.technicians.filter(t => (roleMap[type] || []).includes(t.role));
     showSearchResults(`${type.charAt(0).toUpperCase() + type.slice(1)} Results`, matches);
 }
