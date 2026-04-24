@@ -2403,12 +2403,22 @@ let _lastPopulatedProfileId = null;
 let _activeLocationIdx = 0; // Index into clientData.locations; 0 = primary (mirrors Client_Profiles)
  
 // ─── Profile Cache ────────────────────────────────────────────────────────────
-const PROFILE_CACHE_TTL_MS = 5 * 60 * 1000;
+// TTL is the safety net for when the background refresh fails. Normal updates
+// are always fresh: every page load triggers a stale-while-revalidate fetch,
+// and admin saves invalidate the server-side cache automatically.
+//
+// PROFILE_CACHE_VERSION is the panic button. Bump it (e.g. 'v1' → 'v2') any
+// time you ship a change that makes old cached data shape unsafe to render —
+// for example, renaming a field, changing a type, or removing a field the new
+// code still reads. Bumping the version makes every browser ignore old cached
+// entries and pull fresh data on next load. Most deploys do NOT need a bump.
+const PROFILE_CACHE_TTL_MS  = 7 * 24 * 60 * 60 * 1000; // 7 days
+const PROFILE_CACHE_VERSION = 'v1';
 const _profileMemCache   = new Map();
 const _profileInFlight   = new Map();
  
 function _profileCacheKey(url) {
-    return `pestsos:profile:${encodeURIComponent(url)}`;
+    return `pestsos:profile:${PROFILE_CACHE_VERSION}:${encodeURIComponent(url)}`;
 }
  
 function getCachedProfile(url) {
