@@ -1013,6 +1013,73 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(221,30,51,0.35);
 }
+
+.show-techs-btn {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+.show-techs-btn:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* Tech cards inside the Available Techs modal — match the main grid pattern */
+#availableTechsBody.ats-body-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+/* Scheduling info block inside Available Techs modal */
+.available-techs-scheduling-info {
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+}
+.available-techs-scheduling-info:empty { display: none; }
+.available-techs-scheduling-info .ats-sched-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.6rem;
+    padding: 0.9rem 1.5rem;
+}
+.available-techs-scheduling-info .ats-sched-item {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    line-height: 1.35;
+}
+.available-techs-scheduling-info .ats-sched-label {
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 0.15rem;
+}
+.available-techs-scheduling-info .ats-sched-value {
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.available-techs-scheduling-info .ats-sched-value div { margin: 0.1rem 0; }
+.available-techs-scheduling-info .ats-sched-value strong { color: var(--accent); }
+.available-techs-scheduling-info .ats-sched-notes {
+    grid-column: 1 / -1;
+}
  
 /* ══════════════════════════════════════════════════════════════════
    INFO SECTIONS (bulletin, pests not covered)
@@ -2394,6 +2461,29 @@ body {
             <div class="office-info" id="officeInfo"></div>
         </div>
     </div>
+
+    <div id="availableTechsModal" class="modal">
+        <div class="modal-content" style="max-width: min(960px, 95vw); max-height: 92vh; padding: 1.25rem 0 0;">
+            <div class="modal-header" style="padding: 0 1.5rem; margin-bottom: 0.75rem;">
+                <h3 class="modal-title" id="availableTechsTitle">Available Technicians</h3>
+                <button class="close-btn" onclick="closeAvailableTechsModal()">&times;</button>
+            </div>
+            <div class="available-techs-filter-bar" style="padding:10px 1.5rem;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <label for="availableTechsZipInput" style="font-size:0.9em;color:var(--text-muted);">Filter by ZIP:</label>
+                <input type="text" id="availableTechsZipInput" inputmode="numeric" maxlength="5" placeholder="e.g., 83706"
+                    style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-primary);width:110px;font-size:0.95em;"
+                    oninput="renderAvailableTechs()">
+                <button type="button" onclick="document.getElementById('availableTechsZipInput').value=''; renderAvailableTechs();"
+                    style="padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-primary);font-size:0.85em;cursor:pointer;">
+                    Clear ZIP
+                </button>
+                <span id="availableTechsSummary" style="margin-left:auto;font-size:0.85em;color:var(--text-muted);"></span>
+            </div>
+            <div id="availableTechsSchedulingInfo" class="available-techs-scheduling-info"></div>
+            <div id="availableTechsBody" style="padding:1rem 1.5rem;"></div>
+            <div id="availableTechsNote" style="padding:0 1.5rem 1rem;font-size:0.82em;color:var(--text-muted);"></div>
+        </div>
+    </div>
  
 <script src="config-github.js"></script>
 <script>
@@ -2533,7 +2623,7 @@ function loadDummyData() {
                 website: "https://sosexterminating.com",
                 fieldRoutesLink: "https://fieldroutes.com",
                 physicalAddress: "123 Main Street\nDallas, TX 75201",
-                officeHours: "Monday-Friday: 8 AM - 5 PM"
+                officeHours: "Monday: 8:00 AM - 5:00 PM\nTuesday: 8:00 AM - 5:00 PM\nWednesday: 8:00 AM - 5:00 PM\nThursday: 8:00 AM - 5:00 PM\nFriday: 8:00 AM - 5:00 PM\nSaturday: 10:00 AM - 4:00 PM\nSunday: Closed"
             },
             bulletin: "This is test data - no Wix connection detected",
             pestsNotCovered: "Carpenter Ants, Bed Bugs, Termites (requires separate treatment)",
@@ -2695,9 +2785,11 @@ function loadDummyData() {
                 ]
             }],
             technicians: [
-                { name: "John Smith",   company: "SOS Exterminating", role: "Both",       phone: "(214) 555-0001", schedule: "Mon-Fri 8-5 Saturday 8-12",  maxStops: "12", doesNotService: "",                                           additionalNotes: "Preferred technician for North Dallas area",  zipCodes: ["75001","75002","75010","75011"] },
-                { name: "Sarah Johnson",company: "SOS Exterminating", role: "Inspector",  phone: "(214) 555-0002", schedule: "Mon-Fri 9-4",                 maxStops: "8",  doesNotService: "Does not service regular services – schedule inspections only", additionalNotes: "Commercial inspections specialist",           zipCodes: ["75001","75002","75020","75021"] },
-                { name: "Mike Wilson",  company: "SOS Exterminating", role: "Technician", phone: "(214) 555-0003", schedule: "Mon-Thur 8-5, Fri 8-3",       maxStops: "10", doesNotService: "Termite, Mosquito/Tick",                    additionalNotes: "Covers weekend emergency calls",              zipCodes: ["75030","75031","75040","75041"] }
+                { name: "John Smith",    company: "SOS Exterminating", role: "Both",       phone: "(214) 555-0001", schedule: "Mon-Fri 8-5 Saturday 8-12",  maxStops: "12", doesNotService: "",                                                                         additionalNotes: "Preferred technician for North Dallas area", zipCodes: ["75001","75002","75010","75011"], canPerform: ["Monthly GPC","Quarterly GPC","Bi-Monthly GPC","Monthly Mosquito Service","Free Termite Inspection","Home Protection Bundle","Mosquito + Yard Treatment Bundle"] },
+                { name: "Sarah Johnson", company: "SOS Exterminating", role: "Inspector",  phone: "(214) 555-0002", schedule: "Mon-Fri 9-4",                 maxStops: "8",  doesNotService: "Does not service regular services – schedule inspections only",              additionalNotes: "Commercial inspections specialist",           zipCodes: ["75001","75002","75020","75021"], canPerform: ["Free Termite Inspection","Paid Wildlife Inspection"] },
+                { name: "Mike Wilson",   company: "SOS Exterminating", role: "Technician", phone: "(214) 555-0003", schedule: "Mon-Thur 8-5, Fri 8-3",       maxStops: "10", doesNotService: "Termite, Mosquito/Tick",                                                   additionalNotes: "Covers weekend emergency calls",              zipCodes: ["75030","75031","75040","75041"], canPerform: ["Monthly GPC","Quarterly GPC","Bi-Monthly GPC"] },
+                { name: "Amanda Chen",   company: "SOS Exterminating", role: "Technician", phone: "(214) 555-0004", schedule: "Tue-Sat 8-5",                 maxStops: "9",  doesNotService: "",                                                                         additionalNotes: "Specialty treatments — termite, rodent, bed bugs", zipCodes: ["75050","75051"],                canPerform: ["Subterranean Termite Treatment","Rodent Exclusion","Bed Bug Treatment","Termite + Pest Bundle","Full Property Protection Bundle"] },
+                { name: "David Martinez",company: "SOS Exterminating", role: "Technician", phone: "(214) 555-0005", schedule: "Mon-Fri 7-4",                 maxStops: "11", doesNotService: "",                                                                         additionalNotes: "Newly onboarded — services pending configuration", zipCodes: ["75010","75011"],                canPerform: [] }
             ],
             policies: {
                 "Service Coverage": [
@@ -2707,15 +2799,22 @@ function loadDummyData() {
                     { type: "mobile",     title: "Trailers/Mobile Homes",      description: "Pest control services for mobile homes, trailers, and manufactured housing.",                                                                options: ["Yes","No","Restrictions Apply"],                        default: "Yes" }
                 ],
                 "Scheduling and Operations": [
-                    { type: "contract",          title: "Signed Contract",              description: "Requirements for signed service agreements before beginning pest control services.",                         options: ["Required","Not Required","Verbal Agreement OK"],        default: "Required" },
-                    { type: "returning",         title: "Returning Customers",          description: "Special policies and procedures for customers returning after service cancellation.",                       options: ["Standard Pricing","Welcome Back Discount","Re-inspection Required"], default: "Standard Pricing" },
-                    { type: "confirmations",     title: "Appointment Confirmations",    description: "How and when appointment confirmations are sent to customers.",                                            options: ["24 hours prior","48 hours prior","Day of service"],     default: "24 hours prior" },
-                    { type: "distance",          title: "Max Distance",                 description: "Maximum service distance from branch location for regular service calls.",                                 options: ["25 miles","50 miles","75 miles","No limit"],            default: "50 miles" },
+                    { type: "contract",          title: "Signed Contract",              description: "Requirements for signed service agreements before beginning pest control services.",                         options: ["Required","Not Required","Verbal Agreement OK"],        default: "Required before initial service. Email or DocuSign accepted. For commercial accounts requiring a master service agreement, route to the home office." },
+                    { type: "returning",         title: "Returning Customers",          description: "Special policies and procedures for customers returning after service cancellation.",                       options: ["Standard Pricing","Welcome Back Discount","Re-inspection Required"], default: "Welcome Back Discount — 15% off initial service for customers returning within 12 months. Verify account history before quoting." },
+                    { type: "confirmations",     title: "Appointment Confirmations",    description: "How and when appointment confirmations are sent to customers.",                                            options: ["24 hours prior","48 hours prior","Day of service"],     default: "Automated text 48 hours prior, reminder call 24 hours prior. Agents confirm morning of service for initial treatments." },
+                    { type: "distance",          title: "Max Distance",                 description: "Maximum service distance from branch location for regular service calls.",                                 options: ["25 miles","50 miles","75 miles","No limit"],            default: "50 miles from Dallas North branch. 25–50 mi may require travel surcharge — confirm with dispatch before quoting." },
                     { type: "scheduling_times",  title: "Scheduling Policy Times",      description: "Standard time windows and scheduling policies for different service types.",
-                      schedulingLayout: { "Inspection": "8:00 AM - 5:00 PM", "Initial/Interior": "8:00 AM - 4:00 PM", "Regular": "8:00 AM - 5:00 PM" },
+                      schedulingLayout: {
+                          "Inspection":        "8:00 AM - 5:00 PM (M-F), 10:00 AM - 4:00 PM (Sat)",
+                          "Initial/Interior":  "8:00 AM - 4:00 PM (M-F), not offered Sat",
+                          "Regular Service":   "8:00 AM - 5:00 PM (M-F), 10:00 AM - 4:00 PM (Sat)",
+                          "Termite Treatment": "8:00 AM - 2:00 PM (M-F only)",
+                          "Rodent/Wildlife":   "9:00 AM - 4:00 PM (M-F), Sat by appointment"
+                      },
                       options: ["Standard Hours","Extended Hours","Flexible Schedule"],  default: "Standard Hours" },
-                    { type: "sameday",           title: "Same Day Services",            description: "Availability and policies for same-day pest control services.",                                            options: ["Available","Emergency Only","Not Available"],           default: "Emergency Only" },
-                    { type: "emergency",         title: "After Hours Emergency",        description: "Emergency pest control services outside of normal business hours.",                                        options: ["Available","Limited Availability","Not Available"],     default: "Limited Availability" }
+                    { type: "sameday",           title: "Same Day Services",            description: "Availability and policies for same-day pest control services.",                                            options: ["Available","Emergency Only","Not Available"],           default: "Emergency only (stinging insects, rodent sightings in food prep areas). Standard same-day adds a $45 expedite fee, subject to tech availability." },
+                    { type: "emergency",         title: "After Hours Emergency",        description: "Emergency pest control services outside of normal business hours.",                                        options: ["Available","Limited Availability","Not Available"],     default: "Limited availability — on-call tech rotation. $150 after-hours service fee plus standard pricing. Only for safety-critical pest issues." },
+                    { type: "general_notes",     title: "Scheduling General Notes",     description: "Free-form notes agents should know about scheduling.",                                                      options: [], default: "Always confirm the customer's physical address matches their service ZIP before booking. Initial services should be scheduled at least 48 hours out to allow for product prep. If the customer asks for a specific technician, note it in the appointment but do NOT guarantee — route requests go through dispatch." }
                 ],
                 "Service Policies": [
                     { type: "reservices",   title: "Reservices",          description: "Policy for repeat service calls within guarantee period due to continued pest activity.",         options: ["Free within 30 days","Free within 60 days","Free within 90 days"], default: "Must allow 10-14 days for product to work. If customer has had more than 2 reservices on account, attempt to upsell service (QPC to Bi or Bi to Monthly). Exception: may schedule within 2 days of treatment for fleas." },
@@ -2933,6 +3032,19 @@ function populateClientData() {
     }
 
     showSection('services');
+
+    // After all cards are rendered, hide any "Show Available Techs" buttons
+    // whose service/bundle has zero qualified techs. Keeps agents from
+    // clicking into empty modals.
+    hideUnavailableTechButtons();
+
+    // If the Available Techs modal happens to be open during a background
+    // refresh, re-render its contents so the tech list reflects fresh data.
+    const atm = document.getElementById('availableTechsModal');
+    if (atm && atm.style.display === 'block') {
+        renderAvailableTechsSchedulingInfo();
+        renderAvailableTechs();
+    }
 }
  
 function toggleDiscountPolicy() {
@@ -3296,6 +3408,11 @@ function buildServicePanel(service, svcIdx) {
                             <div class="price-display-value">${priceDisplay}</div>
                         </div>
                     </div>
+                    <button type="button" class="show-techs-btn"
+                            onclick="openAvailableTechsModal(this.getAttribute('data-target-name'))"
+                            data-target-name="${escapeHtml(service.name || '')}">
+                        👷 Show Available Techs
+                    </button>
                 </div>`;
         } else if (isReferOffice) {
             calculatorHTML = `<div class="calculator-title">📞 Pricing</div>
@@ -3305,6 +3422,11 @@ function buildServicePanel(service, svcIdx) {
                             <div class="price-display-value">Please refer to home office for pricing</div>
                         </div>
                     </div>
+                    <button type="button" class="show-techs-btn"
+                            onclick="openAvailableTechsModal(this.getAttribute('data-target-name'))"
+                            data-target-name="${escapeHtml(service.name || '')}">
+                        👷 Show Available Techs
+                    </button>
                 </div>`;
         } else {
             calculatorHTML = `<div class="calculator-title">🧮 Pricing Calculator</div>
@@ -3315,6 +3437,11 @@ function buildServicePanel(service, svcIdx) {
                 <div class="pricing-result" id="result_${serviceId}">
                     <div class="pricing-display" id="pricing_${serviceId}"></div>
                     <div class="sqft-range-info" id="range_${serviceId}"></div>
+                    <button type="button" class="show-techs-btn"
+                            onclick="openAvailableTechsModal(this.getAttribute('data-target-name'))"
+                            data-target-name="${escapeHtml(service.name || '')}">
+                        👷 Show Available Techs
+                    </button>
                 </div>`;
         }
         const applicableAddOns = (clientData.addOns || []).filter(a =>
@@ -3509,6 +3636,11 @@ function buildBundlePanel(bundle) {
                 <div class="pricing-result" id="bnd-result-${bundleId}">
                     <div class="bundle-pricing-grid" id="bnd-breakdown-${bundleId}"></div>
                     <div id="bnd-total-${bundleId}" style="margin-top:0.75rem;"></div>
+                    <button type="button" class="show-techs-btn"
+                            onclick="openAvailableTechsModal(this.getAttribute('data-target-name'))"
+                            data-target-name="${escapeHtml(bundle.name || '')}">
+                        👷 Show Available Techs
+                    </button>
                 </div>
             </div>`;
     }
@@ -3890,6 +4022,11 @@ function buildSubServiceHTML(subServiceId, sub) {
                 <div class="pricing-result" id="result_${subServiceId}">
                     <div class="pricing-display" id="pricing_${subServiceId}"></div>
                     <div class="sqft-range-info" id="range_${subServiceId}"></div>
+                    <button type="button" class="show-techs-btn"
+                            onclick="openAvailableTechsModal(this.getAttribute('data-target-name'))"
+                            data-target-name="${escapeHtml(sub.name || '')}">
+                        👷 Show Available Techs
+                    </button>
                 </div>
             </div>
         </div>`;
@@ -4576,6 +4713,187 @@ async function openOfficeModal() {
 function closeOfficeModal() {
     document.getElementById('officeModal').style.display = 'none';
 }
+
+// ─── Available Techs Modal ────────────────────────────────────────────────────
+// Shows technicians who can perform a given service/bundle, with optional ZIP filter.
+// Triggered from the "Show Available Techs" button on pricing result panels.
+// Current target name is stashed on the modal element so the ZIP input can
+// re-filter without having to re-derive what service we're looking at.
+function openAvailableTechsModal(targetName) {
+    const modal = document.getElementById('availableTechsModal');
+    if (!modal || !targetName) return;
+    const cleanName = String(targetName).trim();
+    if (!cleanName) return;
+    modal.setAttribute('data-target-name', cleanName);
+    const titleEl = document.getElementById('availableTechsTitle');
+    if (titleEl) titleEl.textContent = 'Available Techs for "' + cleanName + '"';
+
+    // Start with an empty ZIP filter each open so the agent sees everyone first
+    const zipInp = document.getElementById('availableTechsZipInput');
+    if (zipInp) zipInp.value = '';
+
+    renderAvailableTechsSchedulingInfo();
+    modal.style.display = 'block';
+    renderAvailableTechs();
+}
+
+// Populates the compact scheduling-info block inside the modal by cloning
+// the live rendered values from the Scheduling tab. We read from the DOM
+// (not clientData.policies) so whatever the user actually sees in that tab
+// is exactly what appears here — including any custom layouts or notes.
+function renderAvailableTechsSchedulingInfo() {
+    const host = document.getElementById('availableTechsSchedulingInfo');
+    if (!host) return;
+
+    // Each entry: [label shown in modal, source element id in Scheduling tab]
+    const fields = [
+        ['Default Scheduling Windows', 'defaultSchedulingTimes'],
+        ['Max Distance',               'maxDistanceFull'],
+        ['Same Day Services',          'sameDayPolicyFull'],
+        ['Appointment Confirmations',  'confirmationPolicyFull'],
+        ['After Hours Emergency',      'afterHoursPolicyFull']
+    ];
+
+    const items = [];
+    fields.forEach(([label, id]) => {
+        const src = document.getElementById(id);
+        if (!src) return;
+        const html = src.innerHTML.trim();
+        // Skip empty or placeholder values so the block stays compact
+        if (!html || html === '—' || html.toLowerCase() === 'not specified' || html === 'Loading...') return;
+        items.push(
+            '<div class="ats-sched-item">' +
+                '<div class="ats-sched-label">' + escapeHtml(label) + '</div>' +
+                '<div class="ats-sched-value">' + html + '</div>' +
+            '</div>'
+        );
+    });
+
+    // General Notes is handled separately — it has a visibility flag on its card
+    const notesCard = document.getElementById('schedulingGeneralNotesCard');
+    const notesEl   = document.getElementById('schedulingGeneralNotesFull');
+    if (notesCard && notesEl && notesCard.style.display !== 'none') {
+        const notesHtml = notesEl.innerHTML.trim();
+        if (notesHtml) {
+            items.push(
+                '<div class="ats-sched-item ats-sched-notes">' +
+                    '<div class="ats-sched-label">📝 General Notes</div>' +
+                    '<div class="ats-sched-value">' + notesHtml + '</div>' +
+                '</div>'
+            );
+        }
+    }
+
+    host.innerHTML = items.length
+        ? '<div class="ats-sched-grid">' + items.join('') + '</div>'
+        : '';
+}
+
+function closeAvailableTechsModal() {
+    const modal = document.getElementById('availableTechsModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Returns true if ANY tech (with a configured canPerform list) is qualified
+// for the given service or bundle name. Used both by the modal's render logic
+// and by the button-visibility sweep so there's a single source of truth.
+// A tech with empty canPerform never counts — they're treated as "not yet
+// configured" and hidden, same as in the modal.
+function hasAvailableTechsForName(targetName) {
+    if (!targetName) return false;
+    const needle = String(targetName).trim().toLowerCase();
+    if (!needle) return false;
+    const techs = Array.isArray(clientData.technicians) ? clientData.technicians : [];
+    return techs.some(t => {
+        const cp = Array.isArray(t.canPerform) ? t.canPerform : [];
+        if (cp.length === 0) return false;
+        return cp.some(n => String(n).trim().toLowerCase() === needle);
+    });
+}
+
+// Walk every "Show Available Techs" button on the page and hide the ones
+// whose target name has zero qualified techs. Safe to call multiple times.
+// Called after services/bundles render and any time clientData may have
+// changed (e.g. background refresh from the cache layer).
+function hideUnavailableTechButtons() {
+    document.querySelectorAll('.show-techs-btn').forEach(btn => {
+        const name = btn.getAttribute('data-target-name') || '';
+        btn.style.display = hasAvailableTechsForName(name) ? '' : 'none';
+    });
+}
+
+// Re-renders the tech list based on current target name + ZIP input.
+// Called on open and on every keystroke in the ZIP field.
+function renderAvailableTechs() {
+    const modal = document.getElementById('availableTechsModal');
+    const body  = document.getElementById('availableTechsBody');
+    const note  = document.getElementById('availableTechsNote');
+    const sum   = document.getElementById('availableTechsSummary');
+    if (!modal || !body) return;
+
+    const targetName = (modal.getAttribute('data-target-name') || '').trim();
+    const zipRaw     = (document.getElementById('availableTechsZipInput') || {}).value || '';
+    const zipFilter  = zipRaw.trim();
+
+    const allTechs = Array.isArray(clientData.technicians) ? clientData.technicians : [];
+
+    // Partition: configured (canPerform has any entries) vs not configured.
+    // Per earlier decision: hide techs with empty canPerform, show a count note instead.
+    const configured    = [];
+    let   notConfigured = 0;
+    allTechs.forEach(t => {
+        const cp = Array.isArray(t.canPerform) ? t.canPerform : [];
+        if (cp.length === 0) { notConfigured++; return; }
+        configured.push(t);
+    });
+
+    // Name match on canPerform (case-insensitive, trimmed)
+    const needle  = targetName.toLowerCase();
+    const matches = configured.filter(t =>
+        (t.canPerform || []).some(n => String(n).trim().toLowerCase() === needle)
+    );
+
+    // Optional ZIP filter layered on top
+    const zipMatches = zipFilter
+        ? matches.filter(t => (t.zipCodes || []).map(z => String(z).trim()).includes(zipFilter))
+        : matches;
+
+    // Render
+    body.innerHTML = '';
+    if (zipMatches.length === 0) {
+        body.classList.remove('ats-body-grid');
+        let msg = 'No technicians found who can perform "' + escapeHtml(targetName) + '"';
+        if (zipFilter) msg += ' in ZIP ' + escapeHtml(zipFilter);
+        msg += '.';
+        body.innerHTML = '<div style="padding:30px 10px;text-align:center;color:var(--text-muted);">' + msg + '</div>';
+    } else {
+        body.classList.add('ats-body-grid');
+        zipMatches.forEach(t => body.appendChild(createTechnicianCard(t)));
+    }
+
+    // Summary line (right side of filter bar)
+    if (sum) {
+        const total = zipMatches.length;
+        const label = total === 1 ? 'technician' : 'technicians';
+        sum.textContent = total + ' ' + label + (zipFilter ? ' in ZIP ' + zipFilter : '');
+    }
+
+    // Not-configured note (below the list)
+    if (note) {
+        if (notConfigured > 0) {
+            note.textContent = notConfigured + ' technician' + (notConfigured === 1 ? ' is' : 's are')
+                + ' not shown because their "Can Perform" list has not been set up yet in the admin.';
+        } else {
+            note.textContent = '';
+        }
+    }
+}
+
+// Close the available-techs modal on outside click
+window.addEventListener('click', e => {
+    const modal = document.getElementById('availableTechsModal');
+    if (modal && e.target === modal) closeAvailableTechsModal();
+});
  
 // Close modal on outside click
 window.addEventListener('click', e => {
@@ -4752,6 +5070,7 @@ function clearSearch() {
     document.getElementById('pestSearchResult').style.color = '';
     document.getElementById('pestsNotCoveredAlert')?.classList.remove('show');
     populateServices();
+    hideUnavailableTechButtons();
 }
  
 function filterServicesByPest(term) {
@@ -4801,6 +5120,7 @@ function filterServicesByPest(term) {
     });
  
     showSection('services');
+    hideUnavailableTechButtons();
 }
  
 // ─── Pricing Calculators ──────────────────────────────────────────────────────
