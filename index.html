@@ -452,21 +452,177 @@ body {
 /* ══════════════════════════════════════════════════════════════════
    NAVIGATION SIDEBAR
    ══════════════════════════════════════════════════════════════════ */
+.left-column {
+    /* Sticky wrapper that holds the nav + checklist together. Replaces
+       .nav-sidebar's sticky behavior so the two siblings move as one block.
+       max-height + overflow-y so a tall checklist doesn't push the column
+       past the viewport — instead its inner item list scrolls. */
+    position: sticky;
+    top: 20px;
+    transition: top 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: calc(100vh - 40px);
+}
+.left-column.sticky-header-active { top: 90px; max-height: calc(100vh - 110px); }
+
 .nav-sidebar {
     background: var(--bg-sidebar);
     border: 1px solid var(--border);
     border-radius: 0.875rem;
     padding: 1.25rem;
     height: fit-content;
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
     box-shadow: var(--shadow);
-    position: sticky;
-    top: 20px;
-    transition: top 0.3s ease, background 0.3s ease;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
 }
- 
-.nav-sidebar.sticky-header-active { top: 90px; max-height: calc(100vh - 170px); }
+
+/* ── CHECKLIST PANEL ──────────────────────────────────────────────────── */
+.checklist-panel {
+    background: var(--bg-sidebar);
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    transition: background 0.3s ease;
+    /* Take remaining vertical space in the sticky column. The inner items
+       list is what scrolls when the list is long; the picker / list-header
+       stay pinned. */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+.checklist-panel-title {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.checklist-picker { display: flex; flex-direction: column; gap: 0.6rem; }
+.checklist-picker-prompt {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+.checklist-pick-btn {
+    display: block;
+    width: 100%;
+    background: var(--nav-btn-bg);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    border-radius: 0.6rem;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.checklist-pick-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+}
+.checklist-pick-btn:disabled,
+.checklist-pick-btn[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.checklist-list {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1 1 auto;
+}
+.checklist-list-title-static {
+    margin-bottom: 0.6rem;
+    flex-shrink: 0;
+}
+/* Two-segment pill toggle. Wraps both buttons; the "active" segment fills
+   with the accent. Sits between the panel title and the items list. */
+.checklist-toggle {
+    display: flex;
+    background: var(--nav-btn-bg, rgba(255,255,255,0.04));
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    padding: 3px;
+    margin-bottom: 0.75rem;
+    flex-shrink: 0;
+    gap: 2px;
+}
+.checklist-toggle-seg {
+    flex: 1 1 50%;
+    background: transparent;
+    border: 0;
+    color: var(--text-secondary);
+    padding: 0.45rem 0.6rem;
+    border-radius: 0.45rem;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    text-align: center;
+}
+.checklist-toggle-seg:hover:not(.active):not(:disabled) {
+    color: var(--text-primary);
+    background: var(--bg-card-hover, rgba(255,255,255,0.04));
+}
+.checklist-toggle-seg.active {
+    background: var(--accent, #6366f1);
+    color: var(--white, #fff);
+}
+.checklist-toggle-seg:disabled,
+.checklist-toggle-seg[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.checklist-items {
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-right: 4px;
+}
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem 0.4rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    user-select: none;
+}
+.checklist-item:hover { background: var(--bg-card-hover, rgba(255,255,255,0.04)); }
+.checklist-item input[type="checkbox"] {
+    margin-top: 0.2rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    accent-color: var(--accent, #6366f1);
+}
+.checklist-item-label {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    line-height: 1.35;
+    flex: 1;
+}
+.checklist-item.checked .checklist-item-label {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+.checklist-empty {
+    font-size: 0.85rem;
+    color: var(--text-muted, var(--text-secondary));
+    font-style: italic;
+    padding: 0.5rem 0.4rem;
+}
  
 .nav-btn {
     display: block;
@@ -1613,6 +1769,8 @@ body {
  
 @media (max-width: 768px) {
     .main-container { grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
+    .left-column { position: static; max-height: none; }
+    .checklist-panel { max-height: 60vh; }
     .header-content { flex-direction: column; gap: 0.875rem; text-align: center; }
     .time-weather-container { flex-direction: column; }
     .header-actions { flex-wrap: wrap; justify-content: center; }
@@ -2172,14 +2330,33 @@ body {
     <!-- Main Container -->
     <div class="main-container">
  
+        <!-- Left Column: nav + checklist panel as siblings -->
+        <div class="left-column">
         <!-- Navigation Sidebar -->
         <nav class="nav-sidebar">
             <button class="nav-btn active" data-section="services" onclick="showSection('services', this)">Services</button>
             <button class="nav-btn" data-section="policies" onclick="showSection('policies', this)">Policies</button>
             <button class="nav-btn" data-section="technicians" onclick="showSection('technicians', this)">Scheduling</button>
-            <button class="nav-btn" data-section="bulletin" onclick="showSection('bulletin', this)">Bulletin</button>
             <button class="nav-btn" data-section="documents" id="navDocuments" style="display:none;" onclick="showSection('documents', this)">Company Notice</button>
         </nav>
+        <!-- Checklist Panel: hidden until populateChecklistPanel finds data. -->
+        <div id="checklistPanel" class="checklist-panel" style="display:none;">
+            <div id="checklistPicker" class="checklist-picker">
+                <div class="checklist-panel-title">Call Checklist</div>
+                <div class="checklist-picker-prompt">Select call type:</div>
+                <button type="button" id="checklistPickServiceBtn" class="checklist-pick-btn" onclick="pickChecklist('service')">Service Call</button>
+                <button type="button" id="checklistPickSalesBtn"   class="checklist-pick-btn" onclick="pickChecklist('sales')">Sales Call</button>
+            </div>
+            <div id="checklistList" class="checklist-list" style="display:none;">
+                <div class="checklist-panel-title checklist-list-title-static">Call Checklist</div>
+                <div class="checklist-toggle" role="tablist" aria-label="Call type">
+                    <button type="button" id="checklistToggleServiceBtn" class="checklist-toggle-seg" role="tab" aria-selected="false" onclick="pickChecklist('service')">Service</button>
+                    <button type="button" id="checklistToggleSalesBtn"   class="checklist-toggle-seg" role="tab" aria-selected="false" onclick="pickChecklist('sales')">Sales</button>
+                </div>
+                <div id="checklistItems" class="checklist-items"></div>
+            </div>
+        </div>
+        </div>
  
         <!-- Content Area -->
         <main class="content-area">
@@ -2390,14 +2567,10 @@ body {
                 <div id="serviceAreasGrid" class="services-grid"></div>
             </div>
  
-            <!-- Bulletin Section -->
-            <div id="bulletinSection" class="content-section">
-                <div class="info-section">
-                    <h2 class="info-title">Company Bulletin</h2>
-                    <div class="info-content" id="bulletinContent"></div>
-                </div>
-            </div>
- 
+            <!-- Bulletin section removed — bulletin is shown in the always-visible
+                 top info card (#topBulletinContent), so a dedicated nav-targeted
+                 section is no longer needed. -->
+
             <!-- Documents Section -->
             <div id="documentsSection" class="content-section">
                 <div id="acquisitionLetterCard" class="info-section" style="display:none;">
@@ -2628,6 +2801,24 @@ function loadDummyData() {
             bulletin: "This is test data - no Wix connection detected",
             pestsNotCovered: "Carpenter Ants, Bed Bugs, Termites (requires separate treatment)",
             discountPolicy: "Senior Discount: 10% off initial service for customers 65+\nMilitary Discount: 15% off for active duty and veterans\nReferral Credit: $25 credit applied after referred customer completes first service\nAnnual Prepay: 5% discount when full year is paid upfront",
+            // Demo checklists shown when no profileId is in the URL.
+            checklists: {
+                service: [
+                    "Verify service address and gate code",
+                    "Confirm pest type and severity",
+                    "Ask about pets / children at home",
+                    "Schedule next service window",
+                    "Read poison procedure if rodenticide is requested"
+                ],
+                sales: [
+                    "Verify caller name and callback number",
+                    "Identify pest issue and urgency",
+                    "Quote first-time and recurring price",
+                    "Mention any active promotions",
+                    "Schedule initial service",
+                    "Send confirmation email"
+                ]
+            },
             poisonProcedure: "1. Confirm pest type and severity before recommending any rodenticide or bait station treatment.\n2. Always ask if children or pets are present in the home.\n3. Tamper-resistant bait stations are required in all residential settings.\n4. Document product name, EPA registration number, and placement locations in the service report.\n5. Advise customer to keep children and pets away from treated areas for minimum 24 hours.\n6. If accidental ingestion is suspected, direct customer to call Poison Control immediately: 1-800-222-1222.",
             services: [{
                 name: "General Pest Control",
@@ -2938,6 +3129,8 @@ function populateClientData() {
     renderLocationSwitcher();
 
     showAlertBanner();
+    // Render the call checklist panel (hidden if no items configured).
+    populateChecklistPanel();
     // Weather uses the active location (falls back to clientData.location string
     // for single-location or legacy profiles).
     loadWeatherForecast(getActiveLocationWeatherQuery());
@@ -2985,7 +3178,11 @@ function populateClientData() {
  
     const bulletinText = clientData.bulletin || 'No bulletin information available.';
     const bulletinHTML = bulletinText.split(/\n\n+/).map(para => `<p style="margin-bottom:0.85rem;">${para.replace(/\n/g,'<br>')}</p>`).join('');
-    document.getElementById('bulletinContent').innerHTML      = bulletinHTML;
+    // bulletinContent was the dedicated section's container; it's been removed
+    // in favor of the always-visible top info card. Keep the lookup defensive
+    // in case any future layout brings the section back.
+    const _bulletinContentEl = document.getElementById('bulletinContent');
+    if (_bulletinContentEl) _bulletinContentEl.innerHTML = bulletinHTML;
     document.getElementById('topBulletinContent').innerHTML   = bulletinHTML;
  
     const pestsText = clientData.pestsNotCovered || 'No pest exclusions listed.';
@@ -3046,7 +3243,172 @@ function populateClientData() {
         renderAvailableTechs();
     }
 }
- 
+
+// ─── Call Checklist ───────────────────────────────────────────────────────────
+// Transient state — resets every page load.
+//   _checklistMode    : 'none' (picker shown) | 'service' | 'sales'
+//   _checklistChecked : Set of "type:itemText" strings — survives a Service↔Sales
+//                       toggle within the same page load.
+// Data source: clientData.checklists from the API, shape:
+//   { service: [string, ...], sales: [string, ...] }
+// Globals come first, custom items appended (deduped server-side).
+// The whole panel hides if both arrays are empty.
+//
+// Check-state key contract (IMPORTANT if you touch dedupe logic):
+//   The key is `mode + ':' + text`, where `text` is the EXACT string
+//   delivered by the API (case-sensitive, whitespace-trimmed server-side).
+//   The server-side dedupe in mergeChecklistsForProfile does a case-insensitive
+//   match BUT keeps the global's original casing. So as long as a given
+//   item's rendered text doesn't change between renders, check state is
+//   stable. If you ever change the client to render text in a transformed
+//   form (e.g. `.toLowerCase()`, sentence case), make _key() use the SAME
+//   transform — otherwise toggling a checkbox writes one key and the next
+//   render reads a different one, silently dropping check state.
+let _checklistMode = 'none';
+const _checklistChecked = new Set();
+
+function _checklistKey(mode, text) { return mode + ':' + text; }
+
+
+function populateChecklistPanel() {
+    const panel = document.getElementById('checklistPanel');
+    if (!panel) return;
+    const lists = (clientData && clientData.checklists) || { service: [], sales: [] };
+    const hasService = Array.isArray(lists.service) && lists.service.length > 0;
+    const hasSales   = Array.isArray(lists.sales)   && lists.sales.length   > 0;
+    if (!hasService && !hasSales) {
+        panel.style.display = 'none';
+        return;
+    }
+    panel.style.display = '';
+    if (_checklistMode === 'service' || _checklistMode === 'sales') {
+        const stillHasItems = (_checklistMode === 'service' && hasService) ||
+                              (_checklistMode === 'sales'   && hasSales);
+        if (stillHasItems) {
+            // Restoring a mid-session pick: ensure the picker is hidden, the
+            // list is shown, the toggle reflects the active mode, and the
+            // items render.
+            document.getElementById('checklistPicker').style.display = 'none';
+            document.getElementById('checklistList').style.display = '';
+            updateChecklistToggleState();
+            renderChecklistList();
+            return;
+        }
+        _checklistMode = 'none';
+    }
+    showChecklistPicker();
+}
+
+function showChecklistPicker() {
+    document.getElementById('checklistPicker').style.display = '';
+    document.getElementById('checklistList').style.display = 'none';
+
+    // Disable the side that has no items so the agent can't pick into a
+    // blank list. populateChecklistPanel hides the panel if BOTH sides are
+    // empty, so at least one button here is always enabled.
+    const lists = (clientData && clientData.checklists) || { service: [], sales: [] };
+    const hasService = Array.isArray(lists.service) && lists.service.length > 0;
+    const hasSales   = Array.isArray(lists.sales)   && lists.sales.length   > 0;
+    const svcBtn = document.getElementById('checklistPickServiceBtn');
+    const salBtn = document.getElementById('checklistPickSalesBtn');
+    if (svcBtn) {
+        svcBtn.disabled = !hasService;
+        svcBtn.title = hasService ? '' : 'No service checklist items configured for this client';
+    }
+    if (salBtn) {
+        salBtn.disabled = !hasSales;
+        salBtn.title = hasSales ? '' : 'No sales checklist items configured for this client';
+    }
+}
+
+function pickChecklist(type) {
+    if (type !== 'service' && type !== 'sales') return;
+    // Guard against picking an empty side (e.g., toggle clicked when its
+    // segment is disabled, programmatic call, or stale state).
+    const lists = (clientData && clientData.checklists) || { service: [], sales: [] };
+    const items = (type === 'sales' ? lists.sales : lists.service) || [];
+    if (items.length === 0) return;
+    _checklistMode = type;
+    document.getElementById('checklistPicker').style.display = 'none';
+    document.getElementById('checklistList').style.display = '';
+    updateChecklistToggleState();
+    renderChecklistList();
+}
+
+function resetChecklist() {
+    // Legacy entry point — there's no "Switch" button anymore (the toggle
+    // replaces it), but keep the function so any future caller still works.
+    // Returns to the picker. Check state is NOT cleared — the agent might
+    // come back to this list. Page reload is the way to wipe checks.
+    _checklistMode = 'none';
+    showChecklistPicker();
+}
+
+// Updates the two-segment pill toggle to reflect _checklistMode and to
+// disable whichever side has no items. Called from pickChecklist (which
+// runs both on initial pick from the picker screen AND on every toggle
+// click, since both routes are wired to pickChecklist).
+function updateChecklistToggleState() {
+    const lists = (clientData && clientData.checklists) || { service: [], sales: [] };
+    const hasService = Array.isArray(lists.service) && lists.service.length > 0;
+    const hasSales   = Array.isArray(lists.sales)   && lists.sales.length   > 0;
+    const svcSeg = document.getElementById('checklistToggleServiceBtn');
+    const salSeg = document.getElementById('checklistToggleSalesBtn');
+    if (svcSeg) {
+        svcSeg.classList.toggle('active', _checklistMode === 'service');
+        svcSeg.setAttribute('aria-selected', _checklistMode === 'service' ? 'true' : 'false');
+        svcSeg.disabled = !hasService;
+        svcSeg.title = hasService ? '' : 'No service checklist items configured for this client';
+    }
+    if (salSeg) {
+        salSeg.classList.toggle('active', _checklistMode === 'sales');
+        salSeg.setAttribute('aria-selected', _checklistMode === 'sales' ? 'true' : 'false');
+        salSeg.disabled = !hasSales;
+        salSeg.title = hasSales ? '' : 'No sales checklist items configured for this client';
+    }
+}
+
+function renderChecklistList() {
+    const lists = (clientData && clientData.checklists) || { service: [], sales: [] };
+    const items = (_checklistMode === 'sales' ? lists.sales : lists.service) || [];
+    const container = document.getElementById('checklistItems');
+    if (!container) return;
+    container.innerHTML = '';
+    // Defensive empty-state. pickChecklist guards against picking an empty
+    // side, but if items somehow become empty after picking (data refresh,
+    // etc.) we render a clear message instead of a silent blank panel.
+    if (items.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'checklist-empty';
+        empty.textContent = 'No items in this checklist.';
+        container.appendChild(empty);
+        return;
+    }
+    items.forEach((text) => {
+        const key = _checklistKey(_checklistMode, text);
+        const isChecked = _checklistChecked.has(key);
+        const row = document.createElement('label');
+        row.className = 'checklist-item' + (isChecked ? ' checked' : '');
+        row.dataset.key = key;
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = isChecked;
+        cb.addEventListener('change', () => toggleChecklistItem(key, cb.checked, row));
+        const span = document.createElement('span');
+        span.className = 'checklist-item-label';
+        span.textContent = text;
+        row.appendChild(cb);
+        row.appendChild(span);
+        container.appendChild(row);
+    });
+}
+
+function toggleChecklistItem(key, checked, rowEl) {
+    if (checked) _checklistChecked.add(key);
+    else _checklistChecked.delete(key);
+    if (rowEl) rowEl.classList.toggle('checked', checked);
+}
+
 function toggleDiscountPolicy() {
     document.getElementById('discountPolicyBlock').classList.toggle('expanded');
 }
@@ -4939,7 +5301,7 @@ function initializeStickyHeader() {
     const header       = document.querySelector('.header');
     if (!stickyHeader || !header) { setTimeout(initializeStickyHeader, 200); return; }
  
-    const navSidebar   = document.querySelector('.nav-sidebar');
+    const navSidebar   = document.querySelector('.left-column');
     const toolsSidebar = document.querySelector('.tools-sidebar');
     const headerHeight = header.offsetHeight;
     let ticking        = false;
