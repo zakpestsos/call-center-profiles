@@ -2597,10 +2597,10 @@ body {
             <!-- Pest Search -->
             <div class="tool-section">
                 <div class="tool-title">Pest Search</div>
-                <input type="text" class="tool-input" id="pestSearch" placeholder="Enter pest name" maxlength="50">
+                <input type="text" class="tool-input" id="pestSearch" placeholder="Search pests or services" maxlength="50">
                 <button class="tool-btn" onclick="searchPests()">Search</button>
                 <button class="tool-btn" onclick="clearSearch()" style="background: linear-gradient(135deg, #64748b, #94a3b8);">Clear</button>
-                <div class="tool-result" id="pestSearchResult">Enter pest name to search</div>
+                <div class="tool-result" id="pestSearchResult">Enter pest or service to search</div>
                 <div class="search-popup" id="searchPopup" style="display: none;">
                     <div class="search-popup-content" id="searchPopupContent"></div>
                 </div>
@@ -5353,7 +5353,29 @@ function searchPests() {
         check(service.pests, service.name);
         service.subServices?.forEach(sub => check(sub.pests, `${service.name} (${sub.name})`));
     });
- 
+
+    // Pass 2: service-level match (only if no pest matches).
+    // Searches name / description / guarantee. Descriptions are included
+    // intentionally — agents are expected to read the result and catch the
+    // rare "does not service X" edge case.
+    let foundInServiceText = [];
+    if (foundInServices.length === 0) {
+        const seen = new Set();
+        const scan = (service, label) => {
+            if (!service || seen.has(label)) return;
+            const haystack = [service.name, service.description, service.guarantee]
+                .filter(Boolean).join(' ').toLowerCase();
+            if (haystack.includes(term)) {
+                foundInServiceText.push({ name: label });
+                seen.add(label);
+            }
+        };
+        clientData.services.forEach(service => {
+            scan(service, service.name);
+            service.subServices?.forEach(sub => scan(sub, `${service.name} (${sub.name})`));
+        });
+    }
+
     let foundInNotCovered = false;
     if (clientData.pestsNotCovered && !exactInServices) {
         const notCoveredList = clientData.pestsNotCovered.toLowerCase().split(',').map(p => p.trim());
@@ -5362,10 +5384,11 @@ function searchPests() {
         }
     }
  
-    showSearchPopup(term, foundInServices, foundInNotCovered, exactInServices);
+    showSearchPopup(term, foundInServices, foundInNotCovered, exactInServices, foundInServiceText);
 }
  
-function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServices) {
+function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServices, foundInServiceText) {
+    foundInServiceText = foundInServiceText || [];
     let html = '';
  
     if (foundInServices.length) {
@@ -5378,6 +5401,16 @@ function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServic
                     <div class="search-popup-item-detail">Click to view service details</div>
                 </div>`;
         });
+    } else if (foundInServiceText.length) {
+        // No pest match, but the term appears in a service's name/description/guarantee
+        html += `<div class="search-popup-header">🔧 Service match for "${term}":</div>`;
+        foundInServiceText.forEach(s => {
+            html += `
+                <div class="search-popup-item" onclick="selectSearchResult('${s.name}', '${term}')">
+                    <div><span class="search-popup-item-icon">🔧</span><span class="search-popup-item-text">${s.name}</span></div>
+                    <div class="search-popup-item-detail">Click to view service details</div>
+                </div>`;
+        });
     }
  
     if (foundInNotCovered && foundInServices.length) {
@@ -5385,7 +5418,7 @@ function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServic
     } else if (foundInNotCovered) {
         html += `<div class="search-popup-header">⚠️ "${term}" is NOT COVERED</div>
                  <div class="search-popup-item not-covered"><div><span class="search-popup-item-icon">🚫</span><span class="search-popup-item-text">Found in exclusions list</span></div><div class="search-popup-item-detail">${clientData.pestsNotCovered}</div></div>`;
-    } else if (!foundInServices.length) {
+    } else if (!foundInServices.length && !foundInServiceText.length) {
         html += `<div class="search-popup-header">❓ No coverage found for "${term}"</div>
                  <div class="search-popup-item"><div><span class="search-popup-item-icon">📞</span><span class="search-popup-item-text">Contact office for details</span></div><div class="search-popup-item-detail">Pest may require special treatment</div></div>`;
     }
@@ -5397,6 +5430,9 @@ function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServic
     if (foundInServices.length) {
         resultEl.textContent = exactInServices ? `✅ "${term}" is covered` : `🔍 Found "${term}"`;
         resultEl.style.color = exactInServices ? '#10b981' : '#60a5fa';
+    } else if (foundInServiceText.length) {
+        resultEl.textContent = `🔧 Service match for "${term}"`;
+        resultEl.style.color = '#60a5fa';
     } else if (foundInNotCovered) {
         resultEl.textContent = `⚠️ "${term}" not covered`;
         resultEl.style.color = '#ef4444';
@@ -5409,7 +5445,7 @@ function showSearchPopup(term, foundInServices, foundInNotCovered, exactInServic
 function selectSearchResult(serviceName, term) {
     hideSearchPopup();
     showSection('services');
-    filterServicesByPest(term);
+    filterServicesByPest(term, serviceName);
     setTimeout(() => {
         // With the tab layout, just scroll the panels into view and highlight the tab bar
         const tabsBar = document.getElementById('serviceTabsBar');
@@ -5435,7 +5471,7 @@ function clearSearch() {
     hideUnavailableTechButtons();
 }
  
-function filterServicesByPest(term) {
+function filterServicesByPest(term, autoExpandName) {
     const tabsBar   = document.getElementById('serviceTabsBar');
     const tabPanels = document.getElementById('serviceTabPanels');
     if (!tabsBar || !tabPanels) return;
@@ -5444,31 +5480,54 @@ function filterServicesByPest(term) {
     tabsBar.innerHTML   = '';
     tabPanels.innerHTML = '';
  
-    const matching = (clientData.services || []).filter(service => {
-        const mainMatch = service.pests?.toLowerCase().includes(term);
-        const subMatch  = service.subServices?.some(s => s.pests?.toLowerCase().includes(term));
+    const t = (term || '').toLowerCase();
+
+    // Pass 1: pest-field match (preferred — what the original code did)
+    let matching = (clientData.services || []).filter(service => {
+        const mainMatch = service.pests?.toLowerCase().includes(t);
+        const subMatch  = service.subServices?.some(s => s.pests?.toLowerCase().includes(t));
         return mainMatch || subMatch;
     });
- 
+
+    // Pass 2: fall back to service-text match (name / description / guarantee)
+    // so service-name searches like "exclusion" surface the right cards.
+    // Mirrors the two-pass logic in searchPests so the popup and the filter agree.
     if (!matching.length) {
-        tabPanels.innerHTML = '<div class="info-section"><div class="info-content">No services found matching that pest.</div></div>';
+        const textMatches = (service) => {
+            const hay = [service.name, service.description, service.guarantee]
+                .filter(Boolean).join(' ').toLowerCase();
+            return hay.includes(t);
+        };
+        matching = (clientData.services || []).filter(service => {
+            return textMatches(service) || service.subServices?.some(textMatches);
+        });
+    }
+
+    if (!matching.length) {
+        tabPanels.innerHTML = '<div class="info-section"><div class="info-content">No services found matching that term.</div></div>';
         return;
     }
  
+    // The popup labels sub-service hits as "Parent (Sub)". Auto-expand the
+    // parent tab in that case, since sub-services don't have their own top-level tab.
+    const autoExpandParent = autoExpandName ? autoExpandName.replace(/\s*\(.+\)\s*$/, '') : '';
+
     matching.forEach((service, idx) => {
         const tabId   = `svc-tab-f-${idx}`;
         const panelId = `svc-panel-f-${idx}`;
         const freqLabel = service.subServices?.length ? 'Multi' : (service.frequency || '');
+        const isAutoExpand = autoExpandParent && service.name === autoExpandParent;
  
         const btn = document.createElement('button');
-        btn.className = 'svc-tab-btn active';
+        // Open the tab the user clicked from search; leave the rest collapsed
+        btn.className = isAutoExpand ? 'svc-tab-btn active was-active' : 'svc-tab-btn';
         btn.id = tabId;
         btn.innerHTML = `${service.name || 'Service'}${freqLabel ? `<span class="tab-freq-badge">${freqLabel}</span>` : ''}`;
         btn.addEventListener('click', () => activateServiceTab(tabId, panelId, null));
         tabsBar.appendChild(btn);
  
         const panel = document.createElement('div');
-        panel.className = 'svc-tab-panel active';
+        panel.className = isAutoExpand ? 'svc-tab-panel active' : 'svc-tab-panel';
         panel.id = panelId;
         const content = buildServicePanel(service, idx);
  
