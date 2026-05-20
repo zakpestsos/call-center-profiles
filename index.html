@@ -2500,16 +2500,16 @@ body {
                                     <div class="service-policy-title" id="reservicesCardTitle">Reservices Setup</div>
                                     <div class="service-policy-description" id="reservicesCardDescription">Required settings for repeat service calls within guarantee period</div>
                                     <div class="reservices-settings" id="reservicesDetails" style="display: none;">
-                                        <div class="reservices-setting">
+                                        <div class="reservices-setting" id="reservicesServiceTypeRow">
                                             <div class="setting-label" id="reservicesServiceTypeLabel">Set Service Type to:</div>
                                             <div class="setting-value" id="reservicesServiceType">Reservice</div>
                                         </div>
-                                        <div class="reservices-setting">
+                                        <div class="reservices-setting" id="reservicesSubscriptionRow">
                                             <div class="setting-label" id="reservicesSubscriptionLabel">Set Subscription to:</div>
                                             <div class="setting-value" id="reservicesSubscription">Stand-Alone Service</div>
                                         </div>
                                         <div class="reservices-policy">
-                                            <div class="policy-note-title">📖 Reservice Policy</div>
+                                            <div class="policy-note-title">📖 Reservice / Call Back Policy</div>
                                             <div class="policy-note-content" id="reservicesPolicy">Loading...</div>
                                         </div>
                                     </div>
@@ -4556,6 +4556,19 @@ function populateSchedulingPolicies() {
         const el = document.getElementById(elId);
         const v = p && p.value ? String(p.value).trim() : '';
         if (el && v) el.textContent = v;
+    });
+
+    // Per-row hide flags — let admins hide individual rows in the expandable area
+    const reserviceHideRows = [
+        { title: 'reservice service type hide',  rowId: 'reservicesServiceTypeRow' },
+        { title: 'reservice subscription hide',  rowId: 'reservicesSubscriptionRow' },
+    ];
+    reserviceHideRows.forEach(({ title, rowId }) => {
+        const p = allPolicies.find(x => (x.title || '').toLowerCase() === title);
+        if (p) matchedPolicies.add(p);
+        const row = document.getElementById(rowId);
+        const shouldHide = p && String(p.value || '').trim().toLowerCase() === 'true';
+        if (row && shouldHide) row.style.display = 'none';
     });
  
     // General Notes — shown as a highlighted card when present
