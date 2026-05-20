@@ -4563,13 +4563,31 @@ function populateSchedulingPolicies() {
         { title: 'reservice service type hide',  rowId: 'reservicesServiceTypeRow' },
         { title: 'reservice subscription hide',  rowId: 'reservicesSubscriptionRow' },
     ];
+    // TEMP DIAGNOSTIC — remove after debugging
+    console.log('[Reservice Hide Debug] All policies titles:', JSON.stringify(allPolicies.map(p => p.title)));
     reserviceHideRows.forEach(({ title, rowId }) => {
         const p = allPolicies.find(x => (x.title || '').toLowerCase() === title);
         if (p) matchedPolicies.add(p);
         const row = document.getElementById(rowId);
         const shouldHide = p && String(p.value || '').trim().toLowerCase() === 'true';
-        if (row && shouldHide) row.style.display = 'none';
+        // TEMP DIAGNOSTIC — remove after debugging
+        console.log('[Reservice Hide Debug]', { searchingFor: title, foundEntry: p, value: p ? p.value : null, willHide: shouldHide, rowFound: !!row });
+        // Set the row's display state symmetrically: hide when flagged, restore default when not.
+        // This matters because populateSchedulingPolicies() can run multiple times (e.g. after
+        // a stale-while-revalidate cache refresh). Without the explicit reset, a row hidden
+        // from stale cached data would stay hidden even after fresh data shows it shouldn't be.
+        if (row) row.style.display = shouldHide ? 'none' : '';
     });
+    // TEMP DIAGNOSTIC — log final DOM state of both rows
+    setTimeout(() => {
+        const r1 = document.getElementById('reservicesServiceTypeRow');
+        const r2 = document.getElementById('reservicesSubscriptionRow');
+        console.log('[Reservice Hide Debug] FINAL DOM STATE:');
+        console.log('  Service Type Row inline style.display:', r1 ? r1.style.display : 'NOT FOUND');
+        console.log('  Service Type Row computed display:', r1 ? window.getComputedStyle(r1).display : 'NOT FOUND');
+        console.log('  Subscription Row inline style.display:', r2 ? r2.style.display : 'NOT FOUND');
+        console.log('  Subscription Row computed display:', r2 ? window.getComputedStyle(r2).display : 'NOT FOUND');
+    }, 500);
  
     // General Notes — shown as a highlighted card when present
     const generalNotes = findByTitle('scheduling general notes');
