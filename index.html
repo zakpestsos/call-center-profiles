@@ -2489,7 +2489,7 @@ body {
                             <h3 class="service-policies-title" id="servicePoliciesTitle">📋 Service Policies</h3>
                             <div class="service-policies-subtitle" id="servicePoliciesSubtitle">Key policies for scheduling and service management</div>
                             <button class="toggle-policies-btn" onclick="toggleReservicePolicies()">
-                                <span id="toggleText">Show Reservice Details</span>
+                                <span id="toggleText">Show Details</span>
                                 <span class="toggle-icon" id="toggleIcon">▼</span>
                             </button>
                         </div>
@@ -4601,7 +4601,7 @@ function toggleReservicePolicies() {
     const toggleIcon = document.getElementById('toggleIcon');
     const isHidden   = details.style.display === 'none';
     details.style.display         = isHidden ? 'flex' : 'none';
-    toggleText.textContent        = isHidden ? 'Hide Reservice Details' : 'Show Reservice Details';
+    toggleText.textContent        = isHidden ? 'Hide Details' : 'Show Details';
     toggleIcon.classList.toggle('rotated', isHidden);
 }
  
