@@ -2014,6 +2014,28 @@ body {
     gap: 0.4rem;
     margin-bottom: 0.65rem;
 }
+.addon-desc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 0.65rem;
+}
+.addon-desc-list:empty {
+    display: none;
+    margin: 0;
+}
+.addon-desc-item {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    padding-left: 0.65rem;
+    border-left: 2px solid rgba(12,143,203,0.35);
+}
+.addon-desc-item-name {
+    font-weight: 700;
+    color: var(--water);
+    margin-right: 0.35rem;
+}
 
 .addon-chip {
     display: inline-flex;
@@ -3076,7 +3098,7 @@ function loadDummyData() {
                 {
                     addOnId: "addon_demo_1",
                     name: "Indoor Flea Treatment",
-                    description: "Interior flea treatment added to any general pest service visit.",
+                    description: "Interior flea treatment added to any general pest service visit. Technician treats carpets, baseboards, and pet resting areas with an IGR-based product that breaks the flea life cycle. Customer must vacuum thoroughly beforehand and keep pets off treated surfaces until fully dry.",
                     applicableServices: ["General Pest Control", "Monthly Mosquito Service"],
                     applicableBundles: ["Home Protection Bundle", "Full Property Protection Bundle"],
                     pricingData: { pricingMode: "flat", flatPrice: "$45.00" },
@@ -3086,7 +3108,7 @@ function loadDummyData() {
                 {
                     addOnId: "addon_demo_2",
                     name: "Exterior Spider Web Removal",
-                    description: "Full exterior de-webbing added to any pest control visit.",
+                    description: "Full exterior de-webbing of eaves, doorframes, and porches added to each visit.",
                     applicableServices: ["General Pest Control"],
                     applicableBundles: ["Home Protection Bundle"],
                     pricingData: { pricingMode: "flat", flatPrice: "$25.00" },
@@ -3101,6 +3123,14 @@ function loadDummyData() {
                     pricingData: { pricingMode: "sqft", firstPrice: "$35.00", recurringPrice: "$30.00", sqftMin: 0, sqftMax: 999999 },
                     recurring: "true",
                     agentNote: "Place in wooded or brushy areas. Highly effective for tick reduction."
+                },
+                {
+                    addOnId: "addon_demo_4",
+                    name: "Wasp Nest Removal",
+                    applicableServices: ["General Pest Control"],
+                    pricingData: { pricingMode: "flat", flatPrice: "$40.00" },
+                    recurring: "false",
+                    agentNote: "Technician removes accessible nests only. No-description add-on — shown here to confirm graceful fallback."
                 }
             ]
         };
@@ -3480,6 +3510,25 @@ function getWeatherIcon(code) {
 // ─── Services ─────────────────────────────────────────────────────────────────
 const IDENTIFIER_ORDER = ['GPC', 'Specialty', 'Termite', 'Rodent/Wildlife', 'Mosquito, Tick and Flea', 'Non-pest Services'];
 
+// Map raw stored frequency values to display labels for the tab bubble.
+// Keys here MUST match the <option value="..."> strings in the backend
+// form's frequency dropdown. The raw value is preserved in
+// service.frequency for sorting (freqRank) and any other logic.
+// Used by both populateServices (normal view) and filterServicesByPest
+// (pest-search view) so bubble labels stay consistent across both.
+const FREQ_LABELS = {
+    'one-time':             'One Time',
+    'bi-monthly':           'Bi-Monthly',
+    'quarterly':            'Quarterly',
+    'monthly':              'Monthly',
+    '21-days':              'Every 21 Days',
+    '14-days':              'Every 14 Days',
+    '10-14-days':           'Every 10-14 Days',
+    'inspection':           'Inspection',
+    'refer-to-home-office': 'Refer to Office',
+    'bundle':               'Bundle'
+};
+
 function populateServices() {
     const tabsBar   = document.getElementById('serviceTabsBar');
     const tabPanels = document.getElementById('serviceTabPanels');
@@ -3528,23 +3577,30 @@ function populateServices() {
 
     // Sort services within each group: frequency hierarchy first, then alphabetical
     const FREQ_RANK = {
-        'weekly':        1,
-        'every 14 days': 2,
-        'every 10-14 days': 2,
-        'bi-weekly':     2,
-        'every 21 days': 3,
-        'monthly':       4,
-        'bi-monthly':    5,
-        'quarterly':     6,
-        'annual':        7,
-        'annually':      7,
-        'yearly':        7,
-        'one time':      8,
-        'one-time':      8,
-        'seasonal':      9,
-        'paid inspection': 10,
-        'free inspection': 11,
-        'inspection':    11,
+        // Spelled-out forms (legacy / custom-typed values)
+        'weekly':            1,
+        'every 14 days':     2,
+        'every 10-14 days':  2,
+        'bi-weekly':         2,
+        'every 21 days':     3,
+        'monthly':           4,
+        'bi-monthly':        5,
+        'quarterly':         6,
+        'annual':            7,
+        'annually':          7,
+        'yearly':            7,
+        'one time':          8,
+        'one-time':          8,
+        'seasonal':          9,
+        'paid inspection':  10,
+        'free inspection':  11,
+        'inspection':       11,
+        // Slug forms emitted by the backend form's <option value="..."> values
+        '14-days':           2,
+        '10-14-days':        2,
+        '21-days':           3,
+        'refer-to-home-office': 12,
+        'bundle':            6
     };
     function freqRank(service) {
         const f = (service.frequency || service.serviceType || '').toLowerCase().trim();
@@ -3597,7 +3653,13 @@ function populateServices() {
         svcMembers.forEach(({ service, idx }) => {
             const svcTabId   = `svc-tab-${idx}`;
             const svcPanelId = `svc-panel-${idx}`;
-            const freqLabel  = service.subServices?.length ? 'Multi' : (service.frequency || '');
+            // FREQ_LABELS is defined at module scope above. Raw value preserved
+            // in service.frequency for sorting (freqRank); custom-typed values
+            // not in the map fall through to their raw string.
+            const freqRaw   = service.frequency || '';
+            const freqLabel = service.subServices?.length
+                ? 'Multi'
+                : (FREQ_LABELS[freqRaw] || freqRaw);
 
             const svcBtn = document.createElement('button');
             svcBtn.className = 'svc-tab-btn';
@@ -3722,6 +3784,7 @@ function buildServicePanel(service, svcIdx) {
             </div>
             ${service.agentNote ? `<div class="agent-note"><div class="agent-note-title">Agent Note</div><div class="agent-note-content">${service.agentNote}</div></div>` : ''}
             ${addonQuickBarMultiHTML}
+            <div class="addon-desc-list" id="addonDescs_${serviceId}"></div>
             ${applicableAddOnsMulti.length ? `
             <div class="addon-active-section" id="addonSection_${serviceId}">
                 <div class="addon-chip-list" id="addonChips_${serviceId}"></div>
@@ -3869,6 +3932,7 @@ function buildServicePanel(service, svcIdx) {
             </div>
             ${service.agentNote ? `<div class="agent-note"><div class="agent-note-title">Agent Note</div><div class="agent-note-content">${service.agentNote}</div></div>` : ''}
             ${addonQuickBarHTML}
+            <div class="addon-desc-list" id="addonDescs_${serviceId}"></div>
             <div class="pests-covered-section">
                 <div class="pests-covered-title">Pests Covered</div>
                 <div class="pests-covered-list pests-covered">${service.pests || 'N/A'}</div>
@@ -4041,6 +4105,7 @@ function buildBundlePanel(bundle) {
             <div class="pests-covered-list pests-covered">${bundle.pests}</div>
         </div>` : ''}
         ${bundleAddonQuickBarHTML}
+        <div class="addon-desc-list" id="addonDescs_${bundleId}"></div>
         ${applicableBundleAddOns.length ? `
         <div class="addon-active-section" id="addonSection_${bundleId}">
             <div class="addon-chip-list" id="addonChips_${bundleId}"></div>
@@ -5498,7 +5563,12 @@ function filterServicesByPest(term) {
     matching.forEach((service, idx) => {
         const tabId   = `svc-tab-f-${idx}`;
         const panelId = `svc-panel-f-${idx}`;
-        const freqLabel = service.subServices?.length ? 'Multi' : (service.frequency || '');
+        // Use the same FREQ_LABELS map as populateServices so bubble labels stay
+        // consistent between the normal view and the pest-search-filtered view.
+        const freqRaw   = service.frequency || '';
+        const freqLabel = service.subServices?.length
+            ? 'Multi'
+            : (FREQ_LABELS[freqRaw] || freqRaw);
  
         const btn = document.createElement('button');
         btn.className = 'svc-tab-btn active';
@@ -5900,6 +5970,9 @@ function renderAddonSection(serviceId) {
     const selected = _getAddonMap(serviceId);
     if (selected.size === 0) {
         section.classList.remove('show');
+        // Clear the (now standalone) description list so nothing lingers
+        const emptyDescs = document.getElementById(`addonDescs_${serviceId}`);
+        if (emptyDescs) emptyDescs.innerHTML = '';
         // Clean up any injected acreage input so stale state doesn't persist
         const orphanedAcreage = document.getElementById(`addonAcreageInput_${serviceId}`);
         if (orphanedAcreage) orphanedAcreage.remove();
@@ -5944,6 +6017,17 @@ function renderAddonSection(serviceId) {
             : '';
         return `<span class="addon-chip"${chipStyle}>${escapeHtml(a.name)}${requiredBadge}${qtyHtml}${removeBtn}</span>`;
     }).join('');
+
+    // Descriptions for selected add-ons (shown beneath the chips). Only
+    // add-ons that actually have a description render a line; if none do,
+    // the container stays empty and collapses.
+    const descsEl = document.getElementById(`addonDescs_${serviceId}`);
+    if (descsEl) {
+        descsEl.innerHTML = activeAddons
+            .filter(a => a.description)
+            .map(a => `<div class="addon-desc-item"><span class="addon-desc-item-name">${escapeHtml(a.name)}</span>${escapeHtml(a.description)}</div>`)
+            .join('');
+    }
 
     // Clear any leftover per-addon inputs container (no longer used)
     const inputsEl = document.getElementById(`addonInputs_${serviceId}`);
