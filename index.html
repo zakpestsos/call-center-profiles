@@ -2037,6 +2037,48 @@ body {
     margin-right: 0.35rem;
 }
 
+/* Region-based pricing: badge sits next to the price it affects, never global chrome */
+.region-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(12,143,203,0.15);
+    color: var(--water);
+    border: 1px solid rgba(12,143,203,0.4);
+    vertical-align: middle;
+}
+/* Fallback pricing for served ZIPs with no assigned region — amber, not a real region */
+.region-badge.region-badge-unlisted {
+    background: rgba(245,158,11,0.15);
+    color: #f59e0b;
+    border-color: rgba(245,158,11,0.4);
+}
+.region-state-note .price-display-value.region-state-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+.region-zip-inline {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.region-zip-inline .sqft-input { max-width: 160px; }
+.region-zip-inline-notice {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+}
+
 .addon-chip {
     display: inline-flex;
     align-items: center;
@@ -2634,6 +2676,12 @@ body {
                 <input type="text" class="tool-input" id="zipInput" placeholder="Enter ZIP code" maxlength="5">
                 <button class="tool-btn" onclick="checkZip()">Check Area</button>
                 <div class="tool-result" id="zipResult">Enter ZIP to check</div>
+                <!-- Pricing region picker — only shown for profiles with region-tagged pricing -->
+                <div id="regionPickerWrap" style="display:none;margin-top:0.65rem;">
+                    <div class="tool-title" style="font-size:0.72rem;">Pricing Region</div>
+                    <select class="tool-input" id="regionPicker" onchange="onRegionPickerChange(this.value)"></select>
+                    <div class="tool-result" id="regionStatus">No region selected</div>
+                </div>
             </div>
  
             <!-- Acreage Converter -->
@@ -2686,6 +2734,7 @@ body {
 let clientData = {};
 let _lastPopulatedProfileId = null;
 let _activeLocationIdx = 0; // Index into clientData.locations; 0 = primary (mirrors Client_Profiles)
+let _pristinePayloadJson = null; // payload JSON exactly as received, before applyRegionFilter() annotates clientData
  
 // ─── Profile Cache ────────────────────────────────────────────────────────────
 // TTL is the safety net for when the background refresh fails. Normal updates
@@ -2745,6 +2794,234 @@ async function fetchJsonWithCache(url, { ttlMs = PROFILE_CACHE_TTL_MS } = {}) {
     return p;
 }
  
+// ─── Region-Based Pricing ─────────────────────────────────────────────────────
+// Some clients price a service differently by geographic region. Regions are
+// defined on the ZIP list (Service_Areas.Territory — the single source of
+// region names). Pricing tiers carry an optional `region` field; a tier with
+// no region applies in every region, which is how regionless clients render
+// exactly as before.
+//
+// Filtering happens ONLY in applyRegionFilter(), called from
+// populateClientData() (every data path funnels through it) and from
+// setActiveRegion(). Everything downstream — pricingInputHTML,
+// calculatePricing, calculateSubServicePricing, the flat/per-unit auto-show
+// gates, the add-on breakdown — decides the pricing UI from tiers[0] of the
+// already-filtered array. Do NOT filter at those call sites: index 0 must
+// already be the active region's base tier by the time they run.
+let _activeRegion       = null;  // display-cased region name, or null = not resolved
+let _activeRegionSource = null;  // 'zip' | 'manual'
+
+function normRegion(x) {
+    return String(x == null ? '' : x).trim().toLowerCase();
+}
+
+// Reserved fallback key. The builder's "Area Not Listed" tab serializes its
+// tiers with region '__unlisted__'. It is NOT a region: it never appears in
+// the ZIP list or the manual picker, and it only prices ZIPs that are IN the
+// service-area list but have no territory assigned. A ZIP outside the list
+// stays "not in service" — the fallback never extends the footprint.
+const REGION_UNLISTED_KEY = '__unlisted__';
+
+function isUnlistedRegionActive() {
+    return normRegion(_activeRegion) === REGION_UNLISTED_KEY;
+}
+
+function serviceHasUnlistedPricing(svcOrSub) {
+    const raw = svcOrSub._allPricingTiers || svcOrSub.pricingTiers;
+    return Array.isArray(raw) && raw.some(t => normRegion(t.region) === REGION_UNLISTED_KEY);
+}
+
+function profileHasUnlistedPricing() {
+    return (clientData.services || []).some(svc =>
+        serviceHasUnlistedPricing(svc) || (svc.subServices || []).some(serviceHasUnlistedPricing));
+}
+
+// Badge shown next to a price whose value depends on the region resolution.
+function regionBadgeFor() {
+    if (isUnlistedRegionActive()) {
+        return `<span class="region-badge region-badge-unlisted" title="Area Not Listed pricing — this ZIP has no assigned region">Area Not Listed</span>`;
+    }
+    return `<span class="region-badge" title="Pricing shown for the ${escapeHtml(_activeRegion)} region">${escapeHtml(_activeRegion)}</span>`;
+}
+
+// True when this service's / sub-service's raw tiers carry any region tag —
+// i.e. its displayed price depends on which region is active.
+function serviceHasRegionPricing(svcOrSub) {
+    const raw = svcOrSub._allPricingTiers || svcOrSub.pricingTiers;
+    return Array.isArray(raw) && raw.some(t => normRegion(t.region));
+}
+
+function profileHasRegionPricing() {
+    return (clientData.services || []).some(svc =>
+        serviceHasRegionPricing(svc) || (svc.subServices || []).some(serviceHasRegionPricing));
+}
+
+function filterTiersForRegion(tiers, region) {
+    if (!Array.isArray(tiers)) return tiers;
+    const active = normRegion(region);
+    return tiers.filter(t => !normRegion(t.region) || normRegion(t.region) === active);
+}
+
+// Every distinct territory from the ZIP list, first-appearance order, ZIP-list
+// casing. Tier regions that match no ZIP-list territory (orphans — e.g. a
+// territory renamed after pricing was saved) are appended flagged rather than
+// hidden: the picker must never make saved pricing unreachable.
+function getProfileRegions() {
+    const regions = [];
+    const seen    = new Set();
+    (clientData.serviceAreas || []).forEach(a => {
+        const key = normRegion(a.territory);
+        if (!key || seen.has(key)) return;
+        seen.add(key);
+        regions.push({ name: String(a.territory).trim(), orphan: false });
+    });
+    (clientData.services || []).forEach(svc => {
+        const tierSets = [svc._allPricingTiers || svc.pricingTiers];
+        (svc.subServices || []).forEach(sub => tierSets.push(sub._allPricingTiers || sub.pricingTiers));
+        tierSets.forEach(tiers => (Array.isArray(tiers) ? tiers : []).forEach(t => {
+            const key = normRegion(t.region);
+            // The reserved fallback key is not a selectable region — an agent
+            // must never pick it; it applies only when no region resolves.
+            if (!key || key === REGION_UNLISTED_KEY || seen.has(key)) return;
+            seen.add(key);
+            regions.push({ name: String(t.region).trim(), orphan: true });
+        }));
+    });
+    return regions;
+}
+
+// Back up each raw tier array once, then publish the filtered view the rest of
+// the page reads. Idempotent: re-running re-derives from the backup, so a
+// region switch never loses tiers. Services with no region-tagged tiers are
+// left completely untouched — their pricingTiers array is not even replaced.
+function applyRegionFilter() {
+    const apply = (svcOrSub) => {
+        if (svcOrSub._allPricingTiers === undefined) {
+            if (!Array.isArray(svcOrSub.pricingTiers)) return;
+            if (!svcOrSub.pricingTiers.some(t => normRegion(t.region))) return;
+            svcOrSub._allPricingTiers = svcOrSub.pricingTiers;
+        }
+        svcOrSub.pricingTiers = filterTiersForRegion(svcOrSub._allPricingTiers, _activeRegion);
+    };
+    (clientData.services || []).forEach(svc => {
+        apply(svc);
+        (svc.subServices || []).forEach(apply);
+    });
+}
+
+function setActiveRegion(name, source) {
+    _activeRegion       = name ? String(name).trim() : null;
+    _activeRegionSource = _activeRegion ? (source || 'manual') : null;
+    applyRegionFilter();
+    populateServices();
+    renderRegionPicker();
+}
+
+function onRegionPickerChange(value) {
+    setActiveRegion(value || null, 'manual');
+}
+
+// Sidebar picker — rendered only for profiles that actually have region-tagged
+// pricing, so the other clients see no new chrome at all.
+function renderRegionPicker() {
+    const wrap   = document.getElementById('regionPickerWrap');
+    const picker = document.getElementById('regionPicker');
+    const status = document.getElementById('regionStatus');
+    if (!wrap || !picker) return;
+    if (!profileHasRegionPricing()) { wrap.style.display = 'none'; return; }
+    wrap.style.display = '';
+    const activeKey = normRegion(_activeRegion);
+    picker.innerHTML = '<option value="">— Select region —</option>' + getProfileRegions().map(r =>
+        `<option value="${escapeHtml(r.name)}"${normRegion(r.name) === activeKey ? ' selected' : ''}>${escapeHtml(r.name)}${r.orphan ? ' (not on ZIP list)' : ''}</option>`
+    ).join('');
+    if (status) {
+        if (isUnlistedRegionActive()) {
+            status.textContent = 'Area Not Listed pricing — ZIP has no assigned region';
+            status.style.color = '#f59e0b';
+        } else if (_activeRegion) {
+            status.textContent = `Region: ${_activeRegion}` + (_activeRegionSource === 'zip' ? ' (from ZIP)' : '');
+            status.style.color = '#10b981';
+        } else {
+            status.textContent = 'No region selected — enter ZIP or pick one';
+            status.style.color = '#f59e0b';
+        }
+    }
+}
+
+// Explicit region states — rendered INSTEAD of a calculator so no code path
+// can quote a price from an unresolved or unmatched region. The blocked state
+// carries its own ZIP input so the agent can resolve the region right on the
+// card; it only exists while no region is set, so once resolved (from any
+// card or the sidebar) every copy of it re-renders away.
+function regionNotSetHTML(id) {
+    const zipId    = `regionZip_${id}`;
+    const noticeId = `regionZipNotice_${id}`;
+    const stateMsg = isUnlistedRegionActive()
+        ? 'This ZIP has no assigned region and this service has no Area Not Listed pricing — select a region in the sidebar, or try another ZIP.'
+        : "Enter the customer's ZIP to show pricing, or select a region in the sidebar.";
+    return `<div class="pricing-result show region-state-note">
+                    <div class="price-display-item">
+                        <div class="price-display-label">Prices vary by region</div>
+                        <div class="price-display-value region-state-text">${stateMsg}</div>
+                    </div>
+                    <div class="region-zip-inline">
+                        <input type="text" class="sqft-input" id="${zipId}" placeholder="Enter ZIP code" maxlength="5" inputmode="numeric"
+                               onkeypress="if(event.key==='Enter') resolveRegionFromCardZip('${zipId}','${noticeId}')">
+                        <button type="button" class="calculate-btn" onclick="resolveRegionFromCardZip('${zipId}','${noticeId}')">Set Region</button>
+                    </div>
+                    <div class="region-zip-inline-notice" id="${noticeId}"></div>
+                </div>`;
+}
+
+// Resolve the region from a card's inline ZIP input. Region SETTING goes
+// through setActiveRegion() — the same single path as the sidebar tool; only
+// the feedback differs. When the ZIP can't resolve a region the active region
+// is already null (this input only renders then), so no state change and no
+// re-render — the notice stays visible on the card.
+function resolveRegionFromCardZip(zipId, noticeId) {
+    const zip    = String(document.getElementById(zipId)?.value || '').trim();
+    const notice = document.getElementById(noticeId);
+    const say = (msg, color) => { if (notice) { notice.textContent = msg; notice.style.color = color; } };
+    if (!/^\d{5}$/.test(zip)) { say('Please enter a valid 5-digit ZIP', '#ef4444'); return; }
+
+    // Mirror into the sidebar tool so both entry points show one consistent state
+    const sidebarInput = document.getElementById('zipInput');
+    if (sidebarInput) sidebarInput.value = zip;
+
+    const found = (clientData.serviceAreas || []).find(a => String(a.zip) === zip);
+    if (!found) { say('✗ Not in service area', '#ef4444'); return; }
+
+    const territory = String(found.territory || '').trim();
+    if (!territory) {
+        if (profileHasUnlistedPricing()) {
+            const unlistedResultEl = document.getElementById('zipResult');
+            if (unlistedResultEl) {
+                unlistedResultEl.textContent = `✓ ${found.branch || found.city} - ${found.city}, ${found.state} — no region assigned: Area Not Listed pricing applies`;
+                unlistedResultEl.style.color = '#f59e0b';
+            }
+            setActiveRegion(REGION_UNLISTED_KEY, 'zip');
+            return;
+        }
+        say(`✓ ${found.city}, ${found.state} — region not set for this ZIP; select one in the sidebar`, '#f59e0b');
+        return;
+    }
+
+    const resultEl = document.getElementById('zipResult');
+    if (resultEl) {
+        resultEl.textContent = `✓ ${found.branch || found.city} - ${found.city}, ${found.state} — Region: ${territory}`;
+        resultEl.style.color = found.inService ? '#10b981' : '#ef4444';
+    }
+    setActiveRegion(territory, 'zip');
+}
+
+function regionNoPricingHTML() {
+    return `<div class="pricing-result show region-state-note">
+                    <div class="price-display-item">
+                        <div class="price-display-value region-state-text">No pricing configured for the ${escapeHtml(_activeRegion)} region — contact the home office.</div>
+                    </div>
+                </div>`;
+}
+
 // ─── Profile Load ─────────────────────────────────────────────────────────────
 async function loadProfileData() {
     const profileId = getProfileIdFromUrl();
@@ -2762,21 +3039,27 @@ async function loadProfileData() {
  
         if (cached) {
             clientData = cached;
+            _pristinePayloadJson = JSON.stringify(cached);
             initPage();
-            // Stale-while-revalidate background refresh
+            // Stale-while-revalidate background refresh. Compare against the
+            // payload as received — applyRegionFilter() annotates clientData in
+            // place, so stringifying clientData here would always mismatch.
             fetchJsonWithCache(fullUrl)
                 .then(fresh => {
-                    if (JSON.stringify(fresh) !== JSON.stringify(clientData)) {
+                    const freshJson = JSON.stringify(fresh);
+                    if (freshJson !== _pristinePayloadJson) {
                         clientData = fresh;
+                        _pristinePayloadJson = freshJson;
                         populateClientData();
                     }
                 })
                 .catch(e => console.warn('Background refresh failed:', e));
             return;
         }
- 
+
         const data = await fetchJsonWithCache(fullUrl);
         clientData  = data;
+        _pristinePayloadJson = JSON.stringify(data);
         initPage();
  
     } catch (error) {
@@ -2996,6 +3279,22 @@ function loadDummyData() {
                     { sqftMin: 5001, sqftMax: 10000, firstPrice: "$119.00", recurringPrice: "$109.00", serviceType: "Lawn Care" },
                     { sqftMin: 10001, sqftMax: 999999, firstPrice: "Requires Client Follow-Up", recurringPrice: "", serviceType: "Lawn Care" }
                 ]
+            }, {
+                name: "German Roach Clean-Out",
+                serviceIdentifier: "Specialty",
+                description: "Intensive multi-visit German cockroach elimination program. Demonstrates region-based pricing — the price depends on the customer's region.",
+                contract: "None", guarantee: "60-day guarantee", duration: "1-2 hours",
+                pests: "German Cockroaches",
+                serviceType: "One Time", frequency: "One Time",
+                productType: "Specialty",
+                billingFrequency: "Due at time of service",
+                agentNote: "Region pricing demo: North Dallas prices by square footage, South Dallas is flat-rate. ZIP 75301 is served but has no region — Area Not Listed pricing ($265) applies. Tier regions are deliberately lower-cased to exercise case-drift matching.",
+                pricingTiers: [
+                    { pricingMode: "sqft", region: "north dallas", firstPrice: "$225.00", recurringPrice: "N/A", sqftMin: 0,    sqftMax: 2500,   serviceType: "Roach Clean-Out" },
+                    { pricingMode: "sqft", region: "north dallas", firstPrice: "$285.00", recurringPrice: "N/A", sqftMin: 2501, sqftMax: 999999, serviceType: "Roach Clean-Out" },
+                    { pricingMode: "flat", region: "South Dallas", flatPrice: "$250.00", serviceType: "Roach Clean-Out" },
+                    { pricingMode: "flat", region: "__unlisted__", flatPrice: "$265.00", serviceType: "Roach Clean-Out" }
+                ]
             }],
             technicians: [
                 { name: "John Smith",    company: "SOS Exterminating", role: "Both",       phone: "(214) 555-0001", schedule: "Mon-Fri 8-5 Saturday 8-12",  maxStops: "12", doesNotService: "",                                                                         additionalNotes: "Preferred technician for North Dallas area", zipCodes: ["75001","75002","75010","75011"], canPerform: ["Monthly GPC","Quarterly GPC","Bi-Monthly GPC","Monthly Mosquito Service","Free Termite Inspection","Home Protection Bundle","Mosquito + Yard Treatment Bundle"] },
@@ -3047,7 +3346,11 @@ function loadDummyData() {
                     { type: "satisfaction",  title: "Customer Satisfaction Policy", description: "Customer satisfaction is our priority. Any service concerns should be reported within 24 hours for prompt resolution.",                          options: ["24-hour reporting","48-hour reporting","Weekly follow-up"],    default: "24-hour reporting" }
                 ]
             },
-            serviceAreas: [{ zip: "75001", city: "Dallas", state: "TX", branch: "Dallas North Branch", territory: "North Dallas", inService: true }],
+            serviceAreas: [
+                { zip: "75001", city: "Dallas",     state: "TX", branch: "Dallas North Branch",   territory: "North Dallas", inService: true },
+                { zip: "75201", city: "Dallas",     state: "TX", branch: "Dallas Central Branch", territory: "South Dallas", inService: true },
+                { zip: "75301", city: "Carrollton", state: "TX", branch: "Dallas North Branch",   territory: "", inService: true }
+            ],
             bundles: [{
                 bundleId: "bundle_demo_1",
                 name: "Home Protection Bundle",
@@ -3147,6 +3450,12 @@ function populateClientData() {
         Object.keys(_activeAddons).forEach(k => delete _activeAddons[k]);
         _lastPopulatedProfileId = currentProfileId;
     }
+
+    // Single choke point for region filtering: every data path (fresh fetch,
+    // cache hit, background refresh, dummy data) renders through here, so the
+    // tiers[0]-driven pricing sites below only ever see a filtered array.
+    applyRegionFilter();
+    renderRegionPicker();
 
     document.getElementById('loadingState').style.display = 'none';
  
@@ -3539,6 +3848,14 @@ function populateServices() {
         return;
     }
 
+    // Preserve open tabs across re-renders (region change, background
+    // refresh): capture the active tab/panel ids before wiping and restore
+    // them after the rebuild. Ids are deterministic (category name, service
+    // index, sub index), so they map to the same logical tab in the new DOM;
+    // anything that no longer exists is simply skipped.
+    const activeTabIds = [...tabsBar.querySelectorAll('.active'), ...tabPanels.querySelectorAll('.active')]
+        .map(el => el.id).filter(Boolean);
+
     tabsBar.innerHTML   = '';
     tabPanels.innerHTML = '';
 
@@ -3700,6 +4017,9 @@ function populateServices() {
         panel.appendChild(innerPanels);
         tabPanels.appendChild(panel);
     });
+
+    // Restore the tabs that were open before this rebuild (captured above)
+    activeTabIds.forEach(id => document.getElementById(id)?.classList.add('active'));
 }
 
 function activateCategoryTab(tabId, panelId) {
@@ -3822,10 +4142,25 @@ function buildServicePanel(service, svcIdx) {
         const isInspection   = (service.serviceType || '').toLowerCase().includes('inspection');
         const isReferOffice  = (service.serviceType || '').toLowerCase().includes('refer-office');
         const flatPrice = service.pricingTiers?.[0]?.flatPrice;
+        // Region-based pricing: pricingTiers is already filtered to the active
+        // region (applyRegionFilter). These flags only drive the explicit
+        // states and the badge — nothing here re-filters.
+        // Blocked when no region is resolved yet, or when the ZIP resolved to
+        // "no assigned region" and this service has no Area Not Listed block.
+        const regionAffected  = serviceHasRegionPricing(service);
+        const regionBlocked   = regionAffected &&
+            (!_activeRegion || (isUnlistedRegionActive() && !serviceHasUnlistedPricing(service)));
+        const regionBadgeHTML = regionAffected && _activeRegion && !regionBlocked ? regionBadgeFor() : '';
         let calculatorHTML;
-        if (isInspection) {
+        if (regionBlocked) {
+            calculatorHTML = `<div class="calculator-title">🧮 Pricing Calculator</div>
+                ${regionNotSetHTML(serviceId)}`;
+        } else if (regionAffected && !(service.pricingTiers || []).length) {
+            calculatorHTML = `<div class="calculator-title">🧮 Pricing Calculator${regionBadgeHTML}</div>
+                ${regionNoPricingHTML()}`;
+        } else if (isInspection) {
             const priceDisplay = flatPrice && flatPrice !== '—' ? flatPrice : 'Free Inspection';
-            calculatorHTML = `<div class="calculator-title">🔍 Inspection Pricing</div>
+            calculatorHTML = `<div class="calculator-title">🔍 Inspection Pricing${regionBadgeHTML}</div>
                 <div class="pricing-result show">
                     <div class="pricing-display">
                         <div class="price-display-item">
@@ -3840,7 +4175,7 @@ function buildServicePanel(service, svcIdx) {
                     </button>
                 </div>`;
         } else if (isReferOffice) {
-            calculatorHTML = `<div class="calculator-title">📞 Pricing</div>
+            calculatorHTML = `<div class="calculator-title">📞 Pricing${regionBadgeHTML}</div>
                 <div class="pricing-result show">
                     <div class="pricing-display">
                         <div class="price-display-item">
@@ -3854,7 +4189,7 @@ function buildServicePanel(service, svcIdx) {
                     </button>
                 </div>`;
         } else {
-            calculatorHTML = `<div class="calculator-title">🧮 Pricing Calculator</div>
+            calculatorHTML = `<div class="calculator-title">🧮 Pricing Calculator${regionBadgeHTML}</div>
                 <div class="service-info-summary">
                     ${service.productType || service.name} • ${service.serviceFrequencyCustom || service.frequency} service • Billed ${service.billingFrequencyCustom || service.billingFrequency}
                 </div>
@@ -3966,12 +4301,13 @@ function buildServicePanel(service, svcIdx) {
             setTimeout(() => renderAddonSection(serviceId), 0);
         }
 
-        // Auto-show flat pricing immediately — no input needed (skip inspections/referrals, they render inline)
-        if (!isInspection && !isReferOffice && service.pricingTiers?.[0]?.pricingMode === 'flat') {
+        // Auto-show flat pricing immediately — no input needed (skip inspections/referrals, they render inline;
+        // skip region-blocked cards — they render the "select region" state with no pricing_ element)
+        if (!isInspection && !isReferOffice && !regionBlocked && service.pricingTiers?.[0]?.pricingMode === 'flat') {
             setTimeout(() => calculatePricing(serviceId), 0);
         }
         // Auto-show per-unit pricing immediately at default qty=1 so agents see the price without clicking
-        if (!isInspection && !isReferOffice && service.pricingTiers?.[0]?.pricingMode === 'per_unit') {
+        if (!isInspection && !isReferOffice && !regionBlocked && service.pricingTiers?.[0]?.pricingMode === 'per_unit') {
             setTimeout(() => calculatePricing(serviceId), 0);
         }
     }
@@ -4421,6 +4757,31 @@ function detailItem(label, value) {
 }
  
 function buildSubServiceHTML(subServiceId, sub) {
+    // Region-based pricing: sub.pricingTiers is already filtered centrally
+    // (applyRegionFilter) — these flags only pick the explicit states / badge.
+    // Blocked when no region is resolved yet, or when the ZIP resolved to
+    // "no assigned region" and this sub-service has no Area Not Listed block.
+    const regionAffected  = serviceHasRegionPricing(sub);
+    const regionBlocked   = regionAffected &&
+        (!_activeRegion || (isUnlistedRegionActive() && !serviceHasUnlistedPricing(sub)));
+    const regionBadgeHTML = regionAffected && _activeRegion && !regionBlocked ? regionBadgeFor() : '';
+    let subCalcBodyHTML;
+    if (regionBlocked) {
+        subCalcBodyHTML = regionNotSetHTML(subServiceId);
+    } else if (regionAffected && !(sub.pricingTiers || []).length) {
+        subCalcBodyHTML = regionNoPricingHTML();
+    } else {
+        subCalcBodyHTML = `${pricingInputHTML(subServiceId, sub.pricingTiers, `calculateSubServicePricing('${subServiceId}', ${parseInt(subServiceId.split('_sub_')[1])})`)}
+                <div class="pricing-result" id="result_${subServiceId}">
+                    <div class="pricing-display" id="pricing_${subServiceId}"></div>
+                    <div class="sqft-range-info" id="range_${subServiceId}"></div>
+                    <button type="button" class="show-techs-btn"
+                            onclick="openAvailableTechsModal(this.getAttribute('data-target-name'))"
+                            data-target-name="${escapeHtml(sub.name || '')}">
+                        👷 Show Available Techs
+                    </button>
+                </div>`;
+    }
     return `
         <div class="subservice-item">
             <div class="subservice-header">
@@ -4444,17 +4805,8 @@ function buildSubServiceHTML(subServiceId, sub) {
                 </div>
             </div>
             <div class="pricing-calculator">
-                <div class="calculator-title">🧮 ${sub.name} Pricing Calculator</div>
-                ${pricingInputHTML(subServiceId, sub.pricingTiers, `calculateSubServicePricing('${subServiceId}', ${parseInt(subServiceId.split('_sub_')[1])})`)}
-                <div class="pricing-result" id="result_${subServiceId}">
-                    <div class="pricing-display" id="pricing_${subServiceId}"></div>
-                    <div class="sqft-range-info" id="range_${subServiceId}"></div>
-                    <button type="button" class="show-techs-btn"
-                            onclick="openAvailableTechsModal(this.getAttribute('data-target-name'))"
-                            data-target-name="${escapeHtml(sub.name || '')}">
-                        👷 Show Available Techs
-                    </button>
-                </div>
+                <div class="calculator-title">🧮 ${sub.name} Pricing Calculator${regionBadgeHTML}</div>
+                ${subCalcBodyHTML}
             </div>
         </div>`;
 }
@@ -4994,6 +5346,32 @@ function checkZip() {
         if (found) {
             resultEl.textContent = `✓ ${found.branch || found.city} - ${found.city}, ${found.state}`;
             resultEl.style.color = found.inService ? '#10b981' : '#ef4444';
+            // Region-based pricing: resolve the pricing region from this ZIP's
+            // territory. Only profiles with region-tagged pricing get any of
+            // this — for everyone else the output above is unchanged.
+            if (profileHasRegionPricing()) {
+                const territory = String(found.territory || '').trim();
+                if (territory) {
+                    setActiveRegion(territory, 'zip');
+                    resultEl.textContent += ` — Region: ${territory}`;
+                } else if (profileHasUnlistedPricing()) {
+                    // ZIP is served but has no territory assigned: price from
+                    // the builder's "Area Not Listed" fallback where a service
+                    // configured one (services without it show the explicit
+                    // region-not-set state).
+                    setActiveRegion(REGION_UNLISTED_KEY, 'zip');
+                    resultEl.textContent += ' — no region assigned: Area Not Listed pricing applies';
+                    resultEl.style.color = '#f59e0b';
+                } else {
+                    // No fallback configured anywhere: explicit "region not
+                    // set" state. Clearing the previous region matters: a
+                    // stale region from the last caller must not price this
+                    // one. Never fall back to the first region.
+                    setActiveRegion(null);
+                    resultEl.textContent += ' — region not set for this ZIP, select one below';
+                    resultEl.style.color = '#f59e0b';
+                }
+            }
         } else {
             resultEl.textContent = '✗ Not in service area';
             resultEl.style.color = '#ef4444';
