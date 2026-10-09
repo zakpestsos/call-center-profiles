@@ -1,79 +1,12 @@
-<<<<<<< HEAD
 {
   "name": "call-center-profiles",
-  "version": "1.0.0",
-  "description": "Complete call center client profile system with Google Sheets and Wix CMS integration",
-  "main": "app.js",
+  "private": true,
+  "description": "Agent-facing call center profile viewer (served by GitHub Pages)",
   "scripts": {
-    "start": "http-server -p 8080 -c-1",
-    "build": "echo 'Static files ready for deployment'",
-    "test": "echo 'No tests specified'",
-    "deploy": "echo 'Deploy to GitHub Pages or Wix'"
+    "test": "node tests/test_viewer_regions.js",
+    "audit": "node scripts/audit_profiles.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/call-center-profiles.git"
-  },
-  "keywords": [
-    "call-center",
-    "client-profiles",
-    "wix",
-    "google-sheets",
-    "dashboard",
-    "scheduling"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
-    "http-server": "^14.1.1"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "jsdom": "^24.0.0"
+  }
 }
-=======
-{
-  "name": "call-center-profiles",
-  "version": "1.0.0",
-  "description": "Complete call center client profile system with Google Sheets and Wix CMS integration",
-  "main": "app.js",
-  "scripts": {
-    "start": "http-server -p 8080 -c-1",
-    "build": "echo 'Static files ready for deployment'",
-    "test": "echo 'No tests specified'",
-    "deploy": "echo 'Deploy to GitHub Pages or Wix'"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/call-center-profiles.git"
-  },
-  "keywords": [
-    "call-center",
-    "client-profiles",
-    "wix",
-    "google-sheets",
-    "dashboard",
-    "scheduling"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {
-    "http-server": "^14.1.1"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
-}
->>>>>>> 2736c685fc8fe36c89bbf61e8bcaaac71c17974d
