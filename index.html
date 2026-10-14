@@ -1470,6 +1470,16 @@ body {
     white-space: pre-wrap;
 }
  
+/* Commercial Community Property Scheduling Rules — amber "check before booking" card */
+.policy-item-compact.policy-warning-amber {
+    background: rgba(245, 158, 11, 0.12);
+    border: 2px solid rgba(245, 158, 11, 0.75);
+}
+.policy-item-compact.policy-warning-amber:hover { border-color: #f59e0b; }
+.policy-item-compact.policy-warning-amber .policy-label { color: #fbbf24; white-space: normal; }
+[data-theme="light"] .policy-item-compact.policy-warning-amber { background: #fff7e6; border-color: #d97706; }
+[data-theme="light"] .policy-item-compact.policy-warning-amber .policy-label { color: #92400e; }
+
 #defaultSchedulingTimes { line-height: 1.6; white-space: pre-wrap; }
 #defaultSchedulingTimes strong { color: var(--water); font-weight: 700; }
 
@@ -2532,6 +2542,16 @@ body {
                                 </div>
                                 <div class="policy-item-body">
                                     <div class="policy-value-full" id="afterHoursPolicyFull"></div>
+                                </div>
+                            </div>
+                            <div class="policy-item-compact policy-warning-amber" id="commercialCommunityRulesCard" style="display:none;">
+                                <div class="policy-item-header">
+                                    <div class="policy-header-left">
+                                        <span class="policy-label">⚠️ Commercial Community Property Scheduling Rules</span>
+                                    </div>
+                                </div>
+                                <div class="policy-item-body">
+                                    <div class="policy-value-full" id="commercialCommunityRulesFull" style="white-space:pre-wrap;"></div>
                                 </div>
                             </div>
                             <div class="policy-item-compact" id="schedulingGeneralNotesCard" style="display:none;">
@@ -5002,6 +5022,23 @@ function populateSchedulingPolicies() {
         if (gnFull && gnText && gnText !== 'Not specified') {
             gnFull.textContent = gnText;
             if (gnCard) gnCard.style.display = '';
+        }
+    }
+
+    // Commercial Community Property Scheduling Rules — amber card shown only when present.
+    // Exact-title match so it can never be confused with other policies.
+    // Reset every run: populateSchedulingPolicies() can re-run after a cache refresh.
+    const ccRules = allPolicies.find(p => (p.title || '').trim().toLowerCase() === 'commercial community property scheduling rules');
+    const ccCard  = document.getElementById('commercialCommunityRulesCard');
+    const ccFull  = document.getElementById('commercialCommunityRulesFull');
+    if (ccCard) ccCard.style.display = 'none';
+    if (ccFull) ccFull.textContent = '';
+    if (ccRules) {
+        matchedPolicies.add(ccRules); // keep it from also rendering as an "extra" card
+        const ccText = String(ccRules.value || '').trim();
+        if (ccFull && ccText) {
+            ccFull.textContent = ccText;
+            if (ccCard) ccCard.style.display = '';
         }
     }
 
