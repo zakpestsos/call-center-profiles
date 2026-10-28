@@ -4302,6 +4302,8 @@ function buildServicePanel(service, svcIdx) {
                     ${detailItem('Leave During Service', service.leaveDuringService || service.leaveDuringServiceCustom)}
                     ${detailItem('Follow up', service.followUp)}
                     ${detailItem('Prep Sheet', service.prepSheet || service.prepSheetCustom)}
+                    ${reserviceDetailItem('Set Reservice Type To', service.reserviceType, 'type')}
+                    ${reserviceDetailItem('Set Subscription Type To', service.subscriptionType, 'subscription')}
                 </div>
             </div>
             <div class="pricing-calculator">
@@ -4774,6 +4776,25 @@ function calculateBundlePricing(bundleId) {
 
 function detailItem(label, value) {
     return `<div class="detail-item"><div class="detail-label">${label}</div><div class="detail-value">${value || 'N/A'}</div></div>`;
+}
+
+// Per-service reservice setup (Services tab Reservice_Type / Subscription_Type).
+// A service with no value of its own shows exactly what the office-wide
+// "Reservices Setup" card shows (its value, else that card's default), and
+// nothing when the office hides that row.
+function officeReserviceDefault(kind) {
+    const all = Object.values((clientData && clientData.policies) || {}).flat();
+    const get = t => all.find(x => (x.title || '').trim().toLowerCase() === t);
+    const hide = get(kind === 'type' ? 'reservice service type hide' : 'reservice subscription hide');
+    if (hide && String(hide.value || '').trim().toLowerCase() === 'true') return '';
+    const p = get(kind === 'type' ? 'reservice service type value' : 'reservice subscription value');
+    const v = p && p.value ? String(p.value).trim() : '';
+    return v || (kind === 'type' ? 'Reservice' : 'Stand-Alone Service');
+}
+
+function reserviceDetailItem(label, own, kind) {
+    const value = String(own || '').trim() || officeReserviceDefault(kind);
+    return value ? detailItem(label, value) : '';
 }
  
 function buildSubServiceHTML(subServiceId, sub) {

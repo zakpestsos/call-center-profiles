@@ -42,6 +42,7 @@ const RENDER_FNS = [
   'escapeHtml', 'pricingInputHTML', 'pricingUnitLabel',
   'calculatePricing', 'calculateSubServicePricing',
   'buildServicePanel', 'buildSubServiceHTML', 'detailItem', 'subDetailItem',
+  'officeReserviceDefault', 'reserviceDetailItem',
   'checkZip'
 ];
 
@@ -400,6 +401,37 @@ html = renderPanels([fbSvc]);
 check(!html[0].includes('Area Not Listed') && html[0].includes('>North</span>'),
   'badge returns to the real region name');
 clientData.services.pop();
+
+// ════════════════════════════════════════════════════════════════════════════
+console.log('\nPER-SERVICE RESERVICE SETUP (Services tab Reservice_Type / Subscription_Type)');
+const detail = (h, label) => {
+  const m = h.match(new RegExp(`detail-label">${label}</div><div class="detail-value">([^<]*)<`));
+  return m ? m[1] : null;
+};
+const rsvSvc = (extra) => Object.assign({ name: 'Rsv Svc', pricingTiers: [{ firstPrice: '$99', recurringPrice: '$49' }] }, extra);
+
+global.clientData = { services: [], addOns: [], serviceAreas: [], policies: {} };
+html = renderPanels([rsvSvc({ reserviceType: 'Natural State Callback', subscriptionType: 'Callback Only' })]);
+check(detail(html[0], 'Set Reservice Type To') === 'Natural State Callback' && detail(html[0], 'Set Subscription Type To') === 'Callback Only',
+  "service's own values are shown");
+
+html = renderPanels([rsvSvc({})]);
+check(detail(html[0], 'Set Reservice Type To') === 'Reservice' && detail(html[0], 'Set Subscription Type To') === 'Stand-Alone Service',
+  'no per-service value + no office override -> the office card defaults');
+
+global.clientData.policies = { Scheduling: [
+  { title: 'Reservice Service Type Value', value: 'Call Back Service' },
+  { title: 'Reservice Subscription Value', value: 'N/A' },
+  { title: 'Reservice Subscription Hide', value: 'true' }
+] };
+html = renderPanels([rsvSvc({})]);
+check(detail(html[0], 'Set Reservice Type To') === 'Call Back Service',
+  "falls back to the office's Reservices Setup value");
+check(detail(html[0], 'Set Subscription Type To') === null,
+  'office hid the subscription row -> no subscription item');
+html = renderPanels([rsvSvc({ subscriptionType: 'Pest Plus' })]);
+check(detail(html[0], 'Set Subscription Type To') === 'Pest Plus',
+  "a service's own value still shows when the office hides its row");
 
 console.log(fails === 0 ? '\nALL PASSED' : `\n${fails} FAILED`);
 process.exit(fails === 0 ? 0 : 1);
