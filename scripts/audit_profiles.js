@@ -68,7 +68,8 @@ const viewerSrc = fs.readFileSync(VIEWER_PATH, 'utf8');
 eval(extractRegionBlock(viewerSrc) +
      extract(viewerSrc, ['escapeHtml', 'pricingInputHTML', 'pricingUnitLabel',
        'calculatePricing', 'calculateSubServicePricing',
-       'buildServicePanel', 'buildSubServiceHTML', 'detailItem', 'subDetailItem']) +
+       'buildServicePanel', 'buildSubServiceHTML', 'detailItem', 'subDetailItem',
+       'officeReserviceDefault', 'reserviceDetailItem']) +
      '\nglobalThis.__setRegion = (v) => { _activeRegion = v; _activeRegionSource = v ? "manual" : null; };');
 
 const mount = document.getElementById('mount');
