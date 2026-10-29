@@ -69,7 +69,7 @@ eval(extractRegionBlock(viewerSrc) +
      extract(viewerSrc, ['escapeHtml', 'pricingInputHTML', 'pricingUnitLabel',
        'calculatePricing', 'calculateSubServicePricing',
        'buildServicePanel', 'buildSubServiceHTML', 'detailItem', 'subDetailItem',
-       'officeReserviceDefault', 'reserviceDetailItem']) +
+       'officeReserviceDefault', 'reserviceDetailItem', 'officeAgreementItem']) +
      '\nglobalThis.__setRegion = (v) => { _activeRegion = v; _activeRegionSource = v ? "manual" : null; };');
 
 const mount = document.getElementById('mount');

@@ -4132,7 +4132,8 @@ function buildServicePanel(service, svcIdx) {
             </div>` : ''}
             <div class="service-details">
                 <div class="service-details-grid">
-                    ${detailItem('Contract', service.contract)}
+                    ${officeAgreementItem(detailItem)}
+                    ${detailItem('Contract Length', service.contract)}
                     ${detailItem('Guarantee', service.guarantee)}
                     ${detailItem('Duration', service.duration)}
                     ${detailItem('Service Type', service.serviceType)}
@@ -4294,7 +4295,8 @@ function buildServicePanel(service, svcIdx) {
             </div>
             <div class="service-details">
                 <div class="service-details-grid">
-                    ${detailItem('Contract', service.contract)}
+                    ${officeAgreementItem(detailItem)}
+                    ${detailItem('Contract Length', service.contract)}
                     ${detailItem('Guarantee', service.guarantee)}
                     ${detailItem('Call Ahead', service.callAhead || service.callAheadCustom)}
                     ${detailItem('Initial Duration', service.duration)}
@@ -4796,6 +4798,15 @@ function reserviceDetailItem(label, own, kind) {
     const value = String(own || '').trim() || officeReserviceDefault(kind);
     return value ? detailItem(label, value) : '';
 }
+
+// Office-wide "Requires signed agreement?" policy (Sales), shown on every
+// service as "Agreement". Nothing when the office has no answer.
+function officeAgreementItem(render) {
+    const all = Object.values((clientData && clientData.policies) || {}).flat();
+    const p = all.find(x => (x.title || '').trim().toLowerCase() === 'requires signed agreement?');
+    const value = p && p.value ? String(p.value).trim() : '';
+    return value ? render('Agreement', value) : '';
+}
  
 function buildSubServiceHTML(subServiceId, sub) {
     // Region-based pricing: sub.pricingTiers is already filtered centrally
@@ -4837,7 +4848,8 @@ function buildSubServiceHTML(subServiceId, sub) {
             </div>
             <div class="subservice-details">
                 <div class="subservice-details-grid">
-                    ${subDetailItem('Contract', sub.contract)}
+                    ${officeAgreementItem(subDetailItem)}
+                    ${subDetailItem('Contract Length', sub.contract)}
                     ${subDetailItem('Guarantee', sub.guarantee)}
                     ${subDetailItem('Duration', sub.duration)}
                     ${subDetailItem('Service Type', sub.serviceType)}

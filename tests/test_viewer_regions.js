@@ -42,7 +42,7 @@ const RENDER_FNS = [
   'escapeHtml', 'pricingInputHTML', 'pricingUnitLabel',
   'calculatePricing', 'calculateSubServicePricing',
   'buildServicePanel', 'buildSubServiceHTML', 'detailItem', 'subDetailItem',
-  'officeReserviceDefault', 'reserviceDetailItem',
+  'officeReserviceDefault', 'reserviceDetailItem', 'officeAgreementItem',
   'checkZip'
 ];
 
@@ -432,6 +432,23 @@ check(detail(html[0], 'Set Subscription Type To') === null,
 html = renderPanels([rsvSvc({ subscriptionType: 'Pest Plus' })]);
 check(detail(html[0], 'Set Subscription Type To') === 'Pest Plus',
   "a service's own value still shows when the office hides its row");
+
+// ════════════════════════════════════════════════════════════════════════════
+console.log('\nAGREEMENT + CONTRACT LENGTH (office "Requires signed agreement?" policy)');
+html = renderPanels([rsvSvc({ contract: '12 Months' })]);
+check(detail(html[0], 'Contract Length') === '12 Months' && detail(html[0], 'Contract') === null,
+  '"Contract" is now labeled "Contract Length"');
+check(detail(html[0], 'Agreement') === null,
+  'no signed-agreement policy -> no Agreement item');
+global.clientData.policies.Sales = [{ title: 'Requires signed agreement?', value: 'Yes, digital only' }];
+html = renderPanels([rsvSvc({ contract: '12 Months' })]);
+check(detail(html[0], 'Agreement') === 'Yes, digital only',
+  "Agreement shows the office's answer");
+check(html[0].indexOf('>Agreement<') < html[0].indexOf('>Contract Length<'),
+  'Agreement sits right before Contract Length');
+global.clientData.policies.Sales = [{ title: 'Requires signed agreement?', value: 'No' }];
+html = renderPanels([rsvSvc({})]);
+check(detail(html[0], 'Agreement') === 'No', '"No" is shown too');
 
 console.log(fails === 0 ? '\nALL PASSED' : `\n${fails} FAILED`);
 process.exit(fails === 0 ? 0 : 1);
