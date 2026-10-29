@@ -449,6 +449,13 @@ check(html[0].indexOf('>Agreement<') < html[0].indexOf('>Contract Length<'),
 global.clientData.policies.Sales = [{ title: 'Requires signed agreement?', value: 'No' }];
 html = renderPanels([rsvSvc({})]);
 check(detail(html[0], 'Agreement') === 'No', '"No" is shown too');
+html = renderPanels([rsvSvc({ signedAgreement: 'Yes, commercial only' })]);
+check(detail(html[0], 'Agreement') === 'Yes, commercial only',
+  "a service's own Signed_Agreement overrides the office answer");
+global.clientData.policies.Sales = [];
+html = renderPanels([rsvSvc({ signedAgreement: 'Yes' })]);
+check(detail(html[0], 'Agreement') === 'Yes',
+  "a service's own value shows even when the office has no answer");
 
 console.log(fails === 0 ? '\nALL PASSED' : `\n${fails} FAILED`);
 process.exit(fails === 0 ? 0 : 1);
